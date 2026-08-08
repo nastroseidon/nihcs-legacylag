@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>The Adventures of Dr. Marion Wayne</title>
+<style>
+  html,body{margin:0;padding:0;background:#0f1a10;height:100%;overflow:hidden;font-family:Segoe UI,Arial,sans-serif;}
+  #wrap{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+  #stage{position:relative;width:100%;max-width:1280px;aspect-ratio:16/9;background:#0f1a10;box-shadow:0 0 40px rgba(0,0,0,.6);}
+  canvas{display:block;width:100%;height:100%;background:#7ec4e6;}
+  #hud{position:absolute;top:10px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:center;
+       color:#fff;font-weight:700;font-size:clamp(13px,2.2vw,20px);text-shadow:0 2px 4px rgba(0,0,0,.7);pointer-events:none;}
+  #levelTxt{font-size:clamp(12px,2vw,18px);opacity:.95;}
+  #overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+           background:rgba(10,25,12,.85);color:#fff;text-align:center;padding:20px;cursor:pointer;}
+  #overlay h1{font-size:clamp(20px,4vw,40px);margin:.2em 0;color:#ffd54a;text-shadow:0 3px 6px rgba(0,0,0,.8);line-height:1.2;}
+  #overlay p{font-size:clamp(13px,2.6vw,20px);max-width:660px;line-height:1.5;margin:.4em 0;}
+  #overlay .btn{margin-top:18px;background:#ffd54a;color:#2a1c05;font-weight:800;
+                padding:12px 30px;border-radius:10px;font-size:clamp(16px,3vw,24px);box-shadow:0 4px 0 #b8952a;}
+  #credit{position:absolute;bottom:24px;left:0;right:0;text-align:center;color:#e8ddc0;font-style:italic;
+          font-size:clamp(13px,2.4vw,20px);text-shadow:0 2px 4px rgba(0,0,0,.8);opacity:0;
+          animation:creditFade 2.5s ease-in .6s forwards;}
+  @keyframes creditFade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .hidden{display:none!important;}
+  #pauseMenu{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+             background:rgba(10,25,12,.9);z-index:5;}
+  #pauseMenu h2{color:#ffd54a;font-size:clamp(24px,5vw,44px);margin:0 0 18px;text-shadow:0 3px 6px rgba(0,0,0,.8);}
+  .pBtn{width:min(80%,320px);margin:7px 0;background:#ffd54a;color:#2a1c05;font-weight:800;border:none;
+        padding:14px 20px;border-radius:10px;font-size:clamp(15px,2.8vw,22px);cursor:pointer;box-shadow:0 4px 0 #b8952a;}
+  .pBtn:hover{background:#ffe27a;}
+  #victory{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
+           background:#0a190c center/cover no-repeat;}
+  #victory.gameover{background:#1a0e0e;}
+  #victory.gameover #victoryPanel{background:rgba(20,8,8,.9);}
+  #victoryPanel{width:100%;background:rgba(10,25,12,.78);padding:14px;text-align:center;box-sizing:border-box;}
+  #victoryScore{color:#ffd54a;font-size:clamp(18px,3.4vw,30px);font-weight:800;margin-bottom:8px;text-shadow:0 2px 4px #000;}
+  #nameEntry{margin-bottom:8px;}
+  #nameInput{padding:10px 12px;border-radius:8px;border:2px solid #ffd54a;font-size:clamp(14px,2.4vw,18px);width:min(55%,220px);}
+  #nameEntry .pBtn{width:auto;display:inline-block;margin:0 0 0 8px;padding:10px 18px;}
+  #saveMsg{color:#8fff7a;font-weight:700;margin-top:6px;min-height:1em;}
+  .vRow{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+  .vRow .pBtn{width:auto;margin:4px;}
+  #scores{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;
+          background:rgba(10,25,12,.95);color:#fff;padding:20px;box-sizing:border-box;}
+  #scores h2{color:#ffd54a;font-size:clamp(24px,5vw,40px);margin:0 0 14px;}
+  #scoreList{list-style:none;padding:0;margin:0 0 16px;width:min(90%,420px);}
+  #scoreList li{display:flex;justify-content:space-between;padding:8px 12px;font-size:clamp(14px,2.6vw,20px);
+                border-bottom:1px solid rgba(255,255,255,.15);}
+  #scoreList li span{flex:1;text-align:left;}
+  #scoreList li span:nth-child(2){flex:0 0 70px;text-align:center;color:#ffd54a;font-weight:800;}
+  #scoreList li span:last-child{flex:0 0 110px;text-align:right;color:#fff;}
+  #scoreList li.scHead span{color:#7ad0ff;font-weight:800;}
+  #scoreList li.scHead span:nth-child(2){color:#7ad0ff;}
+  #fader{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:20;}
+  #achieve{position:absolute;inset:0;z-index:7;display:flex;align-items:center;justify-content:center;
+           background:rgba(6,10,20,.92);padding:16px;box-sizing:border-box;}
+  #achieveBox{width:min(94%,720px);max-height:92%;overflow-y:auto;background:#0d1424;border:3px solid #ffd54a;
+              border-radius:6px;box-shadow:0 0 0 2px #06263a,0 10px 40px rgba(0,0,0,.7);
+              padding:18px 22px;color:#dfe7ff;font-family:'Consolas','Courier New',monospace;text-align:center;}
+  #achieveHdr{color:#ffd54a;font-weight:800;letter-spacing:2px;font-size:clamp(15px,2.8vw,22px);margin-bottom:12px;}
+  #achieveTitle{color:#7ad0ff;font-weight:800;font-size:clamp(15px,2.6vw,22px);margin-bottom:12px;line-height:1.3;}
+  #achieveBody{font-size:clamp(12px,2vw,16px);line-height:1.5;text-align:left;white-space:pre-wrap;margin-bottom:12px;}
+  #achieveReward{font-size:clamp(11px,1.9vw,15px);line-height:1.45;text-align:left;color:#8fff7a;
+                 border-top:1px dashed #33507a;padding-top:10px;margin-bottom:14px;}
+  #achieveReward::before{content:'REWARD: ';color:#ffd54a;font-weight:800;}
+  /* ===== TESTING: level select styles (delete for production) ===== */
+  #levelSelect{margin-top:20px;padding:12px 16px;border:1px dashed rgba(255,255,255,.4);border-radius:10px;}
+  .lsLabel{font-size:clamp(11px,2vw,15px);letter-spacing:1px;opacity:.75;margin-bottom:8px;}
+  .lsRow{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+  .lsBtn{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);
+         border-radius:8px;padding:8px 12px;font-size:clamp(11px,2vw,15px);font-weight:700;cursor:pointer;}
+  .lsBtn:hover{background:rgba(255,213,74,.85);color:#2a1c05;}
+  /* ===== END TESTING styles ===== */
+  #touch{position:absolute;bottom:14px;left:0;right:0;display:none;justify-content:space-between;padding:0 18px;pointer-events:none;}
+  #touch .side{display:flex;gap:14px;}
+  .tbtn{width:clamp(56px,12vw,80px);height:clamp(56px,12vw,80px);border-radius:50%;
+        background:rgba(255,255,255,.28);border:2px solid rgba(255,255,255,.55);color:#fff;
+        font-size:clamp(22px,5vw,34px);display:flex;align-items:center;justify-content:center;
+        pointer-events:auto;user-select:none;touch-action:none;font-weight:800;}
+  .tbtn:active{background:rgba(255,255,255,.5);}
+  @media (pointer:coarse){#touch{display:flex;}}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="stage">
+    <canvas id="game" width="1280" height="720"></canvas>
+    <div id="hud">
+      <span id="scoreTxt">Medallions: 0</span>
+      <span id="levelTxt"></span>
+      <span id="livesTxt">Lives: 3</span>
+    </div>
+    <div id="touch">
+      <div class="side">
+        <div class="tbtn" data-k="left">&#9664;</div>
+        <div class="tbtn" data-k="right">&#9654;</div>
+      </div>
+      <div class="side"><div class="tbtn" data-k="jump">&#9650;</div></div>
+    </div>
+    <div id="overlay">
+      <h1 id="ovTitle">The Adventures of Dr. Marion Wayne<br><span style="font-size:.72em">and his Journey to the Electronic Health Record</span></h1>
+      <p id="ovText">Collect the golden medallions &mdash; grab every one in a level for a bonus life!
+         Stomp the Legacy Lag bots from above to spring high, but never touch them from the side.
+         Avoid the spikes and the pits!</p>
+      <p style="opacity:.85">Move: A / D or Arrows&nbsp;&nbsp;&middot;&nbsp;&nbsp;Jump: SPACE / W / Up&nbsp;&nbsp;&middot;&nbsp;&nbsp;Pause: ESC</p>
+      <div class="btn" id="ovBtn">START</div>
+      <div class="btn hidden" id="bonusBtn" style="background:#b98cff;box-shadow:0 4px 0 #7a52c0;color:#1a0e33;">BONUS: The Legacy Labyrinth</div>
+      <div class="btn" id="scoresBtn" style="background:#7ad0ff;box-shadow:0 4px 0 #3f9fd0;color:#06263a;">High Scores</div>
+      <!-- ===== TESTING: level select (defaulted ON) ===== -->
+      <div id="levelSelect" style="display:block;">
+        <div class="lsLabel">TESTING &mdash; jump to level</div>
+        <div class="lsRow">
+          <button class="lsBtn" data-lvl="0">1 &middot; Kick-off</button>
+          <button class="lsBtn" data-lvl="1">2 &middot; Planning</button>
+          <button class="lsBtn" data-lvl="2">3 &middot; Super User</button>
+          <button class="lsBtn" data-lvl="3">4 &middot; End User</button>
+          <button class="lsBtn" data-lvl="4">5 &middot; Migration</button>
+          <button class="lsBtn" data-lvl="5">6 &middot; Go Live</button>
+          <button class="lsBtn" data-lvl="6">Bonus &middot; Labyrinth</button>
+        </div>
+      </div>
+      <!-- ===== END TESTING block ===== -->
+      <div id="credit">A VA Northern Indiana Production</div>
+    </div>
+    <div id="pauseMenu" class="hidden">
+      <h2>Paused</h2>
+      <button class="pBtn" id="pResume">Resume</button>
+      <button class="pBtn" id="pRestart">Restart Level</button>
+      <button class="pBtn" id="pMain">Return to Main Screen</button>
+    </div>
+    <div id="victory" class="hidden">
+      <div id="victoryPanel">
+        <div id="victoryScore">Total Medallions: 0</div>
+        <div id="nameEntry">
+          <input id="nameInput" maxlength="14" placeholder="Enter your name" autocomplete="off">
+          <button class="pBtn" id="saveScore">Save Score</button>
+          <div id="saveMsg"></div>
+        </div>
+        <div class="vRow">
+          <button class="pBtn" id="vBonus">Continue to Bonus Level</button>
+          <button class="pBtn" id="vMain">Return to Main Screen</button>
+        </div>
+      </div>
+    </div>
+    <div id="scores" class="hidden">
+      <h2>High Scores</h2>
+      <ol id="scoreList"></ol>
+      <button class="pBtn" id="scoresBack">Back</button>
+    </div>
+    <div id="achieve" class="hidden">
+      <div id="achieveBox">
+        <div id="achieveHdr">&#9733; NEW ACHIEVEMENT UNLOCKED! &#9733;</div>
+        <div id="achieveTitle"></div>
+        <div id="achieveBody"></div>
+        <div id="achieveReward"></div>
+        <button class="pBtn" id="achieveBtn">Continue</button>
+      </div>
+    </div>
+    <div id="fader"></div>
+    <div id="keydbg" style="position:absolute;left:6px;bottom:6px;z-index:30;color:#0f0;background:rgba(0,0,0,.6);font:12px monospace;padding:3px 6px;border-radius:4px;">keys: (press any)</div>
+  </div>
+</div>
+<script>
+(function(){
+"use strict";
+const cv=document.getElementById('game'), ctx=cv.getContext('2d');
+const W=1280,H=720,GROUND=640;
+const GRAV=0.8,MOVE=5.0,JUMP=-17,STOMP_SPRING=-24,MAXFALL=20;
+const STORY=130, FALL_CAP=5*STORY, BLOCK=50;   // BLOCK = universal 1:1 tile measure
+
+// ---------- assets ----------
+const files={
+  idle:'player_idle.png',walk1:'player_walk1.png',walk2:'player_walk2.png',jump:'player_jump.png',
+  en1:'enemy_walk1.png',en2:'enemy_walk2.png',coin:'coin.png',
+  ground:'tile_ground.png',plat:'tile_platform.png',spike:'hazard_spikes.png',
+  floating:'tile_floating.png',girder:'tile_girder.png',
+  bg1:'bg1_kickoff.png',bg2:'bg2_planning.png',bg3:'bg3_superuser.png',
+  bg4:'bg4_enduser.png',bg5:'bg5_migration.png',bg6:'bg6_golive.png',bonus1:'bonus1_labyrinth.png',
+  goal1:'goal1_kickoff.png',goal2:'goal2_planning.png',goal3:'goal3_superuser.png',
+  goal4:'goal4_enduser.png',goal5:'goal5_migration.png',goal6:'goal6_golive.png'
+};
+const img={},ok={};
+// Images load by plain filename (same folder as index.html). Works on normal web hosting
+// like Azure Static Web Apps. (The old SharePoint build embedded these as base64; not needed here.)
+for(const k in files){const im=new Image();ok[k]=false;
+  im.onload=function(){ok[k]=true;}; im.onerror=function(){ok[k]=false;}; im.src=files[k]; img[k]=im;}
+
+// ---------- level definitions (1-6 + bonus) ----------
+const LEVELS=[
+ { name:'Kick-off', bg:'bg1', goal:'goal1', climb:false, worldW:3400, start:[80,GROUND-70],
+   ground:[[0,900],[1050,900],[2100,1300]],
+   walls:[[560,GROUND-64,64,64],[2300,GROUND-128,64,128]],
+   plats:[[700,510,160],[1500,500,160],[2400,500,170]],
+   spikes:[[1300,GROUND]],
+   coins:[[300,560],[380,560],[460,560],[760,450],[1150,560],[1550,440],[1900,560],[2450,440],[2800,560],[3050,560]],
+   enemies:[[1200,1100,1500,GROUND],[2600,2500,3050,GROUND]],
+   goalRect:[3200,GROUND-160,90,160] },
+
+ { name:'Future State Planning', bg:'bg2', goal:'goal2', climb:false, worldW:4300, start:[80,GROUND-70],
+   ground:[[0,600],[760,500],[1400,500],[2050,700],[2900,1400]],
+   plats:[[600,520,150],[980,430,150],[1350,520,150],[1750,430,150],[2150,520,150],[2550,420,160],[3050,500,160],[3450,400,160],[3850,500,160]],
+   spikes:[[900,GROUND],[2200,GROUND]],
+   coins:[[300,560],[620,470],[1000,380],[1400,470],[1770,380],[2170,470],[2570,370],[3070,450],[3470,350],[3900,450]],
+   enemies:[[1000,760,1260,GROUND],[2300,2050,2750,GROUND],[3200,2900,3800,GROUND]],
+   goalRect:[4050,GROUND-160,90,160] },
+
+ { name:'Super User Training', bg:'bg3', goal:'goal3', climb:false, worldW:4300, start:[80,GROUND-70],
+   ground:[[0,700],[900,600],[1650,600],[2400,700],[3300,1000]],
+   plats:[[600,380,150],[1200,520,150],[1550,360,150],[2000,500,150],[2350,340,160],[2800,500,150],[3150,360,160],[3600,480,160],[3950,340,160]],
+   spikes:[[1350,GROUND],[2550,GROUND],[3450,GROUND]],
+   coins:[[350,560],[650,330],[1250,470],[1600,310],[2050,450],[2400,290],[2850,450],[3200,310],[3700,430],[4000,290]],
+   enemies:[[1000,900,1440,GROUND],[1850,1650,2200,GROUND],[2450,2400,2540,GROUND],[2800,2620,3060,GROUND],[3600,3520,4150,GROUND]],
+   goalRect:[4100,GROUND-160,90,160] },
+
+ { name:'End User Training', bg:'bg4', goal:'goal4', climb:false, worldW:4900, start:[80,GROUND-70],
+   ground:[[0,700],[870,650],[1650,500],[2280,700],[3130,650],[3900,1250]],
+   walls:[[450,GROUND-64,64,64]],
+   plats:[[600,500,150],[1000,400,150],[1450,500,150],[1850,400,150],[2250,500,150],[2650,380,160],[3050,490,150],[3450,390,160],[3800,490,160],[4200,400,160],[4550,500,160]],
+   spikes:[[1200,GROUND],[2500,GROUND],[3350,GROUND],[4450,GROUND]],
+   coins:[[350,560],[650,450],[1050,350],[1500,450],[1900,350],[2300,450],[2700,330],[3100,440],[3500,340],[4250,350],[4600,450]],
+   enemies:[[1050,870,1520,GROUND],[1900,1650,2150,GROUND],[2700,2280,2980,GROUND],[3500,3130,3780,GROUND],[4250,3900,4700,GROUND]],
+   goalRect:[4700,GROUND-160,90,160] },
+
+ { name:'Data Migration', bg:'bg5', goal:'goal5', climb:true, worldW:1200, camMinY:-700, start:[100,GROUND-70],
+   ground:[[0,1200]],
+   plats:[[300,485,340,'girder'],[780,485,300,'girder'],[1160,485,40,'girder'],[20,330,900,'girder'],[200,175,700,'girder'],[1040,175,140,'girder'],[20,20,600,'girder'],[520,-135,660,'girder'],[20,-290,700,'girder']],
+   walls:[[980,275,64,210],[600,120,64,210]],
+   spikes:[[520,GROUND],[820,GROUND]],
+   coins:[[200,570],[400,570],[500,435],[800,435],[200,280],[450,280],[350,125],[450,125],[200,-30],[500,-30],[700,-185],[1000,-185],[300,-340]],
+   enemies:[[820,780,980,485],[150,40,560,330],[300,220,560,175],[200,40,600,20],[700,540,1160,-135]],
+   goalRect:[120,-440,90,150] },
+
+ { name:'Go Live', bg:'bg6', goal:'goal6', climb:false, worldW:5200, start:[80,GROUND-70],
+   ground:[[0,820],[1010,540],[1740,510],[2950,600],[3750,1450]],
+   walls:[[500,GROUND-64,64,64],[3200,GROUND-128,64,128]],
+   plats:[[900,490,120],[1150,410,140],[1360,350,130],[1850,390,140],[2060,330,130],
+          [2340,500,120],[2790,500,120],[3300,420,140],
+          [3900,480,140],[4200,400,150],[4550,480,140],[4850,400,150]],
+   phase:[[2600,500,120],[4400,470,120]],
+   spikes:[[1250,GROUND],[3050,GROUND],[4100,GROUND],[4600,GROUND]],
+   coins:[[300,560],[560,560],[760,560],[900,440],[1180,360],[1390,300],
+          [1880,340],[2090,280],[2390,450],[2650,450],[2840,450],
+          [3080,540],[3330,370],[3930,430],[4230,350],[4420,310],[4470,310],
+          [4580,430],[4880,350],[5050,560]],
+   enemies:[[1100,1010,1540,GROUND],[1900,1740,2240,GROUND],[3050,2950,3540,GROUND],
+            [4300,3750,4700,GROUND],[4900,4750,5190,GROUND]],
+   goalRect:[5080,GROUND-160,90,160] },
+
+ { name:'The Legacy Labyrinth', bg:'bonus1', goal:'goal6', climb:true, noNet:true, bonus:true, worldW:2000, camMinY:-2900, start:[100,GROUND-72],
+   ground:[], plats:[], walls:[], spikes:[], coins:[], enemies:[], decor:[], phase:[], groundBlocks:[], goalRect:[100,-2810,200,150] }
+];
+const shortName=['Kick-off','Planning','Super User','End User','Migration','Go Live','Labyrinth'];
+
+// ===== Achievements: "hopped the whole level" (lenient = never walked on ground) =====
+// Each: badge (emoji shown in High Scores), title, body (\n\n = paragraph break), reward.
+// Add the other 11 as more objects in this array; one is picked at random when earned.
+const HOP_ACHIEVEMENTS=[
+ { badge:'\uD83E\uDD98', title:'1978 Pogo Stick Champion of Lower Sheboygan, Wisconsin',
+   body:'Congratulations!\n\nAfter 48 years, three lawsuits, one congressional hearing that accomplished absolutely nothing, and an independent investigation led by a retired mall security guard, the results of the 1978 Lower Sheboygan Pogo Stick Championship have finally been corrected.\n\nThe committee determined that Kelly "The Kangaroo" Kapowski secured her victory through an aggressive campaign of distributing free burgers and shakes from The Max to the judging panel. While technically delicious, this was later ruled to be "extremely unsportsmanlike."\n\nHer title has been revoked. It now belongs to you.\n\nTake a moment to appreciate this historic achievement. Thousands trained. Dozens competed. One person finally received the trophy... almost half a century late.\n\nOr...\n\nYou completed an entire level by hopping the whole way instead of walking like a reasonably efficient healthcare professional. Dr. Marion Wayne would like to remind you that knees are not a renewable resource.',
+   reward:'Eternal bragging rights, imaginary trophy, and the unquestionable privilege of adding "1978 Lower Sheboygan Pogo Stick Champion" to your r\u00e9sum\u00e9. Human Resources cannot verify this accomplishment, but they also can\u2019t prove it didn\u2019t happen.' },
+ { badge:'\uD83E\uDD98', title:'1983 Consecutive Bunny Hop Endurance Champion of Kalamazoo, Michigan',
+   body:'Congratulations!\n\nFollowing a 17-year audit, two hastily assembled review boards, and the accidental discovery of an unlabeled VHS tape behind a vending machine at the Kalamazoo Civic Center, officials have officially overturned the results of the 1983 Consecutive Bunny Hop Endurance Championship.\n\nThe investigation concluded that Steve Urkel had unknowingly competed while wearing prototype orthopedic shoes containing experimental industrial-grade springs. Although the manufacturer marketed them as "business casual," the rulebook was later amended to classify them as "unfairly bouncy."\n\nHis title has been revoked. It now belongs to you.\n\nHistory rarely remembers those who finish second. Fortunately for you, history occasionally loses its paperwork for several decades.\n\nOr...\n\nYou completed an entire level by jumping from beginning to end without allowing Dr. Marion Wayne the luxury of taking a single normal step. Dr. Marion Wayne would like to point out that gravity is supposed to be an occasional inconvenience, not a lifestyle.',
+   reward:'Lifetime membership in the Kalamazoo Association of Competitive Hoppers, one imaginary championship belt, and the satisfaction of knowing your knees are now officially someone else\u2019s problem.' },
+ { badge:'\uD83E\uDD98', title:'1991 Grand Champion of the Floor-Is-Lava Invitational of Oconomowoc, Wisconsin',
+   body:'Congratulations!\n\nAfter the original scorecards were rediscovered inside a library book that had been overdue since the Clinton administration, the International Committee for Extremely Questionable Sports convened an emergency session to review the 1991 Floor-Is-Lava Invitational.\n\nTheir findings were... troubling.\n\nThe committee determined that Joey Gladstone had repeatedly requested "bathroom breaks" during the competition, only to re-enter the course several feet farther along each time. While undeniably creative, this strategy was eventually categorized as "advanced teleportation," which violated at least three paragraphs of the official rules.\n\nHis championship has been rescinded. It now belongs to you.\n\nJustice moves slowly, but apparently not as slowly as municipal library systems.\n\nOr...\n\nYou refused to let Dr. Marion Wayne touch the ground for an entire level because apparently walking has become optional. Dr. Marion Wayne would like everyone to know he fully supports exercise. This was not exercise.',
+   reward:'An honorary lava-proof certificate, a commemorative trophy of questionable historical significance, and bragging rights that absolutely nobody can disprove.' },
+ { badge:'\uD83E\uDD98', title:'1987 Vertical Persistence Cup of Walla Walla, Washington',
+   body:'Congratulations!\n\nThe results of the 1987 Vertical Persistence Cup have finally been corrected following testimony from four eyewitnesses, a retired scorekeeper, and one remarkably detailed diary kept by a concession stand employee.\n\nInvestigators determined that Carlton Banks spent nearly one-third of the competition stopping to admire his own footwork after every successful jump. While judges originally interpreted this as confidence, the official rulebook clearly specifies that contestants must continue hopping "without excessive celebration."\n\nAfter thirty-nine years, the record has finally been amended. The championship is now yours.\n\nEnjoy the moment. These opportunities don\u2019t come around often, mostly because they require decades of administrative delays.\n\nOr...\n\nYou completed an entire level by hopping nonstop, forcing Dr. Marion Wayne to reconsider several life choices. He\u2019d also appreciate it if your next accomplishment involved walking. Just once.',
+   reward:'A personalized participation ribbon that has somehow become a championship ribbon, one invisible trophy, and permission to mention this accomplishment during annual performance reviews. Human Resources will pretend not to hear you.' },
+ { badge:'\uD83E\uDD98', title:'1985 Perpetual Motion Trophy of Ho-Ho-Kus, New Jersey',
+   body:'Congratulations!\n\nAfter years of speculation, the Office of Retroactive Athletic Corrections has completed its review of the 1985 Ho-Ho-Kus Perpetual Motion Tournament.\n\nOfficials discovered that Balki Bartokomous had interpreted the phrase "continuous hopping" to include performing the Dance of Joy between jumps. While the judges initially applauded his enthusiasm, subsequent review determined that choreography and athletic competition occupy two very different sections of the rulebook.\n\nHis championship has officially been vacated. It now belongs to you.\n\nSometimes greatness isn\u2019t about being the best. Sometimes it\u2019s about waiting forty years for someone else to read the fine print.\n\nOr...\n\nYou spent an entire level jumping without ever letting Dr. Marion Wayne experience the simple pleasure of walking like a normal mascot. He\u2019s beginning to suspect you enjoy this.',
+   reward:'One commemorative plaque, an honorary title nobody asked for, and exclusive membership in a club that almost certainly doesn\u2019t exist.' },
+ { badge:'\uD83E\uDD98', title:'1990 Elastic Kneecap Invitational of Peculiar, Missouri',
+   body:'Congratulations!\n\nThe 1990 Elastic Kneecap Invitational has been under review ever since a local newspaper published an article titled "Did We Measure That Correctly?" Although widely dismissed at the time, the question refused to go away.\n\nA recent forensic analysis of the original measuring equipment determined that Cosmo Kramer had unknowingly competed on a practice course that was approximately 18% shorter than regulation length.\n\nWhile undeniably energetic, his performance no longer qualifies for the record books. The title has officially been transferred to you.\n\nSometimes history isn\u2019t rewritten by heroes. Sometimes it\u2019s rewritten by surveyors with better tape measures.\n\nOr...\n\nYou completed an entire level while hopping continuously because apparently the ground had personally offended you. Dr. Marion Wayne would like to remind everyone that he possesses legs for reasons beyond decoration.',
+   reward:'A regulation-sized imaginary trophy, unlimited storytelling privileges, and one exceptionally impressive line for your r\u00e9sum\u00e9.' },
+ { badge:'\uD83E\uDD98', title:'1988 Order of Relentless Boinging of Truth or Consequences, New Mexico',
+   body:'Congratulations!\n\nFor nearly four decades, the Order of Relentless Boinging maintained that the 1988 championship results were beyond question. They were mistaken.\n\nFollowing an anonymous tip, investigators uncovered an administrative error revealing that Norm Peterson had accidentally been credited with an additional 2,000 hops after a scorekeeper spilled root beer onto the official tally sheet. Rather than admit the mistake, the committee simply rounded up and hoped no one would notice.\n\nEventually... someone noticed.\n\nThe championship has now been awarded to its rightful recipient. You.\n\nTake pride in this achievement. Very few people receive a trophy that should have been delivered before the invention of the internet.\n\nOr...\n\nYou completed an entire level by jumping nonstop and somehow convinced Dr. Marion Wayne that touching the ground was no longer part of his job description. He\u2019s requesting a brief meeting with your space bar.',
+   reward:'A beautifully engraved trophy that exists entirely in your imagination, eternal bragging rights, and the unquestionable honor of becoming the official 1988 Order of Relentless Boinging Champion of Truth or Consequences, New Mexico.' },
+ { badge:'\uD83E\uDD98', title:'1986 Continuous Boing Cup of Mukwonago, Wisconsin',
+   body:'Congratulations!\n\nFor nearly forty years, the official results of the 1986 Continuous Boing Cup remained unchallenged. That changed when a documentary crew filming a completely unrelated special on municipal water towers accidentally uncovered the original judging notes tucked inside a folding chair.\n\nThe findings were conclusive.\n\nThe committee determined that Danny Tanner paused every twelve jumps to stop and straighten the lane markers because they "looked a little crooked." While his commitment to cleanliness was universally admired, the official rules clearly state that the clock continues to run during unsolicited housekeeping.\n\nHis championship has been vacated. It now belongs to you.\n\nJustice may not be swift, but it is surprisingly thorough once enough retirees have free afternoons.\n\nOr...\n\nYou completed an entire level by hopping from beginning to end, denying Dr. Marion Wayne the opportunity to enjoy something as basic as walking. He respects your determination. He does not respect what it has done to his knees.',
+   reward:'One commemorative championship sash, an invisible trophy polished to imaginary perfection, and the unquestionable privilege of telling everyone you peaked in Mukwonago.' },
+ { badge:'\uD83E\uDD98', title:'1992 Grand Champion of the Airborne Appreciation Festival of Boring, Oregon',
+   body:'Congratulations!\n\nFollowing years of rumors, speculation, and an unfortunate incident involving a mislabeled filing cabinet, the Bureau of Historical Athletic Corrections has officially completed its review of the 1992 Airborne Appreciation Festival.\n\nTheir investigation revealed that Uncle Jesse Katsopolis had hired a fog machine for what he described as "dramatic entrances." Unfortunately, the resulting smoke prevented judges from verifying whether he had actually completed several sections of the course.\n\nWhile undeniably stylish, invisible athleticism is difficult to score.\n\nHis title has been revoked. It now belongs to you.\n\nHistory remembers champions. Paperwork remembers everyone else.\n\nOr...\n\nYou completed an entire level without allowing Dr. Marion Wayne to touch the ground for even a moment. He would like to remind you that hopping is generally considered an occasional activity, not a transportation strategy.',
+   reward:'An honorary key to the City of Boring (which opens absolutely nothing), a gold-plated imaginary medal, and lifelong bragging rights.' },
+ { badge:'\uD83E\uDD98', title:'1984 National Spring-Heel Invitational of Normal, Illinois',
+   body:'Congratulations!\n\nThe results of the 1984 National Spring-Heel Invitational have officially been overturned after accountants performing a routine audit discovered that the championship bracket had been printed upside down.\n\nSeveral phone calls, two independent reviews, and one very awkward apology later, officials confirmed that Cliff Clavin had advanced through the tournament despite technically losing his opening match.\n\nWhen asked for comment, Cliff insisted the reversal was "part of a little-known postal regulation." It was not.\n\nHis championship has been rescinded. It now belongs to you.\n\nSometimes destiny is written by the victors. Sometimes it\u2019s written by whoever finally notices the spreadsheet is backwards.\n\nOr...\n\nYou bounced through an entire level because walking was apparently beneath you. Dr. Marion Wayne has begun researching ergonomic pogo sticks.',
+   reward:'A framed certificate of improbable excellence, one invisible championship trophy, and the satisfaction of knowing bureaucracy occasionally gets something right... eventually.' },
+ { badge:'\uD83E\uDD98', title:'1989 Golden Kangaroo Trophy of Ding Dong, Texas',
+   body:'Congratulations!\n\nAfter thirty-seven years, the Ding Dong Historical Society finally agreed to digitize its athletic archives. During the process, volunteers discovered an envelope labeled "DO NOT OPEN UNTIL EVERYONE HAS CALMED DOWN."\n\nInside was the official protest against Kimmy Gibbler, who had reportedly distracted every other competitor by enthusiastically cheering for all of them at the exact same time.\n\nAlthough the rulebook encourages sportsmanship, it specifically prohibits "weaponized encouragement."\n\nThe protest should have been reviewed in 1989. Better late than never.\n\nHer title has been revoked. It now belongs to you.\n\nVery few people receive recognition for an event that predates online banking.\n\nOr...\n\nYou completed an entire level by jumping continuously, leaving Dr. Marion Wayne wondering if the floor had somehow become lava without informing him. It hadn\u2019t. You were simply committed to the bit.',
+   reward:'One spectacularly unnecessary championship trophy, unlimited storytelling rights, and the eternal admiration of absolutely no licensed orthopedic professionals.' },
+ { badge:'\uD83E\uDD98', title:'1993 Why, Arizona Invitational for Exceptional Vertical Decision-Making',
+   body:'Congratulations!\n\nFor decades, historians believed the results of the 1993 Invitational were beyond dispute. That assumption changed when a former scorekeeper admitted he had accidentally been using the judging rubric from a regional pie-baking competition.\n\nThe revised calculations painted a very different picture.\n\nOfficials concluded that George Costanza had received bonus points for "excellent crust consistency," a category that, while important elsewhere, had no measurable impact on competitive jumping.\n\nFollowing an emergency session of the International Committee for Extremely Questionable Sports, his championship has officially been nullified. It now belongs to you.\n\nThe committee regrets the inconvenience. George regrets answering his phone.\n\nOr...\n\nYou completed an entire level while hopping nonstop, forcing Dr. Marion Wayne to question whether you understand the purpose of legs. He\u2019d like to assure everyone that walking remains fully supported by modern medicine.',
+   reward:'A championship jacket that exists only in spirit, one beautifully engraved imaginary trophy, and the unquestionable distinction of becoming the 1993 Invitational Champion of Why, Arizona. It\u2019s a title nobody can take away... mostly because nobody else wants it.' }
+];
+let hopUnlockedThisSession=false;   // achievement can fire only once per session
+let earnedBadges=[];                // badges collected this run (for High Scores)
+
+// ===== Bonus (LEVELS[6]) "The Legacy Labyrinth": 71-row tile map, single source of truth =====
+// Legend: # tile_floating(wall)  = tile_ground  - tile_girder  ^ spikes  v ceiling-spikes
+//   $ coin  E enemy  P player-start  F goal  @ phasing-girder  K/L/S/U/M icons  space=empty
+(function(){
+  const MAP=[
+   "########################################",
+   "########################################",
+   "########################################",
+   "#      #################################",
+   "# FFFF #################################",
+   "# FFFF                                 #",
+   "# FFFF  $ $ $                          #",
+   "#      #######                         #",
+   "########$    ##   $    $    $    $     #",
+   "#      #     ###                       #",
+   "# MMMM #@    ########################  #",
+   "# MMMM #                               #",
+   "# MMMM #          $    $    $    $    ##",
+   "# MMMM #  -                            #",
+   "# UUUU #        E # E  # E  #  E #  E  #",
+   "# UUUU #     ###########################",
+   "# UUUU #    -                          #",
+   "# UUUU #                               #",
+   "# SSSS #-@-@-                         $#",
+   "# SSSS #                               #",
+   "# SSSS #        $    $    $    $       #",
+   "# SSSS #$                            @ #",
+   "# LLLL #  E # E #  E #  E #  E #       #",
+   "# LLLL #-----------------------#-      #",
+   "# LLLL #                       #   - $ #",
+   "# LLLL #  #   # # # #  #  ###  #       #",
+   "# KKKK #  ##  # # # # # # #    #       #",
+   "# KKKK #  # # # # ### #   ###  # $@   -#",
+   "# KKKK #  #  ## # # # # #   #  #       #",
+   "# KKKK #  #   # # # #  #  ###  #       #",
+   "#      # --------------------- # -   - #",
+   "################################      $#",
+   "#            #                  $      #",
+   "#$$$  $$  $$ #                     -   #",
+   "#$ $    $   $#E                        #",
+   "#$$$--$   $  #- -#      ##             #",
+   "#$ $  $   $  #   # @    ##    -   @   -#",
+   "#$$$  $$$ $$$#   #      ##             #",
+   "#            #   #^^    ##             #",
+   "##############  E###-   ##  -   @   -  #",
+   "########    $#- -#$    -##             #",
+   "#######      #   #      ##             #",
+   "######       #   #$     ##-  - - - - - #",
+   "#####    #   #   #--  - ##   ^^^^^^^^^^#",
+   "####    ##   #E  #^^^^^^##   ###########",
+   "###    ###  ##- -#########  -#         #",
+   "##    ####   #   #      ##^  #  #####  #",
+   "#    #####   #            #  #  #      #",
+   "#   #######  #             @ #  ####   #",
+   "#  #######   # E  #^###      #  #      #",
+   "#        #  ########    ##   #  #####  #",
+   "##       #   #          ##-  #         #",
+   "###    $ #   #       #####   #  #   #  #",
+   "####     ##  ##--####   ##   #  #   #  #",
+   "####@@@@@#   #v        $##  -#  #####  #",
+   "#        #   #     E    ## $ #  #   #  #",
+   "#     E  #   ########--### - #         #",
+   "#--########  #vvvvvvv  vv# $ #  ####   #",
+   "#  #     #           -   # $ #  #   #  #",
+   "#$-#$    # ^             #-  #  ####   #",
+   "#  #     #####################  #  #   #",
+   "#--#   #                     #  #   #  #",
+   "#      #                     #         #",
+   "#-      #         $          #  #   #  #",
+   "#  #  ^ # E       E          #  ## ##  #",
+   "#############  #######       #  # # #  #",
+   "#                 $   #@@-@-@#  #   #  #",
+   "                             #  #   #  #",
+   "     P    $     E            #         #",
+   "=============^====^=======^============="
+  ];
+  const LB=LEVELS[6], COLS=40, CELL=50, SPH=50;
+  const G=MAP.map(function(r){ var s=r||''; if(s.length<COLS)s+=Array(COLS-s.length+1).join(' '); return s.slice(0,COLS).split(''); });
+  const ROWS=G.length;
+  const at=function(r,c){ return (r>=0&&r<ROWS&&c>=0&&c<COLS)?G[r][c]:'#'; };
+  const yTop=function(r){ return GROUND-(ROWS-1-r)*CELL; };
+  const isFloor=function(r,c){ var a=at(r,c); return a==='#'||a==='='||a==='-'; };
+  const iconKey={K:'goal1',L:'goal2',S:'goal3',U:'goal4',M:'goal5'};
+  const walls=[],plats=[],coins=[],enemies=[],spikes=[],decor=[],phase=[],grounds=[],box={};
+  var r,c;
+  for(r=0;r<ROWS;r++){ c=0;
+    while(c<COLS){ var ch=G[r][c];
+      if(ch==='#'){ var s1=c; while(c<COLS&&G[r][c]==='#')c++; walls.push([s1*CELL,yTop(r),(c-s1)*CELL,CELL]); }
+      else if(ch==='='){ var sg=c; while(c<COLS&&G[r][c]==='=')c++; grounds.push([sg*CELL,yTop(r),(c-sg)*CELL,CELL]); }
+      else if(ch==='-'){ var s2=c; while(c<COLS&&G[r][c]==='-')c++; plats.push([s2*CELL,yTop(r),(c-s2)*CELL,'girder']); }
+      else if(ch==='^'){ spikes.push([c*CELL,yTop(r)+CELL,CELL,false]); c++; }
+      else if(ch==='v'){ spikes.push([c*CELL,yTop(r)+SPH,CELL,true]); c++; }
+      else c++;
+    } }
+  for(r=0;r<ROWS;r++)for(c=0;c<COLS;c++){ var ch2=G[r][c], x=c*CELL, yt=yTop(r), floor=yt+CELL;
+    if(ch2==='$'){ coins.push([x+5,yt+5]); }
+    else if(ch2==='@'){ phase.push([x,yt,CELL]); }
+    else if(ch2==='P'){ LB.start=[x,floor-72]; }
+    else if(ch2==='E'){ var lo=c,hi=c;
+      while(lo-1>=0&&at(r,lo-1)!=='#'&&at(r,lo-1)!=='='&&isFloor(r+1,lo-1))lo--;
+      while(hi+1<COLS&&at(r,hi+1)!=='#'&&at(r,hi+1)!=='='&&isFloor(r+1,hi+1))hi++;
+      enemies.push([x,lo*CELL,(hi+1)*CELL,floor]); }
+    else if(ch2==='F'||iconKey[ch2]){ var b=box[ch2]||(box[ch2]={r0:r,c0:c,r1:r,c1:c});
+      b.r0=Math.min(b.r0,r);b.c0=Math.min(b.c0,c);b.r1=Math.max(b.r1,r);b.c1=Math.max(b.c1,c); }
+  }
+  for(var key in box){ var bb=box[key], bx=bb.c0*CELL, by=yTop(bb.r0), bw=(bb.c1-bb.c0+1)*CELL, bh=(bb.r1-bb.r0+1)*CELL;
+    if(key==='F'){ LB.goalRect=[bx,by,bw,bh]; }
+    else { decor.push([iconKey[key],bx,by,bw,bh]); } }
+  if(!LB.start)LB.start=[CELL,GROUND-72];
+  if(!LB.goalRect)LB.goalRect=[CELL,yTop(4),4*CELL,3*CELL];
+  LB.ground=[]; LB.worldW=COLS*CELL; LB.plats=plats;
+  LB.coins=coins; LB.enemies=enemies; LB.spikes=spikes; LB.decor=decor; LB.phase=phase;
+  LB.walls=walls; LB.groundBlocks=grounds;
+  LB.camMinY=yTop(0)-40; LB.gridMeta={cell:CELL,rows:ROWS,groundY:GROUND};
+})();
+
+// ---------- runtime state ----------
+let L, solids, spikes, coins, enemies, goal, worldW, climb, noNet, camMinY, bgKey, goalKey;
+let fx=[], state='start', score=0, lives=3, tick=0, camX=0, camY=0, allCoinsAwarded=false, DEBUG=false, paused=false, unlockedBonus=false;
+let currentLevel=0, levelStartScore=0, INFINITE_LIVES=false, TESTING=true;  // TESTING defaulted ON
+const player={x:80,y:GROUND-70,w:44,h:68,vx:0,vy:0,onGround:false,face:1,prevBottom:0,invuln:0,highY:0,walkedOnGround:false,lock:0};
+
+function buildFrom(def){
+  L=def; worldW=def.worldW; climb=def.climb; noNet=def.noNet; camMinY=def.camMinY||0;
+  bgKey=def.bg; goalKey=def.goal;
+  player.w=46; player.h=72;   // one block wide (with a hair of clearance), all levels
+  solids=(def.ground||[]).map(function(g){return {x:g[0],y:GROUND,w:g[1],h:600};})
+    .concat((def.walls||[]).map(function(w){return {x:w[0],y:w[1],w:w[2],h:w[3]};}))
+    .concat((def.groundBlocks||[]).map(function(w){return {x:w[0],y:w[1],w:w[2],h:w[3]};}));
+  spikes=def.spikes.map(function(s){return {x:s[0],y:s[1],w:(s[2]||BLOCK),down:s[3]};});
+  coins=def.coins.map(function(c){return {x:c[0],y:c[1],got:false};});
+  enemies=def.enemies.map(function(e){return {x:e[0],minX:e[1],maxX:e[2],floorY:e[3],dir:1,alive:true,w:46,h:64};});
+  const g=def.goalRect; goal={x:g[0],y:g[1],w:g[2],h:g[3]};
+  allCoinsAwarded=false; fx=[];
+}
+function loadLevel(i){
+  currentLevel=i; buildFrom(LEVELS[i]);
+  player.x=L.start[0]; player.y=L.start[1]; player.vx=0; player.vy=0;
+  player.onGround=false; player.face=1; player.invuln=60; player.highY=player.y;
+  camX=0; camY=0; lives=3; levelStartScore=score; state='playing'; paused=false;
+  player.walkedOnGround=false;   // reset hop-achievement tracking for this attempt
+  document.getElementById('pauseMenu').classList.add('hidden');
+  document.getElementById('victory').classList.add('hidden');
+  document.getElementById('scores').classList.add('hidden');
+  overlay.classList.add('hidden'); updateHud();
+}
+function respawn(){
+  player.x=L.start[0]; player.y=L.start[1]; player.vx=0; player.vy=0;
+  player.onGround=false; player.face=1; player.invuln=70; player.highY=player.y;
+  player.prevBottom=player.y+player.h;   // clear stale fall state so no instant re-death
+  player.lock=12;                        // ignore held input briefly so a held key can't re-kill
+}
+function updateHud(){
+  document.getElementById('scoreTxt').textContent='Medallions: '+score;
+  document.getElementById('livesTxt').textContent=(INFINITE_LIVES?'Lives: \u221E':('Lives: '+Math.max(0,lives)));
+  document.getElementById('levelTxt').textContent=(currentLevel===6?'Bonus: ':'Level '+(currentLevel+1)+': ')+L.name;
+}
+
+// ---------- screens / transitions ----------
+const overlay=document.getElementById('overlay');
+const pauseMenu=document.getElementById('pauseMenu');
+const victory=document.getElementById('victory');
+const scores=document.getElementById('scores');
+const achieve=document.getElementById('achieve');
+const fader=document.getElementById('fader');
+
+// retro stepped fade: out 33/66/100 -> swap -> in 66/33/0
+let trans=null; const FADE_HOLD=5, OUT_OP=[0.33,0.66,1], IN_OP=[0.66,0.33,0];
+function fadeTo(cb){ if(trans)return; trans={phase:'out',i:0,t:0,cb:cb}; }
+function stepFade(){
+  if(!trans)return;
+  trans.t++; if(trans.t<FADE_HOLD)return; trans.t=0;
+  if(trans.phase==='out'){
+    fader.style.opacity=OUT_OP[trans.i]; trans.i++;
+    if(trans.i>=OUT_OP.length){ if(trans.cb)trans.cb(); trans.phase='in'; trans.i=0; }
+  } else {
+    fader.style.opacity=IN_OP[trans.i]; trans.i++;
+    if(trans.i>=IN_OP.length){ trans=null; fader.style.opacity=0; }
+  }
+}
+
+let highScores=[];
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];}); }
+function saveScore(name){
+  name=(name||'').trim().slice(0,14)||'Anonymous';
+  highScores.push({name:name,score:score,badges:earnedBadges.slice()});
+  highScores.sort(function(a,b){return b.score-a.score;});
+  if(highScores.length>10)highScores=highScores.slice(0,10);
+}
+function renderScores(){
+  const list=document.getElementById('scoreList');
+  let head='<li class="scHead"><span>Name</span><span>Score</span><span>Achievements</span></li>';
+  if(!highScores.length){ list.innerHTML=head+'<li><span>No scores yet</span><span></span><span></span></li>'; return; }
+  list.innerHTML=head+highScores.map(function(s,i){
+    return '<li><span>'+(i+1)+'. '+escapeHtml(s.name)+'</span><span>'+s.score+'</span><span>'+((s.badges||[]).join(' ')||'\u2014')+'</span></li>';
+  }).join('');
+}
+
+function hideAllScreens(){ overlay.classList.add('hidden'); pauseMenu.classList.add('hidden'); victory.classList.add('hidden'); scores.classList.add('hidden'); achieve.classList.add('hidden'); }
+function updateBonusBtn(){
+  const bb=document.getElementById('bonusBtn');
+  if(unlockedBonus && (state==='start'||state==='won')) bb.classList.remove('hidden'); else bb.classList.add('hidden');
+}
+function showOverlay(title,text,btn){
+  document.getElementById('ovTitle').innerHTML=title;
+  document.getElementById('ovText').textContent=text;
+  document.getElementById('ovBtn').textContent=btn;
+  document.getElementById('credit').style.display='none';
+  hideAllScreens(); overlay.classList.remove('hidden'); updateBonusBtn();
+}
+function goMain(){
+  state='start'; score=0;
+  document.getElementById('credit').style.display='';
+  document.getElementById('ovTitle').innerHTML='The Adventures of Dr. Marion Wayne<br><span style="font-size:.72em">and his Journey to the Electronic Health Record</span>';
+  document.getElementById('ovText').textContent='Collect the golden medallions \u2014 grab every one in a level for a bonus life! Stomp the Legacy Lag bots from above to spring high, but never touch them from the side. Avoid the spikes and the pits!';
+  document.getElementById('ovBtn').textContent='START';
+  hideAllScreens(); overlay.classList.remove('hidden'); updateHud(); updateBonusBtn();
+}
+function showScoreEntry(won){
+  document.getElementById('victoryScore').textContent=(won?'Victory! Total Medallions: ':'Game Over \u2014 Total Medallions: ')+score;
+  document.getElementById('nameInput').value='';
+  document.getElementById('saveMsg').textContent='';
+  document.getElementById('vBonus').classList.toggle('hidden',!won);   // bonus only on a real win
+  victory.classList.toggle('gameover',!won);
+  // set the victory image ONLY on a win; clear it entirely on game over
+  victory.style.backgroundImage=won?"url('victory.png')":'none';
+  hideAllScreens(); victory.classList.remove('hidden');
+}
+function showVictory(){ state='victory'; unlockedBonus=true; showScoreEntry(true); }
+function showGameOver(){ state='gameover'; showScoreEntry(false); }
+function showScores(){ state='scores'; renderScores(); hideAllScreens(); scores.classList.remove('hidden'); }
+
+let afterAchieve=null;   // what to do when the achievement screen is dismissed
+function showAchievement(next){
+  const a=HOP_ACHIEVEMENTS[Math.floor(Math.random()*HOP_ACHIEVEMENTS.length)];
+  if(earnedBadges.indexOf(a.badge)<0)earnedBadges.push(a.badge);
+  document.getElementById('achieveTitle').textContent=a.title;
+  document.getElementById('achieveBody').textContent=a.body;
+  const rw=document.getElementById('achieveReward');
+  if(a.reward){ rw.style.display=''; rw.textContent=a.reward; } else rw.style.display='none';
+  afterAchieve=next; state='achieve';
+  hideAllScreens(); achieve.classList.remove('hidden');
+}
+document.getElementById('achieveBtn').addEventListener('click',function(e){ e.stopPropagation();
+  const nx=afterAchieve; afterAchieve=null; if(nx)fadeTo(nx); });
+
+function overlayAction(){
+  if(state==='start'||state==='won'){ fadeTo(function(){ score=0; loadLevel(0); }); }
+  else if(state==='leveldone'){ fadeTo(function(){ loadLevel(currentLevel+1); }); }
+  else if(state==='lost'){ fadeTo(function(){ score=levelStartScore; loadLevel(currentLevel); }); }
+}
+overlay.addEventListener('click',overlayAction);
+document.getElementById('bonusBtn').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(function(){ score=0; loadLevel(6); }); });
+document.getElementById('scoresBtn').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(showScores); });
+document.getElementById('scoresBack').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(goMain); });
+document.getElementById('saveScore').addEventListener('click',function(e){ e.stopPropagation();
+  saveScore(document.getElementById('nameInput').value); document.getElementById('saveMsg').textContent='Score saved!'; });
+document.getElementById('vBonus').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(function(){ score=0; loadLevel(6); }); });
+document.getElementById('vMain').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(goMain); });
+
+function setPaused(p){ paused=p; if(p)pauseMenu.classList.remove('hidden'); else pauseMenu.classList.add('hidden'); }
+function togglePause(){ if(state!=='playing')return; setPaused(!paused); }
+document.getElementById('pResume').addEventListener('click',function(e){ e.stopPropagation(); setPaused(false); });
+document.getElementById('pRestart').addEventListener('click',function(e){ e.stopPropagation(); setPaused(false); fadeTo(function(){ score=levelStartScore; loadLevel(currentLevel); }); });
+document.getElementById('pMain').addEventListener('click',function(e){ e.stopPropagation(); setPaused(false); fadeTo(goMain); });
+
+// ===== TESTING: level-select handlers (delete this block for production) =====
+document.querySelectorAll('.lsBtn').forEach(function(b){
+  b.addEventListener('click',function(e){ e.stopPropagation(); const n=parseInt(b.dataset.lvl,10); fadeTo(function(){ score=0; loadLevel(n); }); });
+});
+// ===== END TESTING handlers =====
+
+const keys={left:false,right:false,jump:false};
+addEventListener('keydown',function(e){
+  if(e.target&&e.target.tagName==='INPUT')return;   // don't capture keys while typing (e.g. name entry)
+  // TEMP KEY DEBUG: shows what the game receives (remove later)
+  var dbg=document.getElementById('keydbg');
+  if(dbg)dbg.textContent='key="'+e.key+'" code="'+e.code+'" shift='+e.shiftKey;
+  if(['ArrowLeft','ArrowRight','ArrowUp','Space','KeyA','KeyD','KeyW'].includes(e.code))e.preventDefault();
+  if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;
+  if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;
+  if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='Space')keys.jump=true;
+  if(e.code==='KeyG'){DEBUG=!DEBUG;e.preventDefault();}
+  if(e.code==='KeyL'){INFINITE_LIVES=!INFINITE_LIVES;updateHud();e.preventDefault();}
+  if(e.code==='Escape'){togglePause();e.preventDefault();}
+  if(state!=='playing'&&(e.code==='Space'||e.code==='Enter'))overlayAction();
+});
+addEventListener('keyup',function(e){
+  if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;
+  if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false;
+  if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='Space')keys.jump=false;
+});
+document.querySelectorAll('.tbtn').forEach(function(b){
+  const k=b.dataset.k, on=function(e){e.preventDefault();keys[k]=true;}, off=function(e){e.preventDefault();keys[k]=false;};
+  b.addEventListener('touchstart',on,{passive:false});b.addEventListener('touchend',off,{passive:false});
+  b.addEventListener('mousedown',on);b.addEventListener('mouseup',off);b.addEventListener('mouseleave',off);
+});
+
+// ---------- effects ----------
+function spawnBounce(cx,cy){
+  fx.push({type:'text',txt:'BOING!',x:cx,y:cy-20,life:40,max:40});
+  for(let i=0;i<10;i++){const a=Math.PI+Math.random()*Math.PI,sp=2+Math.random()*3;
+    fx.push({type:'dust',x:cx,y:cy,vx:Math.cos(a)*sp,vy:-Math.abs(Math.sin(a))*sp-1,r:4+Math.random()*5,life:26,max:26});}
+}
+function spawn1Up(cx,cy){ fx.push({type:'text',txt:'1-UP!  +1 LIFE',x:cx,y:cy-30,life:80,max:80,col:'#8fff7a'}); }
+function updateFx(){
+  for(let i=fx.length-1;i>=0;i--){const f=fx[i];f.life--;
+    if(f.type==='dust'){f.x+=f.vx;f.y+=f.vy;f.vy+=0.25;f.vx*=0.94;}else f.y-=1.1;
+    if(f.life<=0)fx.splice(i,1);}
+}
+function drawFx(){
+  for(const f of fx){const t=f.life/f.max;
+    if(f.type==='dust'){ctx.globalAlpha=t*0.8;ctx.fillStyle='#e8ddc0';
+      ctx.beginPath();ctx.arc(f.x,f.y,f.r*(0.6+t*0.6),0,7);ctx.fill();}
+    else{ctx.globalAlpha=Math.min(1,t*1.5);ctx.font='900 30px Segoe UI';ctx.textAlign='center';
+      ctx.lineWidth=5;ctx.strokeStyle='#3a2a00';ctx.strokeText(f.txt,f.x,f.y);
+      ctx.fillStyle=f.col||'#ffd54a';ctx.fillText(f.txt,f.x,f.y);}}
+  ctx.globalAlpha=1;
+}
+
+// ---------- physics ----------
+function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;}
+function hitPlayer(){
+  if(player.invuln>0)return;
+  if(INFINITE_LIVES){ respawn(); return; }   // TESTING: no life loss
+  lives--; updateHud();
+  if(lives<=0){ state='gameover'; fadeTo(showGameOver); } else respawn();
+}
+function safetyFloorY(){ return player.highY + FALL_CAP; }
+
+function update(){
+  tick++;
+  if(state!=='playing')return;
+  if(player.invuln>0)player.invuln--;
+
+  // brief input lockout after respawn so a held key can't instantly re-kill / loop
+  const locked=player.lock>0; if(locked)player.lock--;
+  const kL=locked?false:keys.left, kR=locked?false:keys.right, kJ=locked?false:keys.jump;
+
+  player.vx=(kR?MOVE:0)-(kL?MOVE:0);
+  if(kR)player.face=1; else if(kL)player.face=-1;
+  player.x+=player.vx;
+  if(player.x<0)player.x=0;
+  if(player.x+player.w>worldW)player.x=worldW-player.w;
+  for(const r of solids){ if(overlap(player,r)){
+    if(player.vx>0)player.x=r.x-player.w; else if(player.vx<0)player.x=r.x+r.w; } }
+
+  player.prevBottom=player.y+player.h;
+  if(kJ&&player.onGround){player.vy=JUMP;player.onGround=false;}
+  player.vy+=GRAV; if(player.vy>MAXFALL)player.vy=MAXFALL;
+  player.y+=player.vy;
+  player.onGround=false;
+  for(const r of solids){ if(overlap(player,r)){
+    if(player.vy>0){player.y=r.y-player.h;player.vy=0;player.onGround=true;}
+    else if(player.vy<0){player.y=r.y+r.h;player.vy=0;} } }
+  for(const p of L.plats){
+    if(player.vy>=0&&player.prevBottom<=p[1]+4&&player.y+player.h>=p[1]&&
+       player.x+player.w>p[0]&&player.x<p[0]+p[2]){
+      player.y=p[1]-player.h;player.vy=0;player.onGround=true; } }
+  // phasing girders: solid only during seconds 2-4 of the 10s (600-tick) cycle
+  if(L.phase&&L.phase.length){ const cp=tick%600;
+    if(cp>=60&&cp<240){ for(const p of L.phase){
+      if(player.vy>=0&&player.prevBottom<=p[1]+4&&player.y+player.h>=p[1]&&
+         player.x+player.w>p[0]&&player.x<p[0]+p[2]){
+        player.y=p[1]-player.h;player.vy=0;player.onGround=true; } } } }
+  if(climb&&!noNet){
+    const sf=safetyFloorY();
+    if(player.vy>=0&&player.y+player.h>=sf&&player.prevBottom<=sf+player.vy+2){
+      player.y=sf-player.h;player.vy=0;player.onGround=true; }
+  }
+  if(player.onGround&&player.y<player.highY)player.highY=player.y;
+  // "walked" = moving on the ground while NOT holding jump (a hop landing doesn't count)
+  if(player.onGround&&Math.abs(player.vx)>0.1&&!kJ)player.walkedOnGround=true;
+  if(!climb&&player.y>H+120){ hitPlayer(); return; }   // stop processing this frame after a pit death
+
+  for(const c of coins){ if(!c.got&&overlap(player,{x:c.x-4,y:c.y-4,w:44,h:44})){
+    c.got=true;score++;updateHud();
+    if(!allCoinsAwarded&&coins.every(function(cc){return cc.got;})){
+      allCoinsAwarded=true;lives++;updateHud();spawn1Up(player.x+player.w/2,player.y);}
+  } }
+  for(const s of spikes){ const w=s.w||98, m=s.w?3:10;
+    if(overlap(player,{x:s.x+m,y:s.y-40,w:w-2*m,h:40}))hitPlayer(); }
+  for(const e of enemies){ if(!e.alive)continue;
+    e.x+=e.dir*1.7;
+    if(e.x<e.minX){e.x=e.minX;e.dir=1;} if(e.x+e.w>e.maxX){e.x=e.maxX-e.w;e.dir=-1;}
+    const eb={x:e.x,y:e.floorY-e.h,w:e.w,h:e.h};
+    if(overlap(player,eb)){
+      if(player.vy>0&&player.prevBottom<=eb.y+16){
+        e.alive=false;player.vy=STOMP_SPRING;score++;updateHud();spawnBounce(e.x+e.w/2,eb.y+e.h/2);}
+      else hitPlayer(); } }
+  if(overlap(player,goal)){
+    const hopped = !player.walkedOnGround && !hopUnlockedThisSession;
+    if(currentLevel<5){ state='leveldone'; const cl=L.name, nm=LEVELS[currentLevel+1].name, sc=score;
+      const showDone=function(){ showOverlay('LEVEL COMPLETE!','"'+cl+'" cleared! Medallions so far: '+sc+'. Next stop: '+nm+'.','NEXT LEVEL'); };
+      if(hopped){ hopUnlockedThisSession=true; fadeTo(function(){ showAchievement(showDone); }); }
+      else fadeTo(showDone);
+    } else if(currentLevel===5){
+      if(hopped){ hopUnlockedThisSession=true; state='achieve'; unlockedBonus=true;
+        fadeTo(function(){ showAchievement(showVictory); }); }
+      else { state='victory'; unlockedBonus=true; fadeTo(showVictory); }
+    } else { const sc=score;
+      const showWin=function(){ showOverlay('LABYRINTH CONQUERED!','You escaped The Legacy Labyrinth with '+sc+' medallions. Legendary run!','PLAY AGAIN'); };
+      if(hopped){ hopUnlockedThisSession=true; state='achieve'; fadeTo(function(){ showAchievement(function(){ state='won'; showWin(); }); }); }
+      else { state='won'; fadeTo(showWin); } }
+  }
+
+  camX=Math.max(0,Math.min(player.x+player.w/2-W/2,worldW-W));
+  camY=climb?Math.max(camMinY,Math.min(0,player.y+player.h/2-H/2)):0;
+  updateFx();
+}
+
+// ---------- drawing ----------
+function drawSprite(im,fit,dx,dy,dw,dh,flip){
+  if(!fit)return false;
+  ctx.save();
+  if(flip){ctx.translate(dx+dw,dy);ctx.scale(-1,1);ctx.drawImage(im,0,0,dw,dh);}
+  else ctx.drawImage(im,dx,dy,dw,dh);
+  ctx.restore(); return true;
+}
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#8fd0ee');g.addColorStop(1,'#d6f0c8');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  if(ok[bgKey]){
+    const im=img[bgKey], iw=im.naturalWidth||im.width||W, ih=im.naturalHeight||im.height||H;
+    if(climb){ const bw=W, bh=bw*(ih/iw); let oy=((camY*0.4)%bh+bh)%bh-bh;
+      for(let y=oy;y<H+bh;y+=bh)ctx.drawImage(im,0,y,bw,bh);
+    } else { const bh=H, bw=bh*(iw/ih); let ox=((-camX*0.4)%bw-bw)%bw;
+      for(let x=ox;x<W+bw;x+=bw)ctx.drawImage(im,x,0,bw,bh); }
+  }
+  ctx.save();
+  ctx.translate(-camX,-camY);
+
+  // ground (levels 1-6)
+  for(const s of (L.ground||[])){ ctx.save(); ctx.beginPath(); ctx.rect(s[0],GROUND,s[1],600); ctx.clip();
+    for(let y=GROUND;y<GROUND+600;y+=BLOCK)for(let x=s[0];x<s[0]+s[1];x+=BLOCK){
+      if(ok.ground)ctx.drawImage(img.ground,x,y,BLOCK,BLOCK);
+      else{ctx.fillStyle='#8a5a2b';ctx.fillRect(x,y,BLOCK,BLOCK);ctx.fillStyle='#6d4520';ctx.fillRect(x,y,BLOCK,6);} }
+    ctx.restore(); }
+  // bonus ground blocks (= cells) with tile_ground
+  for(const w of (L.groundBlocks||[])){
+    ctx.save();ctx.beginPath();ctx.rect(w[0],w[1],w[2],w[3]);ctx.clip();
+    for(let y=w[1];y<w[1]+w[3];y+=BLOCK)for(let x=w[0];x<w[0]+w[2];x+=BLOCK){
+      if(ok.ground)ctx.drawImage(img.ground,x,y,BLOCK,BLOCK);
+      else{ctx.fillStyle='#8a5a2b';ctx.fillRect(x,y,BLOCK,BLOCK);ctx.fillStyle='#6d4520';ctx.fillRect(x,y,BLOCK,6);}
+    }
+    ctx.restore();
+  }
+  // walls (solid) — tile_floating
+  for(const w of (L.walls||[])){
+    ctx.save();ctx.beginPath();ctx.rect(w[0],w[1],w[2],w[3]);ctx.clip();
+    for(let y=w[1];y<w[1]+w[3];y+=BLOCK)for(let x=w[0];x<w[0]+w[2];x+=BLOCK){
+      if(ok.floating)ctx.drawImage(img.floating,x,y,BLOCK,BLOCK);
+      else{ctx.fillStyle='#6b5a3e';ctx.fillRect(x,y,BLOCK,BLOCK);ctx.strokeStyle='#4a3d29';ctx.lineWidth=2;ctx.strokeRect(x+1,y+1,BLOCK-2,BLOCK-2);}
+    }
+    ctx.restore();
+  }
+  // platforms / girders
+  for(const p of L.plats){
+    const tk=p[3]||'plat';
+    if(tk==='plat'){
+      if(ok.plat)ctx.drawImage(img.plat,p[0],p[1],p[2],54);
+      else{ctx.fillStyle='#a8702f';ctx.fillRect(p[0],p[1],p[2],20);ctx.fillStyle='#c98a3c';ctx.fillRect(p[0],p[1],p[2],6);}
+    } else {
+      ctx.save();ctx.beginPath();ctx.rect(p[0],p[1],p[2],48);ctx.clip();
+      for(let x=p[0];x<p[0]+p[2];x+=BLOCK){
+        if(ok[tk])ctx.drawImage(img[tk],x,p[1],BLOCK,48);
+        else{ctx.fillStyle=(tk==='girder')?'#7a7a86':'#b0894f';ctx.fillRect(x,p[1],BLOCK,18);
+             ctx.fillStyle=(tk==='girder')?'#9aa0aa':'#d0a464';ctx.fillRect(x,p[1],BLOCK,5);}
+      }
+      ctx.restore();
+    }
+  }
+  // phasing girders: opacity s1 50%, s2-4 100%, s5 50%, s6-10 invisible
+  if(L.phase&&L.phase.length){ const cp=tick%600;
+    let a=0; if(cp<60)a=0.5; else if(cp<240)a=1; else if(cp<300)a=0.5;
+    if(a>0){ ctx.globalAlpha=a;
+      for(const p of L.phase){ ctx.save();ctx.beginPath();ctx.rect(p[0],p[1],p[2],48);ctx.clip();
+        for(let x=p[0];x<p[0]+p[2];x+=BLOCK){
+          if(ok.girder)ctx.drawImage(img.girder,x,p[1],BLOCK,48);
+          else{ctx.fillStyle='#7a7a86';ctx.fillRect(x,p[1],BLOCK,18);ctx.fillStyle='#9aa0aa';ctx.fillRect(x,p[1],BLOCK,5);}
+        }
+        ctx.restore(); }
+      ctx.globalAlpha=1; } }
+  // spikes — whole image at natural aspect, width = one block; no crop/stretch
+  for(const s of spikes){
+    if(ok.spike){ const iw=img.spike.naturalWidth||img.spike.width||1, ih=img.spike.naturalHeight||img.spike.height||1;
+      if(s.w){ const dw=s.w, dh=dw*(ih/iw);
+        if(s.down){ ctx.save(); ctx.translate(s.x,s.y); ctx.scale(1,-1); ctx.drawImage(img.spike,0,0,dw,dh); ctx.restore(); }
+        else ctx.drawImage(img.spike,s.x,s.y-dh,dw,dh);
+      } else { const dw=118, dh=dw*(ih/iw); ctx.drawImage(img.spike,s.x,s.y-dh,dw,dh); }
+    } else { ctx.fillStyle='#8a8f98'; const w=s.w||118, yb=s.y, up=!s.down;
+      ctx.beginPath();
+      if(up){ctx.moveTo(s.x+3,yb);ctx.lineTo(s.x+w/2,yb-w*0.8);ctx.lineTo(s.x+w-3,yb);}
+      else{ctx.moveTo(s.x+3,yb-w);ctx.lineTo(s.x+w/2,yb-w*0.2);ctx.lineTo(s.x+w-3,yb-w);}
+      ctx.fill(); } }
+  // safety net (climb levels that use it)
+  if(climb&&!noNet){ const sf=safetyFloorY();
+    ctx.fillStyle='rgba(120,220,160,.18)';ctx.fillRect(camX,sf,W,40);
+    ctx.strokeStyle='rgba(120,220,160,.6)';ctx.lineWidth=3;ctx.setLineDash([14,10]);
+    ctx.beginPath();ctx.moveTo(camX,sf);ctx.lineTo(camX+W,sf);ctx.stroke();ctx.setLineDash([]); }
+  // coins
+  for(const c of coins){ if(c.got)continue; const bob=Math.sin((tick+c.x)*0.08)*4;
+    if(ok.coin)ctx.drawImage(img.coin,c.x,c.y+bob,40,40);
+    else{ctx.fillStyle='#ffd54a';ctx.beginPath();ctx.arc(c.x+20,c.y+20+bob,18,0,7);ctx.fill();
+      ctx.strokeStyle='#c99a1e';ctx.lineWidth=3;ctx.stroke();} }
+  // enemies
+  for(const e of enemies){ if(!e.alive)continue;
+    const wk=(Math.floor(tick/10)%2===0)?'en1':'en2', flip=e.dir>0;
+    if(!drawSprite(img[wk],ok[wk],e.x-6,e.floorY-e.h,e.w+12,e.h,flip)){
+      ctx.fillStyle='#5a6b3a';ctx.fillRect(e.x,e.floorY-e.h,e.w,e.h);
+      ctx.fillStyle='#8fff6a';ctx.fillRect(e.x+8,e.floorY-e.h+12,e.w-16,20);} }
+  // decorative journey icons (bonus)
+  for(const d of (L.decor||[])){ if(ok[d[0]])ctx.drawImage(img[d[0]],d[1],d[2],d[3],d[4]);
+    else{ctx.fillStyle='#2f3a22';ctx.fillRect(d[1],d[2],d[3],d[4]);ctx.strokeStyle='#556';ctx.strokeRect(d[1]+1,d[2]+1,d[3]-2,d[4]-2);} }
+  // goal
+  const gb=Math.sin(tick*0.06)*3;
+  if(ok[goalKey])ctx.drawImage(img[goalKey],goal.x,goal.y+gb,goal.w,goal.h);
+  else{ctx.fillStyle='#b8860b';ctx.fillRect(goal.x+goal.w/2-4,goal.y,8,goal.h);
+    ctx.fillStyle='#ffd54a';ctx.beginPath();ctx.arc(goal.x+goal.w/2,goal.y+28+gb,30,0,7);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 16px Segoe UI';ctx.textAlign='center';
+    ctx.fillText(shortName[currentLevel],goal.x+goal.w/2,goal.y-12);}
+  // player
+  drawFx();
+  const blink=player.invuln>0&&Math.floor(tick/5)%2===0;
+  if(!blink){ let key='idle';
+    if(!player.onGround)key='jump';
+    else if(Math.abs(player.vx)>0.1)key=(Math.floor(tick/8)%2===0)?'walk1':'walk2';
+    const flip=player.face<0;
+    if(!drawSprite(img[key],ok[key],player.x-14,player.y-6,player.w+28,player.h+10,flip)){
+      ctx.fillStyle='#c98a4b';ctx.fillRect(player.x,player.y,player.w,player.h);
+      ctx.fillStyle='#6d4a28';ctx.fillRect(player.x,player.y,player.w,14);} }
+  // DEBUG grid overlay (press G)
+  if(DEBUG && L.gridMeta){
+    const gm=L.gridMeta, cs=gm.cell, rows=gm.rows, gY=gm.groundY, cols=Math.round(worldW/cs);
+    const rowY=function(r){return gY-(rows-1-r)*cs;};
+    ctx.strokeStyle='rgba(255,40,40,.35)'; ctx.lineWidth=1;
+    for(let c=0;c<=cols;c++){ ctx.beginPath(); ctx.moveTo(c*cs,rowY(0)); ctx.lineTo(c*cs,rowY(rows-1)+cs); ctx.stroke(); }
+    for(let r=0;r<rows;r++){ const y=rowY(r); ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(cols*cs,y); ctx.stroke(); }
+    ctx.fillStyle='rgba(255,70,70,.95)'; ctx.font='bold 13px monospace'; ctx.textAlign='left';
+    for(let r=0;r<rows;r+=5){ const y=rowY(r); ctx.fillText('r'+r+'  b'+(rows-1-r), 3, y+14); }
+    for(let c=0;c<cols;c+=5){ ctx.fillText('c'+c, c*cs+3, rowY(0)+14); }
+  }
+  ctx.restore();
+}
+
+// fixed timestep so speed is identical on 60/120/144Hz displays
+let _last=0,_acc=0; const _STEP=1000/60;
+function loop(ts){
+  if(!_last)_last=ts;
+  let dt=ts-_last; _last=ts;
+  if(dt>250)dt=250;
+  _acc+=dt;
+  let guard=0;
+  stepFade();
+  while(_acc>=_STEP && guard<5){ if(!paused && !trans)update(); _acc-=_STEP; guard++; }
+  draw();
+  requestAnimationFrame(loop);
+}
+buildFrom(LEVELS[0]); updateHud(); DEBUG=TESTING;
+document.getElementById('levelTxt').textContent='';
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
