@@ -1,0 +1,6 @@
+# macOS
+.DS_Store
+
+# Only the vendored copies in golive3d/lib and golive3d/utils are used at
+# runtime; node_modules is just where they came from.
+node_modules/

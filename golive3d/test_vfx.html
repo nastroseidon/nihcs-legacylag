@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>VFX test</title>
+<style>body{margin:0;background:#111}canvas{display:block;width:100vw;height:auto}#hurtflash{position:fixed;inset:0;background:radial-gradient(ellipse,transparent 40%,rgba(255,0,0,.6));opacity:0;pointer-events:none}</style>
+</head><body>
+<canvas id="gl" width="1280" height="720"></canvas><div id="hurtflash"></div>
+<script type="module">
+import * as THREE from './lib/three.module.js';
+import { createVFX } from './src/vfx.js';
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gl'), antialias: true });
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.setSize(1280, 720, false);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x3a2a1c);
+const camera = new THREE.PerspectiveCamera(38, 16/9, 0.1, 300);
+camera.position.set(20, 3.5, 15.5); camera.lookAt(20, 2.2, 0);
+// simple ground + dummy bot block for context
+const g = new THREE.Mesh(new THREE.BoxGeometry(60, 1, 8), new THREE.MeshStandardMaterial({ color: 0x8a6a42 }));
+g.position.set(20, -0.5, 0); scene.add(g);
+scene.add(new THREE.AmbientLight(0xffddaa, 0.7));
+const sun = new THREE.DirectionalLight(0xffbb66, 1.5); sun.position.set(5, 10, 6); scene.add(sun);
+window.__game = { state: { player: { x: 1000, y: 500, w: 40, h: 70 } } }; // for ambient anchor
+const vfx = createVFX(scene);
+const V = (x,y,z=0) => new THREE.Vector3(x,y,z);
+window.T = {
+  vfx, V,
+  step(dt=1/60, n=1) { for(let i=0;i<n;i++) vfx.update(dt); renderer.render(scene, camera); },
+  dust: () => vfx.spawnDust(V(20, 0.05)),
+  coin: () => vfx.spawnCoinBurst(V(20, 2)),
+  stomp: () => vfx.spawnStomp(V(20, 0.1)),
+  beam: (hit=true) => vfx.spawnScanBeam(V(18.5, 0), 1, hit),
+  zap: () => vfx.spawnScanZap(V(21.5, 0.6)),
+  win: () => vfx.spawnVictory(V(20, 0.5)),
+  hurt: () => vfx.flashHurt(),
+};
+T.step(1/60, 120); // warm ambient
+</script></body></html>

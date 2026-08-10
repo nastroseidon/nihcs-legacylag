@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Character test</title>
+<style>body{margin:0;background:#1a1410}canvas{display:block}</style></head>
+<body>
+<canvas id="gl" width="1280" height="720"></canvas>
+<script type="module">
+import * as THREE from './lib/three.module.js';
+import { createPlayerVisual } from './src/character.js';
+import { createEnemyVisuals } from './src/enemies.js';
+import { U, Y, GROUND } from './src/leveldata.js';
+
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gl'), antialias: true });
+renderer.setSize(1280, 720, false);
+renderer.shadowMap.enabled = true;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x2b2119);
+const camera = new THREE.PerspectiveCamera(35, 16/9, 0.1, 100);
+
+const sun = new THREE.DirectionalLight(0xffd9a0, 2.2);
+sun.position.set(4, 6, 5); sun.castShadow = true; scene.add(sun);
+scene.add(new THREE.AmbientLight(0x8899bb, 0.55));
+const rim = new THREE.DirectionalLight(0x88bbff, 0.8); rim.position.set(-4, 3, -4); scene.add(rim);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(30, 10),
+  new THREE.MeshStandardMaterial({ color: 0x6b5233, roughness: 0.95 }));
+floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; scene.add(floor);
+
+// fake states
+const px = 400;
+const fake = {
+  tick: 100,
+  player: { x: px, y: GROUND - 72, w: 46, h: 72, vx: 0, vy: 0, face: 1, onGround: true, invuln: 0, anim: 'idle' },
+  enemies: [{ x: px + 90, w: 56, h: 74, floorY: GROUND, dir: -1, alive: true, dying: 0, deathBy: null }],
+};
+const playerVis = await createPlayerVisual(scene);
+const enemyVis = await createEnemyVisuals(scene, fake.enemies);
+
+const params = new URLSearchParams(location.search);
+window.setAnim = a => { fake.player.anim = a; fake.player.onGround = (a==='idle'||a==='run'||a==='scan'); };
+window.kill = (by) => { const e = fake.enemies[0]; e.alive = false; e.deathBy = by; e.dying = by==='scan'?60:40; };
+window.fake = fake;
+
+let t = 0;
+window.step = (dt = 1/60, n = 1) => {
+  for (let i = 0; i < n; i++) {
+    t += dt; fake.tick++;
+    const e = fake.enemies[0];
+    if (!e.alive && e.dying > 0) e.dying--;
+    if (fake.player.anim === 'run') fake.player.vx = 4.6 * fake.player.face; else fake.player.vx = 0;
+    playerVis.update(fake, dt); enemyVis.update(fake, dt);
+  }
+  const cx = U(px) + 1.2, cy = 1.0;
+  const zoom = parseFloat(params.get('zoom') || '4.2');
+  camera.position.set(cx + (parseFloat(params.get('cx')||'0')), cy + 0.35, zoom);
+  camera.lookAt(cx, cy, 0);
+  renderer.render(scene, camera);
+};
+window.step();
+window.__ready = true;
+</script></body></html>

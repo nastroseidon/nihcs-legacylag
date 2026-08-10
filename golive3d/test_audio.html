@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>audio test</title>
+<style>body{background:#111;color:#0f0;font:12px monospace;padding:10px}</style></head>
+<body>
+<button id="run" style="font-size:20px;padding:10px">RUN AUDIO TEST</button>
+<pre id="out">not run</pre>
+<script type="module">
+import { createAudio } from './src/audio.js';
+const out = document.getElementById('out');
+const log = s => { out.textContent += s + '\n'; };
+const errors = [];
+window.addEventListener('error', e => errors.push(String(e.message)));
+const save = r => { try { localStorage.setItem('audioResults', JSON.stringify(r)); } catch (e) {} };
+
+async function runTest() {
+  out.textContent = '';
+  localStorage.removeItem('audioResults');
+  const audio = createAudio();
+  audio.unlock();
+  const dbg = audio._debug();
+  const { ctx, analyser } = dbg;
+  log('ctx.state=' + ctx.state);
+  const results = { phase: 'start', ctxState: ctx.state, sfx: {}, music: {}, scheduler: [], errors };
+  save(results);
+  if (ctx.state !== 'running') { results.phase = 'blocked-autoplay'; save(results); return; }
+  const buf = new Float32Array(analyser.fftSize);
+  const rms = () => {
+    analyser.getFloatTimeDomainData(buf);
+    let s = 0; for (let i = 0; i < buf.length; i++) s += buf[i] * buf[i];
+    return Math.sqrt(s / buf.length);
+  };
+  const measure = (ms) => new Promise(res => {
+    let peak = 0; const iv = setInterval(() => { peak = Math.max(peak, rms()); }, 20);
+    setTimeout(() => { clearInterval(iv); res(peak); }, ms);
+  });
+  const names = ['coin','jump','land','stomp','scan','scanhit','hurt','oneup','win','gameover','respawn','dialogue'];
+  for (const n of names) {
+    audio.play(n);
+    results.sfx[n] = +(await measure(n === 'win' ? 900 : 320)).toFixed(4);
+    save(results);
+  }
+  results.phase = 'music';
+  await new Promise(r => setTimeout(r, 1500));
+  for (const s of ['explore','danger','victory','fail']) {
+    audio.setMusic(s);
+    await new Promise(r => setTimeout(r, 1700));
+    results.music[s] = +(await measure(1300)).toFixed(4);
+    save(results);
+  }
+  results.phase = 'scheduler';
+  for (let i = 0; i < 6; i++) {
+    results.scheduler.push(dbg.getNextNoteTime().toFixed(2) + '/' + ctx.currentTime.toFixed(2));
+    save(results);
+    await new Promise(r => setTimeout(r, 1000));
+  }
+  audio.setMusic('danger', 0.5);
+  const fakeState = { player: { x: 100 }, enemies: [{ alive: true, x: 200 }] };
+  const iv = setInterval(() => audio.tickMusic(fakeState), 16);
+  await new Promise(r => setTimeout(r, 1200));
+  clearInterval(iv);
+  results.revertBack = dbg.getState();
+  results.heat = +dbg.getHeat().toFixed(3);
+  results.errors = errors;
+  results.phase = 'done';
+  save(results);
+  log(JSON.stringify(results, null, 1));
+  window.__audioResults = results;
+}
+document.getElementById('run').onclick = runTest;
+setTimeout(runTest, 300);
+</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dr. Marion Wayne — Go Live (3D)</title>
+<style>
+  html,body{margin:0;padding:0;background:#120c06;height:100%;overflow:hidden;font-family:Segoe UI,Arial,sans-serif;}
+  #wrap{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+  #stage{position:relative;width:100%;max-width:1280px;aspect-ratio:16/9;box-shadow:0 0 60px rgba(0,0,0,.8);}
+  canvas#gl{display:block;width:100%;height:100%;}
+  .hidden{display:none!important;}
+  #hud{position:absolute;top:10px;left:16px;right:16px;display:flex;justify-content:space-between;color:#fff;
+       font-weight:700;font-size:clamp(13px,2.2vw,20px);text-shadow:0 2px 6px rgba(0,0,0,.9);pointer-events:none;}
+  #hurtflash{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(200,30,20,.9));
+             opacity:0;transition:opacity .25s;pointer-events:none;}
+  .screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+          background:rgba(12,8,4,.86);color:#fff;text-align:center;padding:20px;z-index:5;}
+  .screen h1{color:#ffd54a;font-size:clamp(22px,4vw,42px);margin:.2em 0;text-shadow:0 3px 8px #000;}
+  .screen p{max-width:640px;line-height:1.5;font-size:clamp(13px,2.4vw,19px);}
+  .btn{margin-top:16px;background:#ffd54a;color:#2a1c05;font-weight:800;border:none;cursor:pointer;
+       padding:12px 30px;border-radius:10px;font-size:clamp(16px,3vw,24px);box-shadow:0 4px 0 #b8952a;}
+  .btn:hover{background:#ffe27a;}
+  #endScreen.gameover h1{color:#ff7a5a;}
+  #nameInput{padding:9px 12px;border-radius:8px;border:2px solid #ffd54a;font-size:16px;}
+  #saveMsg{color:#8fff7a;font-weight:700;min-height:1.2em;margin-top:6px;}
+  #toast{position:absolute;top:18%;left:50%;transform:translateX(-50%);color:#8fff7a;font-weight:900;
+         font-size:clamp(18px,3.4vw,30px);text-shadow:0 3px 8px #000;pointer-events:none;z-index:4;}
+  #ctrlHint{position:absolute;bottom:8px;left:12px;color:#cbb;font:12px monospace;background:rgba(0,0,0,.5);
+            padding:2px 8px;border-radius:4px;pointer-events:none;}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="stage">
+    <canvas id="gl" width="1280" height="720"></canvas>
+    <div id="hud">
+      <span id="scoreTxt">Medallions: 0</span>
+      <span>Level 6: Go Live</span>
+      <span id="livesTxt">Lives: 3</span>
+    </div>
+    <div id="hurtflash"></div>
+    <div id="toast" class="hidden"></div>
+    <div id="ctrlHint">Move: A/D · Jump: SPACE/W · Scanner: E · Pause: ESC</div>
+    <div id="startScreen" class="screen">
+      <h1>Dr. Marion Wayne<br><span style="font-size:.7em">Level 6 — Go Live</span></h1>
+      <p>The final push to the Electronic Health Record. Collect all 20 golden medallions for a bonus life.
+         Stomp the Legacy Lag bots — or zap them with your barcode scanner (E). Beware spikes, pits,
+         and girders that phase with the system cutover.</p>
+      <button class="btn" id="startBtn">BEGIN THE GO LIVE</button>
+    </div>
+    <div id="pauseScreen" class="screen hidden">
+      <h1>Paused</h1>
+      <button class="btn" id="pResume">Resume</button>
+      <button class="btn" id="pRestart">Restart Level</button>
+    </div>
+    <div id="endScreen" class="screen hidden">
+      <h1 id="endTitle"></h1>
+      <div id="endScore" style="color:#ffd54a;font-weight:800;font-size:clamp(16px,3vw,26px);"></div>
+      <p id="endSub"></p>
+      <div><input id="nameInput" maxlength="14" placeholder="Enter your name">
+        <button class="btn" id="saveScore" style="padding:9px 16px;font-size:16px;margin-left:8px;">Save Score</button></div>
+      <div id="saveMsg"></div>
+      <button class="btn" id="endBtn">PLAY AGAIN</button>
+    </div>
+  </div>
+</div>
+<script type="importmap">
+{ "imports": { "three": "./lib/three.module.js" } }
+</script>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
