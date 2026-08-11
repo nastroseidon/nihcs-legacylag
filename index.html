@@ -478,10 +478,9 @@ function loadLevel(i){
   player.onGround=false; player.face=1; player.invuln=60; player.highY=player.y;
   camX=0; camY=0; lives=pendingLives||lives; pendingLives=0; levelStartScore=score; state='playing'; paused=false;
   player.walkedOnGround=false;   // reset hop-achievement tracking for this attempt
-  document.getElementById('pauseMenu').classList.add('hidden');
-  document.getElementById('victory').classList.add('hidden');
-  document.getElementById('scores').classList.add('hidden');
-  overlay.classList.add('hidden'); updateHud();
+  // hideAllScreens rather than naming screens one by one, so a screen added
+  // later can never be left covering the level (the game-over screen was).
+  hideAllScreens(); updateHud();
   // Level 5 is the run-up to Go Live: start fetching the 3D stage now.
   if(i===4) preloadGoLive();
 }

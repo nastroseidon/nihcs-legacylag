@@ -195,7 +195,6 @@ html = html[:j_start] + html[j_end:]
 edits += 1
 
 cut("const scores=document.getElementById('scores');\n", '', 'scores element ref')
-cut("  document.getElementById('scores').classList.add('hidden');\n", '', 'loadLevel scores hide')
 cut(" scores.classList.add('hidden');", '', 'hideAllScreens scores')
 cut("function showScores(){ state='scores'; renderScores(); hideAllScreens(); scores.classList.remove('hidden'); }\n",
     '', 'showScores')
