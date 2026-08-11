@@ -153,12 +153,70 @@ cut("Move: A / D or Arrows&nbsp;&nbsp;&middot;&nbsp;&nbsp;Jump: SPACE / W / Up&n
     'controls hint')
 
 
-# ------------------------------------------------------- offline behaviour
-# fetch() cannot read a sibling file over file://, so skip it rather than
-# logging a failure on every load.
-cut("fetch('scores.json',{cache:'no-store'})",
-    "(location.protocol==='file:'?Promise.reject():fetch('scores.json',{cache:'no-store'}))",
-    'scores.json fetch guard')
+# -------------------------------------------------- high scores come out
+# A file passed around by hand has no shared board to belong to: every copy
+# would keep its own list, which is more confusing than having none.
+cut("""  #nameEntry{margin-bottom:8px;}
+  #nameInput{padding:10px 12px;border-radius:8px;border:2px solid #ffd54a;font-size:clamp(14px,2.4vw,18px);width:min(55%,220px);}
+  #nameEntry .pBtn{width:auto;display:inline-block;margin:0 0 0 8px;padding:10px 18px;}
+  #saveMsg{color:#8fff7a;font-weight:700;margin-top:6px;min-height:1em;}
+""", '', 'name entry css')
+
+# #scores block through the last #scoreList rule
+s_start = html.index('  #scores{position:absolute;inset:0;z-index:6;')
+s_end = html.index("  #scoreList li.scHead span:nth-child(2){color:#7ad0ff;}\n")
+html = html[:s_start] + html[s_end + len("  #scoreList li.scHead span:nth-child(2){color:#7ad0ff;}\n"):]
+edits += 1
+
+cut('      <div class="btn" id="scoresBtn" style="background:#7ad0ff;box-shadow:0 4px 0 #3f9fd0;color:#06263a;">High Scores</div>\n',
+    '', 'High Scores button')
+
+cut("""        <div id="nameEntry">
+          <input id="nameInput" maxlength="14" placeholder="Enter your name" autocomplete="off">
+          <button class="pBtn" id="saveScore">Save Score</button>
+          <div id="saveMsg"></div>
+        </div>
+""", '', 'name entry markup')
+
+cut("""    <div id="scores" class="hidden">
+      <h2>High Scores</h2>
+      <ol id="scoreList"></ol>
+      <div class="vRow">
+        <button class="pBtn" id="scoresBack">Back</button>
+        <button class="pBtn" id="scoresExport" style="background:#7ad0ff;box-shadow:0 4px 0 #3f9fd0;color:#06263a;">Export scores.json</button>
+      </div>
+    </div>
+""", '', 'scores screen markup')
+
+# the whole scoring module, banner comment through exportScores()
+j_start = html.index('// ---------- high scores ----------')
+j_end = html.index('function hideAllScreens()')
+html = html[:j_start] + html[j_end:]
+edits += 1
+
+cut("const scores=document.getElementById('scores');\n", '', 'scores element ref')
+cut("  document.getElementById('scores').classList.add('hidden');\n", '', 'loadLevel scores hide')
+cut(" scores.classList.add('hidden');", '', 'hideAllScreens scores')
+cut("function showScores(){ state='scores'; renderScores(); hideAllScreens(); scores.classList.remove('hidden'); }\n",
+    '', 'showScores')
+
+for handler, what in [
+    ("document.getElementById('scoresBtn').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(showScores); });\n", 'scoresBtn handler'),
+    ("document.getElementById('scoresBack').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(goMain); });\n", 'scoresBack handler'),
+    ("document.getElementById('scoresExport').addEventListener('click',function(e){ e.stopPropagation(); exportScores(); });\n", 'scoresExport handler'),
+]:
+    cut(handler, '', what)
+
+h_start = html.index("document.getElementById('saveScore').addEventListener('click',")
+h_end = html.index("document.getElementById('vBonus').addEventListener('click',")
+html = html[:h_start] + html[h_end:]
+edits += 1
+
+# showVictory no longer has a name field or Save button to reset
+cut("""  document.getElementById('nameInput').value='';
+  document.getElementById('saveMsg').textContent='';
+  const sb=document.getElementById('saveScore'); sb.disabled=false; sb.style.opacity='';
+""", '', 'showVictory name reset')
 
 
 # ------------------------------------------------------------ inline images

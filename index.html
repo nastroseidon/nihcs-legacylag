@@ -924,7 +924,7 @@ function update(){
   if(overlap(player,goal)){
     const hopped = !player.walkedOnGround && achievementsLeft();
     if(currentLevel<5){ state='leveldone'; const cl=L.name, nm=LEVELS[currentLevel+1].name, sc=score;
-      const showDone=function(){ showOverlay('LEVEL COMPLETE!','"'+cl+'" cleared! Medallions so far: '+sc+'. Next stop: '+nm+'.','START'); };
+      const showDone=function(){ showOverlay('LEVEL COMPLETE!','"'+cl+'" cleared! Medallions so far: '+sc+'. Next stop: '+nm+'.','CONTINUE'); };
       if(hopped){ fadeTo(function(){ showAchievement(showDone); }); }
       else fadeTo(showDone);
     } else if(currentLevel===5){
