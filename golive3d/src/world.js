@@ -760,10 +760,14 @@ export async function buildWorld(scene, L) {
   const coinEdgeMat = new THREE.MeshStandardMaterial({ color: 0xd99b2e, roughness: 0.3, metalness: 0.8, emissive: 0x553800 });
   const coinGeo = new THREE.CylinderGeometry(0.34, 0.34, 0.09, 22);
   const coinInst = new THREE.InstancedMesh(coinGeo, [coinEdgeMat, coinFaceMat, coinFaceMat], coinCount);
+  // update() rewrites every instance matrix each frame, so the cached bounding
+  // sphere is never trustworthy — leaving culling on can drop the whole mesh.
+  coinInst.frustumCulled = false;
   coinInst.castShadow = true; grp.add(coinInst);
   const coinGlow = new THREE.InstancedMesh(new THREE.PlaneGeometry(1.5, 1.5),
     new THREE.MeshBasicMaterial({ map: glowTexture('255,205,100'), transparent: true,
       blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.75 }), coinCount);
+  coinGlow.frustumCulled = false;
   grp.add(coinGlow);
 
   // -------------------------------------------------------------- goal gate
@@ -881,6 +885,7 @@ export async function buildWorld(scene, L) {
     // drifting confetti (instanced quads, animated in update)
     var confetti = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.09, 0.16),
       new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }), 44);
+    confetti.frustumCulled = false;   // animated each frame; see the coin note above
     const R = rand(2024);
     var confettiSeeds = [];
     const cCols = [new THREE.Color(0xe8543f), new THREE.Color(0xf2b34c), new THREE.Color(0x3fb0a8), new THREE.Color(0xefe3c2), new THREE.Color(0xc05dc2)];

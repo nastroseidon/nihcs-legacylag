@@ -101,7 +101,7 @@ const events = {
     vfx.spawnVictory(px2(state.goal.x + 45, state.goal.y + 80));
     // let the victory animation and confetti land before handing back
     if (embedded) setTimeout(() => tellHost('complete', {
-      score: state.score, walkedOnGround: state.walkedOnGround,
+      score: state.score, lives: state.lives, walkedOnGround: state.walkedOnGround,
     }), 2600);
     else hud.showVictory(state.score);
   },

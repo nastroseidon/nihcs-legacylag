@@ -325,7 +325,7 @@ const HOP_ACHIEVEMENTS=[
 let usedAchievements=[];            // indices already awarded this run
 let earnedBadges=[];                // badges collected this run (for High Scores)
 function achievementsLeft(){ return usedAchievements.length<HOP_ACHIEVEMENTS.length; }
-function resetRun(){ usedAchievements=[]; earnedBadges=[]; }
+function resetRun(){ usedAchievements=[]; earnedBadges=[]; lives=3; }
 
 // ===== Bonus (LEVELS[6]) "The Legacy Labyrinth": 71-row tile map, single source of truth =====
 // Legend: # tile_floating(wall)  = tile_ground  - tile_girder  ^ spikes  v ceiling-spikes
@@ -471,7 +471,7 @@ function loadLevel(i){
   currentLevel=i; buildFrom(LEVELS[i]);
   player.x=L.start[0]; player.y=L.start[1]; player.vx=0; player.vy=0;
   player.onGround=false; player.face=1; player.invuln=60; player.highY=player.y;
-  camX=0; camY=0; lives=pendingLives||3; pendingLives=0; levelStartScore=score; state='playing'; paused=false;
+  camX=0; camY=0; lives=pendingLives||lives; pendingLives=0; levelStartScore=score; state='playing'; paused=false;
   player.walkedOnGround=false;   // reset hop-achievement tracking for this attempt
   document.getElementById('pauseMenu').classList.add('hidden');
   document.getElementById('victory').classList.add('hidden');
@@ -513,7 +513,7 @@ function beginGoLive(){
 }
 function start3DGoLive(){
   currentLevel=5; levelStartScore=score; state='golive3d'; paused=false;
-  lives=pendingLives||3; pendingLives=0;
+  lives=pendingLives||lives; pendingLives=0;
   goliveActive=true;
   buildFrom(LEVELS[5]);           // keeps the HUD label and level name in sync
   hideAllScreens(); updateHud();
@@ -537,7 +537,9 @@ addEventListener('message',function(e){
   }
   if(!goliveActive)return;
   if(d.type==='complete'){
-    score=levelStartScore+(d.score||0); updateHud();
+    score=levelStartScore+(d.score||0);
+    if(typeof d.lives==='number') lives=d.lives;   // carry survivors into the bonus level
+    updateHud();
     const hopped=!d.walkedOnGround && achievementsLeft();
     stop3DGoLive(); unlockedBonus=true;
     if(hopped){ state='achieve';
