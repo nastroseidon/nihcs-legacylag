@@ -450,7 +450,7 @@ function resetRun(){ usedAchievements=[]; earnedBadges=[]; lives=3; }
 
 // ---------- runtime state ----------
 let L, solids, spikes, coins, enemies, goal, worldW, climb, noNet, camMinY, bgKey, goalKey;
-let fx=[], state='start', score=0, lives=3, tick=0, camX=0, camY=0, allCoinsAwarded=false, DEBUG=false, paused=false, unlockedBonus=false;
+let fx=[], state='start', score=0, lives=3, tick=0, camX=0, camY=0, allCoinsAwarded=false, paused=false, unlockedBonus=false;
 let currentLevel=0, levelStartScore=0, INFINITE_LIVES=false, TESTING=false;  // Shift+P toggles
 // Beating Go Live unlocks free level choice, and it stays unlocked.
 let levelSelectUnlocked=(function(){ try{ return localStorage.getItem('dmw_beatGoLive')==='1'; }catch(e){ return false; } })();
@@ -812,7 +812,7 @@ addEventListener('keydown',function(e){
   if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;
   if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='Space')keys.jump=true;
   // ----- admin / testing shortcuts -----
-  if(e.shiftKey&&e.code==='KeyP'){ TESTING=!TESTING; DEBUG=TESTING; updateLevelSelect(); e.preventDefault(); }
+  if(e.shiftKey&&e.code==='KeyP'){ TESTING=!TESTING; updateLevelSelect(); e.preventDefault(); }
   if(e.shiftKey&&e.code==='KeyL'){ INFINITE_LIVES=!INFINITE_LIVES; updateHud(); e.preventDefault(); }
   if(e.code==='Escape'){togglePause();e.preventDefault();}
   if(state!=='playing'&&(e.code==='Space'||e.code==='Enter'))overlayAction();
@@ -1063,17 +1063,6 @@ function draw(){
     if(!drawSprite(img[key],ok[key],player.x-14,player.y-6,player.w+28,player.h+10,flip)){
       ctx.fillStyle='#c98a4b';ctx.fillRect(player.x,player.y,player.w,player.h);
       ctx.fillStyle='#6d4a28';ctx.fillRect(player.x,player.y,player.w,14);} }
-  // DEBUG grid overlay (press G)
-  if(DEBUG && L.gridMeta){
-    const gm=L.gridMeta, cs=gm.cell, rows=gm.rows, gY=gm.groundY, cols=Math.round(worldW/cs);
-    const rowY=function(r){return gY-(rows-1-r)*cs;};
-    ctx.strokeStyle='rgba(255,40,40,.35)'; ctx.lineWidth=1;
-    for(let c=0;c<=cols;c++){ ctx.beginPath(); ctx.moveTo(c*cs,rowY(0)); ctx.lineTo(c*cs,rowY(rows-1)+cs); ctx.stroke(); }
-    for(let r=0;r<rows;r++){ const y=rowY(r); ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(cols*cs,y); ctx.stroke(); }
-    ctx.fillStyle='rgba(255,70,70,.95)'; ctx.font='bold 13px monospace'; ctx.textAlign='left';
-    for(let r=0;r<rows;r+=5){ const y=rowY(r); ctx.fillText('r'+r+'  b'+(rows-1-r), 3, y+14); }
-    for(let c=0;c<cols;c+=5){ ctx.fillText('c'+c, c*cs+3, rowY(0)+14); }
-  }
   ctx.restore();
 }
 
@@ -1098,7 +1087,7 @@ window.__dmw={ jumpTo:function(i){ loadLevel(i); },
   get player(){ return player; }, get enemies(){ return enemies; }, get coins(){ return coins; },
   key:function(k,v){ keys[k]=v; } };
 
-buildFrom(LEVELS[0]); updateHud(); DEBUG=TESTING; updateLevelSelect();
+buildFrom(LEVELS[0]); updateHud(); updateLevelSelect();
 document.getElementById('levelTxt').textContent='';
 requestAnimationFrame(loop);
 })();
