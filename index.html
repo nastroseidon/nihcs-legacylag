@@ -48,7 +48,9 @@
   #scores{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;
           background:rgba(10,25,12,.95);color:#fff;padding:20px;box-sizing:border-box;}
   #scores h2{color:#ffd54a;font-size:clamp(24px,5vw,40px);margin:0 0 14px;}
-  #scoreList{list-style:none;padding:0;margin:0 0 16px;width:min(90%,420px);}
+  /* shrink-to-fit inside the stage and scroll, so the buttons are never pushed off */
+  #scoreList{list-style:none;padding:0;margin:0 0 16px;width:min(90%,460px);
+             flex:0 1 auto;min-height:0;overflow-y:auto;}
   #scoreList li{display:flex;justify-content:space-between;padding:8px 12px;font-size:clamp(14px,2.6vw,20px);
                 border-bottom:1px solid rgba(255,255,255,.15);}
   #scoreList li span{flex:1;text-align:left;}
@@ -169,7 +171,10 @@
     <div id="scores" class="hidden">
       <h2>High Scores</h2>
       <ol id="scoreList"></ol>
-      <button class="pBtn" id="scoresBack">Back</button>
+      <div class="vRow">
+        <button class="pBtn" id="scoresBack">Back</button>
+        <button class="pBtn" id="scoresExport" style="background:#7ad0ff;box-shadow:0 4px 0 #3f9fd0;color:#06263a;">Export scores.json</button>
+      </div>
     </div>
     <div id="achieve" class="hidden">
       <div id="achieveBox">
@@ -587,21 +592,70 @@ function stepFade(dt){
   }
 }
 
-let highScores=[];
+// ---------- high scores ----------
+// The site is static, so there is nowhere for the browser to write a file.
+// Scores live in two places and are shown merged:
+//   scores.json  \u2014 optional, committed to the repo. The permanent, shared board.
+//   localStorage \u2014 whatever this browser has played since.
+// "Export scores.json" downloads the merged board so it can be committed,
+// which promotes local runs onto the shared one.
+const SCORES_KEY='dmw_highScores', SCORES_MAX=200, SCORES_SHOWN=25;
+let localScores=[], fileScores=[], highScores=[];
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];}); }
+
+function scoreKey(e){ return e.name+'|'+e.score+'|'+(e.date||''); }
+function normalizeScores(arr){
+  if(!Array.isArray(arr))return [];
+  return arr.filter(function(e){ return e&&typeof e.name==='string'&&isFinite(e.score); })
+    .map(function(e){ return { name:String(e.name).slice(0,14), score:e.score|0,
+      badges:Array.isArray(e.badges)?e.badges.slice(0,12):[], date:e.date||'' }; });
+}
+function mergeScores(){
+  const seen={}, out=[];
+  fileScores.concat(localScores).forEach(function(e){
+    const k=scoreKey(e); if(seen[k])return; seen[k]=1; out.push(e);
+  });
+  out.sort(function(a,b){ return b.score-a.score || (a.date<b.date?-1:1); });
+  highScores=out.slice(0,SCORES_MAX);
+}
+function loadLocalScores(){
+  try{ localScores=normalizeScores(JSON.parse(localStorage.getItem(SCORES_KEY)||'[]')); }
+  catch(e){ localScores=[]; }
+  mergeScores();
+}
+function persistLocalScores(){
+  try{ localStorage.setItem(SCORES_KEY,JSON.stringify(localScores.slice(0,SCORES_MAX))); }
+  catch(e){}   // private browsing or a full quota: the run still shows this session
+}
+// The shared board, if the repo has one. Absent or malformed is fine.
+fetch('scores.json',{cache:'no-store'}).then(function(r){ return r.ok?r.json():[]; })
+  .then(function(j){ fileScores=normalizeScores(j); mergeScores();
+    if(state==='scores')renderScores(); }).catch(function(){});
+loadLocalScores();
+
 function saveScore(name){
   name=(name||'').trim().slice(0,14)||'Anonymous';
-  highScores.push({name:name,score:score,badges:earnedBadges.slice()});
-  highScores.sort(function(a,b){return b.score-a.score;});
-  if(highScores.length>10)highScores=highScores.slice(0,10);
+  localScores.push({ name:name, score:score, badges:earnedBadges.slice(),
+    date:new Date().toISOString().slice(0,10) });
+  localScores.sort(function(a,b){ return b.score-a.score; });
+  localScores=localScores.slice(0,SCORES_MAX);
+  persistLocalScores(); mergeScores();
 }
 function renderScores(){
   const list=document.getElementById('scoreList');
   let head='<li class="scHead"><span>Name</span><span>Score</span><span>Achievements</span></li>';
   if(!highScores.length){ list.innerHTML=head+'<li><span>No scores yet</span><span></span><span></span></li>'; return; }
-  list.innerHTML=head+highScores.map(function(s,i){
-    return '<li><span>'+(i+1)+'. '+escapeHtml(s.name)+'</span><span>'+s.score+'</span><span>'+((s.badges||[]).join(' ')||'\u2014')+'</span></li>';
+  list.innerHTML=head+highScores.slice(0,SCORES_SHOWN).map(function(s,i){
+    return '<li><span>'+(i+1)+'. '+escapeHtml(s.name)+'</span><span>'+s.score+'</span><span>'+
+      ((s.badges||[]).join(' ')||'\u2014')+'</span></li>';
   }).join('');
+}
+function exportScores(){
+  const blob=new Blob([JSON.stringify(highScores,null,1)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='scores.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); },1000);
 }
 
 function hideAllScreens(){ overlay.classList.add('hidden'); pauseMenu.classList.add('hidden'); victory.classList.add('hidden'); gameoverScreen.classList.add('hidden'); scores.classList.add('hidden'); achieve.classList.add('hidden'); }
@@ -648,6 +702,7 @@ function showVictory(){
   document.getElementById('victoryScore').textContent='Victory! Total Medallions: '+score;
   document.getElementById('nameInput').value='';
   document.getElementById('saveMsg').textContent='';
+  const sb=document.getElementById('saveScore'); sb.disabled=false; sb.style.opacity='';
   document.getElementById('vBonus').classList.remove('hidden');
   hideAllScreens(); victory.classList.remove('hidden');
 }
@@ -691,8 +746,13 @@ document.getElementById('ovMain').addEventListener('click',function(e){ e.stopPr
 document.getElementById('bonusBtn').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(function(){ score=0; resetRun(); loadLevel(6); }); });
 document.getElementById('scoresBtn').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(showScores); });
 document.getElementById('scoresBack').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(goMain); });
+document.getElementById('scoresExport').addEventListener('click',function(e){ e.stopPropagation(); exportScores(); });
 document.getElementById('saveScore').addEventListener('click',function(e){ e.stopPropagation();
-  saveScore(document.getElementById('nameInput').value); document.getElementById('saveMsg').textContent='Score saved!'; });
+  if(this.disabled)return;                       // one entry per run, not one per click
+  saveScore(document.getElementById('nameInput').value);
+  this.disabled=true; this.style.opacity=.5;
+  document.getElementById('saveMsg').textContent='Score saved to this device.';
+});
 document.getElementById('vBonus').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(function(){ score=0; loadLevel(6); }); });
 document.getElementById('vMain').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(goMain); });
 // Game over: one more life to retry this level, or bail to the menu.
