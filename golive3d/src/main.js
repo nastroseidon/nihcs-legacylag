@@ -55,12 +55,25 @@ for (const ev of ['keydown', 'pointerdown']) {
 // host so the original victory / game-over / bonus-unlock flow stays in charge.
 const params = new URLSearchParams(location.search);
 const embedded = params.get('embed') === '1' && window.parent !== window;
-const carriedScore = parseInt(params.get('score') || '0', 10) || 0;
-const startLives = Math.max(1, parseInt(params.get('lives') || '3', 10) || 3);
+// Preload mode: the host loads this level in the background during level 5 so
+// the switch is instant. Everything is built, then we sit still until the host
+// sends "begin" with the medallions and lives the player arrives with.
+const preload = params.get('preload') === '1';
+let carriedScore = parseInt(params.get('score') || '0', 10) || 0;
+let startLives = Math.max(1, parseInt(params.get('lives') || '3', 10) || 3);
 function tellHost(type, extra = {}) {
   if (!embedded) return;
   window.parent.postMessage({ source: 'golive3d', type, ...extra }, '*');
 }
+addEventListener('message', e => {
+  const d = e.data;
+  if (!d || d.source !== 'golive3d-host' || d.type !== 'begin') return;
+  carriedScore = parseInt(d.score, 10) || 0;
+  startLives = Math.max(1, parseInt(d.lives, 10) || 3);
+  newGame();
+  audio.unlock(); audio.setMusic('explore');
+  if (!running) { running = true; requestAnimationFrame(loop); }
+});
 // The HUD shows the run total, so add back what earlier levels already earned.
 const showScore = n => hud.setScore(carriedScore + n);
 
@@ -70,6 +83,7 @@ const audio = createAudio();
 const vfx = createVFX(scene);
 
 let engine, state, playerVis, enemyVis, world;
+let running = false;   // the rAF loop is held back while preloading
 
 const events = {
   onCoin: c => { showScore(state.score); vfx.spawnCoinBurst(px2(c.x + 20, c.y + 20)); audio.play('coin'); },
@@ -127,9 +141,16 @@ async function init() {
   if (embedded) {
     // Arriving straight from level 5 — no splash, just keep playing.
     document.getElementById('startScreen').classList.add('hidden');
-    audio.unlock(); audio.setMusic('explore');
-    tellHost('ready');
   }
+  if (preload) {
+    // Draw one frame to warm shaders and textures, then wait for "begin".
+    // Staying out of the rAF loop keeps the GPU free for level 5.
+    renderer.render(scene, camera);
+    tellHost('ready');
+    return;
+  }
+  if (embedded) { audio.unlock(); audio.setMusic('explore'); tellHost('ready'); }
+  running = true;
   requestAnimationFrame(loop);
 }
 

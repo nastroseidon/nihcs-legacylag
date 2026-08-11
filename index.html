@@ -477,6 +477,8 @@ function loadLevel(i){
   document.getElementById('victory').classList.add('hidden');
   document.getElementById('scores').classList.add('hidden');
   overlay.classList.add('hidden'); updateHud();
+  // Level 5 is the run-up to Go Live: start fetching the 3D stage now.
+  if(i===4) preloadGoLive();
 }
 function respawn(){
   player.x=L.start[0]; player.y=L.start[1]; player.vx=0; player.vy=0;
@@ -495,24 +497,45 @@ function updateHud(){
 // in and out, so the victory screen, high scores, hop achievement and bonus
 // unlock below all behave exactly as they do for the 2D levels.
 const golive3dBox=document.getElementById('golive3d'), golive3dFrame=document.getElementById('golive3dFrame');
-let goliveActive=false;
+let goliveActive=false, golivePreloaded=false, pendingBegin=null;
+
+// The 3D stage is a few megabytes of model and shaders, so it starts loading in
+// the background the moment level 5 begins. By the time the player clears it,
+// the switch is immediate.
+function preloadGoLive(){
+  golivePreloaded=false; pendingBegin=null;
+  golive3dFrame.src='golive3d/index.html?embed=1&preload=1';
+}
+function beginGoLive(){
+  const msg={source:'golive3d-host',type:'begin',score:score,lives:lives};
+  if(golivePreloaded){ golive3dFrame.contentWindow.postMessage(msg,'*'); }
+  else pendingBegin=msg;         // still loading; sent the moment it reports ready
+}
 function start3DGoLive(){
   currentLevel=5; levelStartScore=score; state='golive3d'; paused=false;
   lives=pendingLives||3; pendingLives=0;
   goliveActive=true;
   buildFrom(LEVELS[5]);           // keeps the HUD label and level name in sync
   hideAllScreens(); updateHud();
-  golive3dFrame.src='golive3d/index.html?embed=1&score='+score+'&lives='+lives;
+  // No preloaded frame (e.g. Try Again, or jumped straight here) — load now.
+  if(!golivePreloaded && !golive3dFrame.src.includes('preload=1')) preloadGoLive();
+  beginGoLive();
   golive3dBox.classList.remove('hidden');
 }
 function stop3DGoLive(){
-  goliveActive=false;
+  goliveActive=false; golivePreloaded=false; pendingBegin=null;
   golive3dBox.classList.add('hidden');
   golive3dFrame.src='about:blank';
 }
 addEventListener('message',function(e){
   const d=e.data;
-  if(!d||d.source!=='golive3d'||!goliveActive)return;
+  if(!d||d.source!=='golive3d')return;
+  if(d.type==='ready'){
+    golivePreloaded=true;
+    if(pendingBegin){ golive3dFrame.contentWindow.postMessage(pendingBegin,'*'); pendingBegin=null; }
+    return;
+  }
+  if(!goliveActive)return;
   if(d.type==='complete'){
     score=levelStartScore+(d.score||0); updateHud();
     const hopped=!d.walkedOnGround && achievementsLeft();
@@ -580,7 +603,7 @@ function renderScores(){
 }
 
 function hideAllScreens(){ overlay.classList.add('hidden'); pauseMenu.classList.add('hidden'); victory.classList.add('hidden'); gameoverScreen.classList.add('hidden'); scores.classList.add('hidden'); achieve.classList.add('hidden'); }
-function leaveGoLive(){ if(goliveActive)stop3DGoLive(); }
+function leaveGoLive(){ if(goliveActive||golivePreloaded||pendingBegin)stop3DGoLive(); }
 function updateBonusBtn(){
   const bb=document.getElementById('bonusBtn');
   if(unlockedBonus && (state==='start'||state==='won')) bb.classList.remove('hidden'); else bb.classList.add('hidden');

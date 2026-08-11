@@ -28,7 +28,16 @@
          font-size:clamp(18px,3.4vw,30px);text-shadow:0 3px 8px #000;pointer-events:none;z-index:4;}
   #ctrlHint{position:absolute;bottom:8px;left:12px;color:#cbb;font:12px monospace;background:rgba(0,0,0,.5);
             padding:2px 8px;border-radius:4px;pointer-events:none;}
+  /* Launched from the 2D game: there is no splash, the level just continues. */
+  html.embedded #startScreen{display:none!important;}
 </style>
+<script>
+  // Runs before the body paints, so the splash never flashes on the way in
+  // from level 5. The module can't do this — it loads too late.
+  if (new URLSearchParams(location.search).get('embed') === '1') {
+    document.documentElement.className += ' embedded';
+  }
+</script>
 </head>
 <body>
 <div id="wrap">
