@@ -599,8 +599,12 @@ function stepFade(dt){
 //   localStorage \u2014 whatever this browser has played since.
 // "Export scores.json" downloads the merged board so it can be committed,
 // which promotes local runs onto the shared one.
+// Paste the Cloudflare Worker URL from leaderboard/README.md here to turn on
+// the shared board. Left empty, everything below still works from scores.json
+// plus localStorage.
+const LEADERBOARD_URL='';
 const SCORES_KEY='dmw_highScores', SCORES_MAX=200, SCORES_SHOWN=25;
-let localScores=[], fileScores=[], highScores=[];
+let localScores=[], fileScores=[], remoteScores=[], highScores=[];
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];}); }
 
 function scoreKey(e){ return e.name+'|'+e.score+'|'+(e.date||''); }
@@ -612,7 +616,7 @@ function normalizeScores(arr){
 }
 function mergeScores(){
   const seen={}, out=[];
-  fileScores.concat(localScores).forEach(function(e){
+  remoteScores.concat(fileScores,localScores).forEach(function(e){
     const k=scoreKey(e); if(seen[k])return; seen[k]=1; out.push(e);
   });
   out.sort(function(a,b){ return b.score-a.score || (a.date<b.date?-1:1); });
@@ -627,19 +631,43 @@ function persistLocalScores(){
   try{ localStorage.setItem(SCORES_KEY,JSON.stringify(localScores.slice(0,SCORES_MAX))); }
   catch(e){}   // private browsing or a full quota: the run still shows this session
 }
-// The shared board, if the repo has one. Absent or malformed is fine.
+// The committed board, if the repo has one. Absent or malformed is fine.
 fetch('scores.json',{cache:'no-store'}).then(function(r){ return r.ok?r.json():[]; })
   .then(function(j){ fileScores=normalizeScores(j); mergeScores();
     if(state==='scores')renderScores(); }).catch(function(){});
+// The live board, if a Worker is configured. Any failure just leaves it out.
+function fetchRemoteScores(){
+  if(!LEADERBOARD_URL)return Promise.resolve();
+  return fetch(LEADERBOARD_URL,{cache:'no-store'})
+    .then(function(r){ return r.ok?r.json():[]; })
+    .then(function(j){ remoteScores=normalizeScores(j); mergeScores();
+      if(state==='scores')renderScores(); })
+    .catch(function(){});
+}
+fetchRemoteScores();
 loadLocalScores();
 
 function saveScore(name){
   name=(name||'').trim().slice(0,14)||'Anonymous';
-  localScores.push({ name:name, score:score, badges:earnedBadges.slice(),
-    date:new Date().toISOString().slice(0,10) });
+  const entry={ name:name, score:score, badges:earnedBadges.slice(),
+    date:new Date().toISOString().slice(0,10) };
+  // Always keep a local copy, so a run is never lost to a network hiccup.
+  localScores.push(entry);
   localScores.sort(function(a,b){ return b.score-a.score; });
   localScores=localScores.slice(0,SCORES_MAX);
   persistLocalScores(); mergeScores();
+  return postScore(entry);
+}
+function postScore(entry){
+  if(!LEADERBOARD_URL)return Promise.resolve(false);
+  return fetch(LEADERBOARD_URL,{ method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ name:entry.name, score:entry.score, badges:entry.badges }) })
+    .then(function(r){ return r.ok?r.json():null; })
+    .then(function(res){
+      if(!res||!res.ok)return false;
+      if(Array.isArray(res.board)){ remoteScores=normalizeScores(res.board); mergeScores(); }
+      return true;
+    }).catch(function(){ return false; });
 }
 function renderScores(){
   const list=document.getElementById('scoreList');
@@ -749,9 +777,14 @@ document.getElementById('scoresBack').addEventListener('click',function(e){ e.st
 document.getElementById('scoresExport').addEventListener('click',function(e){ e.stopPropagation(); exportScores(); });
 document.getElementById('saveScore').addEventListener('click',function(e){ e.stopPropagation();
   if(this.disabled)return;                       // one entry per run, not one per click
-  saveScore(document.getElementById('nameInput').value);
   this.disabled=true; this.style.opacity=.5;
-  document.getElementById('saveMsg').textContent='Score saved to this device.';
+  const msg=document.getElementById('saveMsg');
+  msg.textContent=LEADERBOARD_URL?'Saving…':'Score saved to this device.';
+  saveScore(document.getElementById('nameInput').value).then(function(shared){
+    if(!LEADERBOARD_URL)return;
+    msg.textContent=shared?'Score saved to the leaderboard.'
+                          :'Saved on this device — leaderboard unreachable.';
+  });
 });
 document.getElementById('vBonus').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(function(){ score=0; loadLevel(6); }); });
 document.getElementById('vMain').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(goMain); });
@@ -1062,7 +1095,9 @@ function loop(ts){
 window.__dmw={ jumpTo:function(i){ loadLevel(i); },
   toGoal:function(){ player.x=goal.x+2; player.y=goal.y+goal.h-player.h; player.vy=0; },
   kill:function(n){ for(var i=0;i<(n||1);i++){ player.invuln=0; hitPlayer(); } },
-  get state(){ return state; }, get lives(){ return lives; }, get score(){ return score; } };
+  get state(){ return state; }, get lives(){ return lives; }, get score(){ return score; },
+  get player(){ return player; }, get enemies(){ return enemies; }, get coins(){ return coins; },
+  key:function(k,v){ keys[k]=v; } };
 
 buildFrom(LEVELS[0]); updateHud(); DEBUG=TESTING; updateLevelSelect();
 document.getElementById('levelTxt').textContent='';

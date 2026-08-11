@@ -1,0 +1,9 @@
+name = "legacylag-leaderboard"
+main = "worker.js"
+compatibility_date = "2025-06-01"
+
+# Created by: npx wrangler kv namespace create SCORES
+# Paste the id it prints in place of the placeholder below.
+[[kv_namespaces]]
+binding = "SCORES"
+id = "PASTE_KV_NAMESPACE_ID_HERE"
