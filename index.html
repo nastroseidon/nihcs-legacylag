@@ -117,7 +117,7 @@
       <p id="ovText">Collect the golden medallions &mdash; grab every one in a level for a bonus life!
          Stomp the Legacy Lag bots from above to spring high, but never touch them from the side.
          Avoid the spikes and the pits!</p>
-      <p style="opacity:.85">Move: A / D or Arrows&nbsp;&nbsp;&middot;&nbsp;&nbsp;Jump: SPACE / W / Up&nbsp;&nbsp;&middot;&nbsp;&nbsp;Pause: ESC</p>
+      <p style="opacity:.85">Move: A / D or Arrows&nbsp;&nbsp;&middot;&nbsp;&nbsp;Jump: SPACE / W / Up&nbsp;&nbsp;&middot;&nbsp;&nbsp;Mute: M&nbsp;&nbsp;&middot;&nbsp;&nbsp;Pause: ESC</p>
       <div class="btnRow">
         <div class="btn" id="ovBtn">START</div>
         <div class="btn hidden" id="ovMain">Main Menu</div>
@@ -569,6 +569,130 @@ function awardAtGoal(extra){
   return award(achievementFacts(extra));
 }
 
+// ===== Sound =====
+// Every effect is built from oscillators at the moment it plays. Nothing is
+// loaded, so FullHTML.html still runs from a disk with nothing beside it.
+// Browsers keep an AudioContext suspended until the page has had a real user
+// gesture, so the context is created on the first one; calls before that are
+// silent no-ops rather than errors. M toggles mute, and the choice sticks.
+let actx=null, sfxBus=null, hall=null, muted=false;
+try{ muted=localStorage.getItem('dmw_mute')==='1'; }catch(e){}
+function audioReady(){
+  if(muted)return false;
+  if(!actx){
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC)return false;
+    try{ actx=new AC(); }catch(e){ actx=null; return false; }
+    sfxBus=actx.createGain(); sfxBus.gain.value=0.55; sfxBus.connect(actx.destination);
+    // a filtered feedback delay, so the brass has somewhere to ring
+    hall=actx.createDelay(1.0); hall.delayTime.value=0.105;
+    const fb=actx.createGain(); fb.gain.value=0.34;
+    const lp=actx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=2800;
+    const wet=actx.createGain(); wet.gain.value=0.30;
+    hall.connect(fb); fb.connect(hall); hall.connect(lp); lp.connect(wet); wet.connect(sfxBus);
+  }
+  if(actx.state==='suspended'){ try{ actx.resume(); }catch(e){} }
+  return true;
+}
+function toggleMute(){
+  muted=!muted;
+  try{ localStorage.setItem('dmw_mute',muted?'1':'0'); }catch(e){}
+  if(actx){ try{ muted?actx.suspend():actx.resume(); }catch(e){} }
+}
+function tone(type,freq,at,dur,peak,glideTo){
+  const o=actx.createOscillator(), g=actx.createGain();
+  o.type=type;
+  o.frequency.setValueAtTime(freq,at);
+  if(glideTo)o.frequency.exponentialRampToValueAtTime(glideTo,at+dur*0.9);
+  g.gain.setValueAtTime(0.0001,at);
+  g.gain.exponentialRampToValueAtTime(peak,at+Math.min(0.02,dur*0.2));
+  g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
+  o.connect(g); g.connect(sfxBus);
+  o.start(at); o.stop(at+dur+0.02);
+}
+function noise(at,dur,cutoff,peak){
+  const n=Math.floor(actx.sampleRate*dur), buf=actx.createBuffer(1,n,actx.sampleRate), d=buf.getChannelData(0);
+  for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  const s=actx.createBufferSource(); s.buffer=buf;
+  const f=actx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=cutoff;
+  const g=actx.createGain();
+  g.gain.setValueAtTime(peak,at);
+  g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
+  s.connect(f); f.connect(g); g.connect(sfxBus);
+  s.start(at); s.stop(at+dur);
+}
+// three detuned saws through a moving lowpass: close enough to a horn section
+function horn(freq,at,dur,peak){
+  const f=actx.createBiquadFilter();
+  f.type='lowpass'; f.Q.value=1.2;
+  f.frequency.setValueAtTime(600,at);
+  f.frequency.linearRampToValueAtTime(3000,at+0.07);
+  f.frequency.linearRampToValueAtTime(1500,at+dur);
+  for(const cents of [-8,0,8]){
+    const o=actx.createOscillator();
+    o.type='sawtooth'; o.frequency.value=freq; o.detune.value=cents;
+    o.connect(f); o.start(at); o.stop(at+dur+0.05);
+  }
+  const g=actx.createGain();
+  g.gain.setValueAtTime(0.0001,at);
+  g.gain.exponentialRampToValueAtTime(peak,at+0.04);
+  g.gain.setValueAtTime(peak,at+dur*0.65);
+  g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
+  f.connect(g); g.connect(sfxBus); g.connect(hall);
+}
+function horns(freqs,at,dur,peak){ for(const f of freqs)horn(f,at,dur,peak); }
+// pitch wobble, for the pogo bounce off a bot
+function wobble(freq,at,dur,peak,depth,rate,glideTo){
+  const o=actx.createOscillator(), g=actx.createGain();
+  const lfo=actx.createOscillator(), lg=actx.createGain();
+  o.type='square';
+  o.frequency.setValueAtTime(freq,at);
+  if(glideTo)o.frequency.exponentialRampToValueAtTime(glideTo,at+dur*0.9);
+  lfo.frequency.value=rate; lg.gain.value=depth;
+  lfo.connect(lg); lg.connect(o.detune);
+  g.gain.setValueAtTime(0.0001,at);
+  g.gain.exponentialRampToValueAtTime(peak,at+0.015);
+  g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
+  o.connect(g); g.connect(sfxBus);
+  o.start(at); o.stop(at+dur+0.02);
+  lfo.start(at); lfo.stop(at+dur+0.02);
+}
+const N={C4:261.63,Eb4:311.13,E4:329.63,F4:349.23,Gb4:369.99,G4:392.00,Ab4:415.30,A4:440.00,
+         Bb4:466.16,B4:493.88,C5:523.25,D5:587.33,E5:659.25,F5:698.46,G5:783.99,A5:880.00,
+         B5:987.77,C6:1046.50,E6:1318.51};
+// jump and landing play hundreds of times a run, so they sit well below the rest
+const SFX={
+  jump:function(t){ tone('triangle',300,t,0.10,0.09,540); noise(t,0.05,1800,0.035); },
+  land:function(t){ noise(t,0.05,2600,0.10); tone('sine',150,t,0.10,0.12,90); },
+  coin:function(t){ tone('square',1180,t,0.045,0.11); tone('square',1620,t+0.075,0.075,0.11); },
+  stomp:function(t){ wobble(190,t,0.24,0.12,90,26,660); },
+  oneup:function(t){ [N.C5,N.E5,N.G5,N.C6].forEach(function(f,i){
+    tone('square',f,t+i*0.105,0.34,0.20); tone('triangle',f*2,t+i*0.105,0.18,0.05); }); },
+  death:function(t){ [N.G4,N.Gb4,N.F4,N.Eb4].forEach(function(f,i){
+    tone('sawtooth',f,t+i*0.155,0.36,0.13,f*0.94); }); tone('sine',98,t+0.46,0.55,0.16,74); },
+  gameover:function(t){
+    [N.C5,N.Bb4,N.Ab4,N.G4,N.Eb4].forEach(function(f,i){
+      tone('square',f,t+i*0.20,0.30,0.15); tone('triangle',f/2,t+i*0.20,0.30,0.09); });
+    tone('sawtooth',155.56,t+1.00,0.70,0.14); tone('sawtooth',185.00,t+1.00,0.70,0.11);
+    tone('sine',77.78,t+1.00,0.75,0.18); },
+  victory:function(t){
+    [N.C5,N.D5,N.E5,N.F5,N.G5,N.A5,N.B5,N.C6].forEach(function(f,i){
+      tone('square',f,t+i*0.075,0.20,0.12); tone('triangle',f/2,t+i*0.075,0.20,0.06); });
+    horns([N.C5,N.E5,N.G5,N.C6,N.E6],t+0.68,1.55,0.15); horn(130.81,t+0.68,1.60,0.16); },
+  // the one fanfare: the first achievement screen after a level is cleared
+  coronation:function(t){
+    horns([N.C4,N.E4,N.G4],t,0.26,0.15);        horn(130.81,t,0.30,0.16);
+    horns([N.F4,N.A4,N.C5],t+0.34,0.26,0.15);   horn(174.61,t+0.34,0.30,0.16);
+    horns([N.G4,N.B4,N.D5],t+0.68,0.26,0.15);   horn(196.00,t+0.68,0.30,0.16);
+    horns([N.C5,N.E5,N.G5,N.C6],t+1.04,1.05,0.16); horn(130.81,t+1.04,1.10,0.18);
+    noise(t+1.04,0.30,900,0.10); }
+};
+function sfx(name){
+  if(!audioReady())return;
+  const cue=SFX[name]; if(!cue)return;
+  try{ cue(actx.currentTime+0.02); }catch(e){}
+}
+
 // ===== Bonus (LEVELS[6]) "The Legacy Labyrinth": 71-row tile map, single source of truth =====
 // Legend: # tile_floating(wall)  = tile_ground  - tile_girder  ^ spikes  v ceiling-spikes
 //   $ coin  E enemy  P player-start  F goal  @ phasing-girder  K/L/S/U/M icons  space=empty
@@ -814,7 +938,7 @@ addEventListener('message',function(e){
       levelStomps:d.stomps||0, levelStompable:d.enemiesTotal||0 });
     stop3DGoLive(); unlockedBonus=true;
     if(won.length){ state='achieve';
-      fadeTo(function(){ showAchievements(won,showVictory); }); }
+      fadeTo(function(){ showAchievements(won,showVictory,'coronation'); }); }
     else { state='victory'; fadeTo(showVictory); }
   } else if(d.type==='gameover'){
     score=levelStartScore+(d.score||0); run.deaths+=d.deaths||0; updateHud();
@@ -990,7 +1114,7 @@ function goMain(){
 }
 // Reached only by finishing the run. Save a score, head to the bonus level, or bail out.
 function showVictory(){
-  state='victory'; unlockedBonus=true;
+  state='victory'; unlockedBonus=true; sfx('victory');
   levelSelectUnlocked=true;
   try{ localStorage.setItem('dmw_beatGoLive','1'); }catch(e){}
   document.getElementById('victoryScore').textContent='Victory! Total Medallions: '+score;
@@ -1002,7 +1126,7 @@ function showVictory(){
 }
 // Reached only by running out of lives. Retry the level on one last life, or quit out.
 function showGameOver(){
-  state='gameover';
+  state='gameover'; sfx('gameover');
   document.getElementById('gameoverScore').textContent='Total Medallions: '+score;
   hideAllScreens(); gameoverScreen.classList.remove('hidden');
 }
@@ -1019,8 +1143,9 @@ function pickVariant(a){
   const idx=pool[Math.floor(Math.random()*pool.length)];
   used.push(idx); return a.variants[idx];
 }
-function showAchievement(a,next){
+function showAchievement(a,next,cue){
   const v=pickVariant(a);
+  if(cue)sfx(cue);   // only the opening screen of a level's chain is scored
   if(earnedBadges.indexOf(a.badge)<0)earnedBadges.push(a.badge);
   document.getElementById('achieveTitle').textContent=v.title;
   document.getElementById('achieveBody').textContent=v.body;
@@ -1033,10 +1158,13 @@ function showAchievement(a,next){
 // One goal touch can earn several at once (Janitor also grants Completionist and
 // Stomp Specialist), so they queue up and are shown one screen after another
 // before whatever was going to happen next.
-function showAchievements(list,next){
+// The fanfare plays once and only once: on the opening screen of the chain a
+// cleared level produces. Screens after it are silent, and so is the one that
+// fires mid-level, which would otherwise interrupt play with a brass section.
+function showAchievements(list,next,firstCue){
   if(!list||!list.length){ if(next)next(); return; }
   const rest=list.slice(1);
-  showAchievement(list[0], rest.length ? function(){ showAchievements(rest,next); } : next);
+  showAchievement(list[0], rest.length ? function(){ showAchievements(rest,next); } : next, firstCue);
 }
 document.getElementById('achieveBtn').addEventListener('click',function(e){ e.stopPropagation();
   const nx=afterAchieve; afterAchieve=null;
@@ -1095,6 +1223,7 @@ addEventListener('keydown',function(e){
   // ----- admin / testing shortcuts -----
   if(e.shiftKey&&e.code==='KeyP'){ TESTING=!TESTING; updateLevelSelect(); e.preventDefault(); }
   if(e.shiftKey&&e.code==='KeyL'){ INFINITE_LIVES=!INFINITE_LIVES; updateHud(); e.preventDefault(); }
+  if(e.code==='KeyM'&&!e.shiftKey){ toggleMute(); e.preventDefault(); }
   if(e.code==='Escape'){togglePause();e.preventDefault();}
   if(state!=='playing'&&(e.code==='Space'||e.code==='Enter'))overlayAction();
 });
@@ -1138,7 +1267,9 @@ function hitPlayer(){
   run.deaths++;
   let out=false;
   if(!INFINITE_LIVES){ lives--; updateHud(); out=lives<=0; }   // TESTING: no life loss
-  if(out)state='gameover'; else respawn();
+  // The last death gets the game-over sting instead of the death one, rather
+  // than both talking over each other.
+  if(out)state='gameover'; else { respawn(); sfx('death'); }
   // "Extensive User Acceptance Testing" is the one achievement earned by dying, so
   // it is judged here rather than at a goal. It has to be judged on the way out as
   // well: past the third death every death is a game over, so checking only the
@@ -1167,7 +1298,8 @@ function update(){
     if(player.vx>0)player.x=r.x-player.w; else if(player.vx<0)player.x=r.x+r.w; } }
 
   player.prevBottom=player.y+player.h;
-  if(kJ&&player.onGround){player.vy=JUMP;player.onGround=false;}
+  const wasOnGround=player.onGround;   // for the landing sound, below
+  if(kJ&&player.onGround){player.vy=JUMP;player.onGround=false;sfx('jump');}
   player.vy+=GRAV; if(player.vy>MAXFALL)player.vy=MAXFALL;
   player.y+=player.vy;
   player.onGround=false;
@@ -1189,15 +1321,16 @@ function update(){
     if(player.vy>=0&&player.y+player.h>=sf&&player.prevBottom<=sf+player.vy+2){
       player.y=sf-player.h;player.vy=0;player.onGround=true; }
   }
+  if(player.onGround&&!wasOnGround)sfx('land');   // touched down this frame
   if(player.onGround&&player.y<player.highY)player.highY=player.y;
   // "walked" = moving on the ground while NOT holding jump (a hop landing doesn't count)
   if(player.onGround&&Math.abs(player.vx)>0.1&&!kJ)player.walkedOnGround=true;
   if(!climb&&player.y>H+120){ hitPlayer(); return; }   // stop processing this frame after a pit death
 
   for(const c of coins){ if(!c.got&&overlap(player,{x:c.x-4,y:c.y-4,w:44,h:44})){
-    c.got=true;score++;lvlCoins++;updateHud();
+    c.got=true;score++;lvlCoins++;updateHud();sfx('coin');
     if(!allCoinsAwarded&&coins.every(function(cc){return cc.got;})){
-      allCoinsAwarded=true;lives++;updateHud();spawn1Up(player.x+player.w/2,player.y);}
+      allCoinsAwarded=true;lives++;updateHud();spawn1Up(player.x+player.w/2,player.y);sfx('oneup');}
   } }
   for(const s of spikes){ const w=s.w||98, m=s.w?3:10;
     if(overlap(player,{x:s.x+m,y:s.y-40,w:w-2*m,h:40}))hitPlayer(); }
@@ -1207,7 +1340,7 @@ function update(){
     const eb={x:e.x,y:e.floorY-e.h,w:e.w,h:e.h};
     if(overlap(player,eb)){
       if(player.vy>0&&player.prevBottom<=eb.y+16){
-        e.alive=false;player.vy=STOMP_SPRING;score++;lvlStomps++;updateHud();spawnBounce(e.x+e.w/2,eb.y+e.h/2);}
+        e.alive=false;player.vy=STOMP_SPRING;score++;lvlStomps++;updateHud();spawnBounce(e.x+e.w/2,eb.y+e.h/2);sfx('stomp');}
       else hitPlayer(); } }
   if(overlap(player,goal)){
     const won=awardAtGoal({ hopped:!player.walkedOnGround,
@@ -1215,14 +1348,14 @@ function update(){
       levelStomps:lvlStomps, levelStompable:enemies.length });
     if(currentLevel<5){ state='leveldone'; const cl=L.name, nm=LEVELS[currentLevel+1].name, sc=score;
       const showDone=function(){ showOverlay('LEVEL COMPLETE!','"'+cl+'" cleared! Medallions so far: '+sc+'. Next stop: '+nm+'.','CONTINUE'); };
-      fadeTo(function(){ showAchievements(won,showDone); });
+      fadeTo(function(){ showAchievements(won,showDone,'coronation'); });
     } else if(currentLevel===5){
       unlockedBonus=true;
-      if(won.length){ state='achieve'; fadeTo(function(){ showAchievements(won,showVictory); }); }
+      if(won.length){ state='achieve'; fadeTo(function(){ showAchievements(won,showVictory,'coronation'); }); }
       else { state='victory'; fadeTo(showVictory); }
     } else { const sc=score;
       const showWin=function(){ state='won'; showOverlay('LABYRINTH CONQUERED!','You escaped The Legacy Labyrinth with '+sc+' medallions. Legendary run!','START'); };
-      if(won.length){ state='achieve'; fadeTo(function(){ showAchievements(won,showWin); }); }
+      if(won.length){ state='achieve'; fadeTo(function(){ showAchievements(won,showWin,'coronation'); }); }
       else { state='won'; fadeTo(showWin); } }
   }
 

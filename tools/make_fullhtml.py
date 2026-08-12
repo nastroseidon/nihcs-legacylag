@@ -147,9 +147,11 @@ cut("""    if(f.type==='dust'){ctx.globalAlpha=t*0.8;ctx.fillStyle='#e8ddc0';
     'fx draw')
 
 # tell the player about it
-cut("Move: A / D or Arrows&nbsp;&nbsp;&middot;&nbsp;&nbsp;Jump: SPACE / W / Up&nbsp;&nbsp;&middot;&nbsp;&nbsp;Pause: ESC",
+cut("Move: A / D or Arrows&nbsp;&nbsp;&middot;&nbsp;&nbsp;Jump: SPACE / W / Up"
+    "&nbsp;&nbsp;&middot;&nbsp;&nbsp;Mute: M&nbsp;&nbsp;&middot;&nbsp;&nbsp;Pause: ESC",
     "Move: A / D or Arrows&nbsp;&nbsp;&middot;&nbsp;&nbsp;Jump: SPACE / W / Up"
-    "&nbsp;&nbsp;&middot;&nbsp;&nbsp;Scanner: E&nbsp;&nbsp;&middot;&nbsp;&nbsp;Pause: ESC",
+    "&nbsp;&nbsp;&middot;&nbsp;&nbsp;Scanner: E&nbsp;&nbsp;&middot;&nbsp;&nbsp;Mute: M"
+    "&nbsp;&nbsp;&middot;&nbsp;&nbsp;Pause: ESC",
     'controls hint')
 
 
