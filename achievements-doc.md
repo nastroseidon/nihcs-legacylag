@@ -301,13 +301,13 @@ You completed an entire level while hopping nonstop, forcing Dr. Marion Wayne to
 
 ## 📝 DESIGNED (not yet coded) — need flavor text + build
 
-These have agreed-upon detection rules but are NOT yet coded. Pacifist and No-Death Run now have completed flavor text; the remaining achievements still need theirs.
+These have agreed-upon detection rules but are NOT yet coded. Pacifist, No-Death Run, and Completionist now have completed flavor text; the remaining achievements still need theirs.
 
 | Achievement | Rule | Notes |
 |---|---|---|
 | **Pacifist** | Finish Levels 1–6 stomping ZERO enemies | Full run from Level 1 only; flavor text complete |
 | **No-Death Run** | Finish Levels 1–6 with ZERO deaths | Full run from Level 1 only; flavor text complete |
-| **Completionist "100% Data Recovery"** | Collect EVERY medallion across all 6 levels | Full run |
+| **Completionist "100% Data Recovery"** | Collect EVERY medallion across all 6 levels | Full run; flavor text complete |
 | **Stomp Specialist "Aggressive Prioritization"** | Stomp EVERY enemy across Levels 1–6 | Full run; opposite of Pacifist |
 | **Janitor** | EVERY enemy stomped AND EVERY medallion collected, Levels 1–6 | Also grants Completionist + Stomp Specialist |
 | **Speedrun "Ahead of Schedule (For Once)"** | Finish Levels 1–6 under a target time | ⚠️ Target time NOT set — needs a timed run |
@@ -767,6 +767,267 @@ It must be retained for seven years.
 Just in case.
 
 **Reward:** One untouched stack of mandatory forms, zero post-incident meetings, and the rare privilege of costing the organization absolutely nothing in preventable death-related administrative labor.
+
+---
+
+## 📝 DESIGNED: Completionist "100% Data Recovery" (4 flavor variants)
+
+**Trigger:** Collect EVERY medallion across all 6 levels.
+**Frequency:** Full run from Level 1 only.
+**Badge:** 💾 (same badge for all 4 variants)
+**Behavior:** When earned, the game randomly displays ONE of the 4 variants below.
+
+The on-screen header for all of them is: **NEW ACHIEVEMENT UNLOCKED!**
+
+---
+
+### Variant 1
+**Badge:** 💾
+**Title:** 100% DATA RECOVERY: THIS WAS A MISTAKE
+
+**Body:**
+Congratulations!
+
+You collected every medallion across all six levels.
+
+Every.
+
+Single.
+
+One.
+
+Some were sitting directly in your path.
+
+Others were hidden in locations no reasonable person would ever search unless specifically instructed by an auditor, a subpoena, or a supervisor saying:
+
+**"I know it's in there somewhere."**
+
+For years, the Legacy Systems Recovery Team had classified several of these items as:
+
+**"Functionally unrecoverable."**
+
+This is an industry term meaning:
+
+**"We stopped looking and assumed everyone who remembered where it was would eventually retire."**
+
+It was a solid plan.
+
+Then you showed up.
+
+You found everything.
+
+This has created a problem.
+
+The archive is now complete.
+
+Records Management is ecstatic.
+
+IT is deeply uncomfortable.
+
+Three former project managers have changed their phone numbers.
+
+One executive has asked whether recovered data can be **"un-recovered."**
+
+IT explained that yes, technically it can, but usually only by accident during scheduled maintenance.
+
+The executive has requested scheduled maintenance.
+
+Request denied.
+
+**Dr. Marion Wayne** would like to congratulate you on recovering 100% of the available medallions and restoring several decades of institutional knowledge that absolutely nobody was prepared to have available again.
+
+You have proven that nothing was truly lost.
+
+It was merely **extremely inconvenient to locate.**
+
+This distinction will now appear in several uncomfortable meetings.
+
+And because you successfully found everything, management has reached the obvious conclusion:
+
+**You are now the person who knows where everything is.**
+
+This designation is permanent.
+
+People you have never met will begin emailing you shortly.
+
+**Reward:** One write-protected imaginary floppy disk, a complete backup of information everyone preferred to believe was gone forever, and permanent organizational recognition as **"the person who found it last time."**
+
+Every future search request will now be forwarded to you until retirement.
+
+---
+
+### Variant 2
+**Badge:** 💾
+**Title:** THE ARCHIVE IS COMPLETE. PLEASE EXPLAIN WHY.
+
+**Body:**
+Congratulations!
+
+You collected every medallion across all six levels.
+
+All of them.
+
+The obvious ones.
+
+The inconvenient ones.
+
+The ones hidden just far enough out of the way to make a normal person say:
+
+**"Absolutely not."**
+
+You said yes.
+
+Repeatedly.
+
+The Office of Records Integrity has compared your collection against the master inventory and reached a conclusion nobody expected to document during their natural lifetime:
+
+**0 ITEMS MISSING.**
+
+This triggered an automatic alert.
+
+Not because anything is wrong.
+
+Because the system was never programmed to expect this result.
+
+The alert was escalated to IT, then Records Management, then Compliance, and finally to a contractor who retired in 2014 but whose email address remains on three distribution lists.
+
+He replied:
+
+**"How did you get this address?"**
+
+Nobody answered.
+
+Meanwhile, **Dr. Marion Wayne** has been informed that the medallion archive is now complete, indexed, reconciled, and ready for review.
+
+He asked who plans to review it.
+
+Silence.
+
+He asked why he collected it.
+
+More silence.
+
+A manager eventually described the effort as **"important for historical continuity,"** which is organizational language for:
+
+**"We don't know, but deleting it now feels risky."**
+
+The collection will therefore be retained indefinitely.
+
+Nobody will look at it again until an inspection is announced.
+
+At that point, it will become the most important thing in the building.
+
+**Reward:** One perfectly reconciled imaginary archive, an audit finding of "No Exceptions Noted," and the crushing knowledge that your reward for completing the impossible is proving the impossible can now be assigned as a recurring task.
+
+---
+
+### Variant 3
+**Badge:** 💾
+**Title:** NO MEDALLION LEFT BEHIND
+
+**Body:**
+Congratulations!
+
+You found every medallion in every level.
+
+This stopped being normal several medallions ago.
+
+Most players see a collectible slightly off the main path and think:
+
+**"Maybe next time."**
+
+You saw it and apparently took that as a personal accusation.
+
+Walls were checked.
+
+Corners were searched.
+
+Platforms were revisited.
+
+Entire sections were crossed again because somewhere, deep inside your brain, a tiny compliance officer was whispering:
+
+**"The numbers don't reconcile."**
+
+Eventually, they did.
+
+100%.
+
+The Medallion Accountability Dashboard has turned green for the first time since anyone can remember.
+
+Senior leadership immediately requested a screenshot because they had heard rumors such a thing was theoretically possible.
+
+The screenshot has been placed into a PowerPoint presentation titled:
+
+**"Operational Excellence Through Personal Sacrifice."**
+
+Your name is not on the slide.
+
+**Dr. Marion Wayne** has asked whether collecting every medallion means the mission is finally complete.
+
+Management has confirmed that it does.
+
+Then they added:
+
+**"For this reporting period."**
+
+Dr. Wayne has stopped asking questions.
+
+**Reward:** One imaginary green checkmark, complete medallion accountability across six levels, and the honor of establishing a performance benchmark that everyone after you will quietly resent.
+
+---
+
+### Variant 4
+**Badge:** 💾
+**Title:** YOU FOUND THE MISSING ATTACHMENT
+
+**Body:**
+Congratulations!
+
+You collected every medallion across all six levels.
+
+More importantly, you have demonstrated a rare and dangerous ability:
+
+**You can actually find things.**
+
+The organization has been searching for someone like you.
+
+Not intentionally.
+
+But now that you've revealed yourself, there is no going back.
+
+Within minutes of your accomplishment, the following requests were submitted:
+
+"Can you find the spreadsheet from the old shared drive?"
+
+"Do you remember where we saved the final-final version?"
+
+"There was an email sometime around 2017..."
+
+"I think somebody named Dave had it."
+
+And, most ominously:
+
+**"It should be easy for you."**
+
+You did this to yourself.
+
+By locating every medallion, you have become organizationally classified as **Good At Finding Stuff.**
+
+This classification outranks job descriptions, workload limits, and basic human boundaries.
+
+**Dr. Marion Wayne** attempted to explain that collecting medallions inside a platform game does not qualify him to reconstruct a decade of abandoned file-management practices.
+
+His objection was documented.
+
+Then someone forwarded him a broken SharePoint link and wrote:
+
+**"Thoughts?"**
+
+There will be no escape.
+
+**Reward:** One imaginary paperclip attachment icon, permanent membership in the unofficial Lost File Recovery Team, and a lifetime subscription to emails beginning with **"Quick question..."**
+
+There is never a quick question.
 
 ---
 
