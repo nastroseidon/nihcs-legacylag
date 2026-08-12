@@ -299,9 +299,9 @@ You completed an entire level while hopping nonstop, forcing Dr. Marion Wayne to
 
 ---
 
-## 📝 DESIGNED (not yet coded) — need flavor text + build
+## 📝 DESIGNED (not yet coded) — flavor text complete, build remaining
 
-These have agreed-upon detection rules but are NOT yet coded. Pacifist, No-Death Run, Completionist, and Stomp Specialist now have completed flavor text; the remaining achievements still need theirs.
+All designed achievements below now have completed flavor text. Detection/screens still need to be built, and the Speedrun target time still needs to be set from a timed clean run.
 
 | Achievement | Rule | Notes |
 |---|---|---|
@@ -309,12 +309,12 @@ These have agreed-upon detection rules but are NOT yet coded. Pacifist, No-Death
 | **No-Death Run** | Finish Levels 1–6 with ZERO deaths | Full run from Level 1 only; flavor text complete |
 | **Completionist "100% Data Recovery"** | Collect EVERY medallion across all 6 levels | Full run; flavor text complete |
 | **Stomp Specialist "Aggressive Prioritization"** | Stomp EVERY enemy across Levels 1–6 | Full run; opposite of Pacifist; flavor text complete |
-| **Janitor** | EVERY enemy stomped AND EVERY medallion collected, Levels 1–6 | Also grants Completionist + Stomp Specialist |
-| **Speedrun "Ahead of Schedule (For Once)"** | Finish Levels 1–6 under a target time | ⚠️ Target time NOT set — needs a timed run |
-| **Perfectionist "No Coin Left Behind"** | Collect 100% of a SINGLE level's medallions | Once per session (per-level) |
-| **Minimalist** | Finish a level collecting ZERO medallions | Once per session (per-level) |
-| **Overtime Hero** | Complete the bonus "Legacy Labyrinth" level | — |
-| **Extensive User Acceptance Testing** | Die 7+ times total in a session | Anti-achievement (comedic) |
+| **Janitor** | EVERY enemy stomped AND EVERY medallion collected, Levels 1–6 | Also grants Completionist + Stomp Specialist; flavor text complete |
+| **Speedrun "Ahead of Schedule (For Once)"** | Finish Levels 1–6 under a target time | Flavor text complete; ⚠️ target time NOT set |
+| **Perfectionist "No Coin Left Behind"** | Collect 100% of a SINGLE level's medallions | Once per session (per-level); flavor text complete |
+| **Minimalist** | Finish a level collecting ZERO medallions | Once per session (per-level); flavor text complete |
+| **Overtime Hero** | Complete the bonus "Legacy Labyrinth" level | Flavor text complete |
+| **Extensive User Acceptance Testing** | Die 7+ times total in a session | Anti-achievement (comedic); flavor text complete |
 
 ---
 
@@ -1355,7 +1355,927 @@ Communications has asked that you never represent the organization at a town hal
 
 ---
 
+## 📝 DESIGNED: Janitor (4 flavor variants)
+
+**Trigger:** Stomp EVERY enemy AND collect EVERY medallion across Levels 1–6.
+**Frequency:** Full run from Level 1 only.
+**Badge:** 🧹 (same badge for all 4 variants)
+**Behavior:** Also grants Completionist and Stomp Specialist. When earned, the game randomly displays ONE of the 4 variants below.
+
+The on-screen header for all of them is: **NEW ACHIEVEMENT UNLOCKED!**
+
+---
+
+### Variant 1
+**Badge:** 🧹
+**Title:** TERMINAL CLEAN: DISTURBINGLY THOROUGH
+
+**Body:**
+Congratulations!
+
+You stomped every enemy **and** collected every medallion across all six levels.
+
+Everything.
+
+There are no hostiles.
+
+No missing assets.
+
+No blinking objects in suspicious corners.
+
+You have reduced six entire levels to:
+
+**Architecture.**
+
+Environmental Services has been notified.
+
+They are offended.
+
+A post-operation inspection was conducted to determine whether **Dr. Marion Wayne** had achieved the mythical organizational condition known as:
+
+**"Completely Done."**
+
+The inspectors arrived with flashlights, clipboards, and the absolute certainty that you had missed something.
+
+They checked behind things.
+
+Nothing.
+
+Under things.
+
+Nothing.
+
+One inspector triumphantly identified a tiny object in the corner.
+
+Quality Management confirmed it was a pixel.
+
+The finding was withdrawn.
+
+Every medallion was accounted for.
+
+Every enemy was accounted for.
+
+Technically, the enemies were accounted for through a collection of unusually flat incident locations, but Records Management accepted the documentation.
+
+Someone then used the phrase:
+
+**"Clean sweep."**
+
+Senior leadership loved it.
+
+There is now a Clean Sweep Initiative.
+
+It has a logo.
+
+There is a steering committee.
+
+Nobody knows who is steering it.
+
+**Dr. Marion Wayne** has been informed that his methods are now considered a **best practice.**
+
+He regrets everything.
+
+**Reward:** One imaginary industrial custodial cart, a flawless white-glove inspection, and permanent designation as **the person management calls when they need somebody to "just clean this mess up."**
+
+They will never mean an actual mess.
+
+---
+
+### Variant 2
+**Badge:** 🧹
+**Title:** CLOSEOUT CHECKLIST: NOTHING LEFT TO CLOSE
+
+**Body:**
+Congratulations!
+
+You collected every medallion and stomped every enemy across all six levels.
+
+The project closeout team has reviewed the numbers:
+
+Assets recovered: **100%.**
+
+Hostiles resolved: **100%.**
+
+Loose ends: **0.**
+
+They checked twice because nobody trusted the zero.
+
+An auditor finally asked the room:
+
+**"So what's left?"**
+
+Nobody answered.
+
+This was the first recorded instance of a closeout meeting ending because the work was actually complete.
+
+**Dr. Marion Wayne** asked if that meant he could go home.
+
+Management said yes.
+
+Then someone remembered the mandatory Lessons Learned session.
+
+It has been scheduled for tomorrow morning.
+
+Attendance is required because your performance was described as **"repeatable."**
+
+It is not.
+
+**Reward:** One imaginary signed closeout form, a dashboard containing nothing but green boxes, and a 90-minute meeting explaining how efficiently you eliminated the need for future meetings.
+
+---
+
+### Variant 3
+**Badge:** 🧹
+**Title:** SCOPE CREEP: FULLY CONSUMED
+
+**Body:**
+Congratulations!
+
+The original assignment was simple:
+
+Move through six levels.
+
+Somewhere along the way, you decided that wasn't enough.
+
+Every medallion needed collecting.
+
+Every enemy needed stomping.
+
+Every suspicious corner needed inspection.
+
+The scope expanded until there was literally nothing left on the map to add to it.
+
+Change Control has reviewed your run and determined that approximately 83% of what you did was **"technically beyond minimum requirements."**
+
+They would like to deny the additional scope retroactively.
+
+Unfortunately, you already finished it.
+
+**Dr. Marion Wayne** has therefore been praised for initiative and warned never to show this level of initiative again without completing the proper request form first.
+
+The form is eleven pages.
+
+Nobody knows where it is.
+
+You probably do.
+
+**Reward:** One imaginary scope-management certificate, total completion of everything anybody could reasonably point at, and the dangerous precedent that **"while you're there"** is now considered a valid project plan.
+
+---
+
+### Variant 4
+**Badge:** 🧹
+**Title:** WHITE-GLOVE APOCALYPSE
+
+**Body:**
+Congratulations!
+
+Every medallion is gone.
+
+Every enemy is gone.
+
+The inspection team entered the level wearing white gloves and expressions of professional suspicion.
+
+They were ready to find something.
+
+Anything.
+
+They found **nothing.**
+
+One inspector checked the same corner four times.
+
+Another quietly asked whether the level had been replaced with a cleaner level.
+
+IT confirmed it had not.
+
+**Dr. Marion Wayne** has achieved a condition Environmental Services refers to only in legends:
+
+**"No deficiencies noted."**
+
+The lead inspector stared at the blank checklist for several seconds, signed it, and requested reassignment.
+
+Quality Management immediately scheduled a follow-up inspection because a perfect inspection is considered inherently suspicious.
+
+**Reward:** One imaginary white glove with absolutely nothing on it, a zero-deficiency report, and the certainty that somebody will inspect you again purely because you passed too well.
+
+---
+
+## 📝 DESIGNED: Speedrun "Ahead of Schedule (For Once)" (4 flavor variants)
+
+**Trigger:** Finish Levels 1–6 under the final target time.
+**Frequency:** Full run from Level 1 only.
+**Badge:** ⏱️ (same badge for all 4 variants)
+**Behavior:** When earned, the game randomly displays ONE of the 4 variants below. Target time still needs to be established from a clean timed run.
+
+The on-screen header for all of them is: **NEW ACHIEVEMENT UNLOCKED!**
+
+---
+
+### Variant 1
+**Badge:** ⏱️
+**Title:** AHEAD OF SCHEDULE. PLEASE DON'T TELL MANAGEMENT.
+
+**Body:**
+Congratulations!
+
+You completed Levels 1–6 under the target time.
+
+This is excellent news.
+
+It is also extremely dangerous information.
+
+Management has already asked whether the original schedule was **"too conservative."**
+
+It was not.
+
+You were just fast.
+
+These are not the same thing.
+
+Unfortunately, somebody took a screenshot of your completion time and placed it into a briefing labeled:
+
+**"NEW PERFORMANCE OPPORTUNITIES."**
+
+**Dr. Marion Wayne** has requested that everyone remember this was an exceptional run requiring concentration, skill, and several decisions he does not intend to repeat.
+
+Leadership heard only the word **"repeat."**
+
+Next quarter's timeline has been shortened.
+
+You're welcome, everyone.
+
+**Reward:** One imaginary stopwatch, a personal best, and the privilege of proving that every future deadline can now be made slightly worse.
+
+---
+
+### Variant 2
+**Badge:** ⏱️
+**Title:** THE TIME STUDY HAS BEEN COMPROMISED
+
+**Body:**
+Congratulations!
+
+You finished all six levels under the target time while a process analyst was trying to establish a normal baseline.
+
+You have ruined everything.
+
+The analyst had a stopwatch.
+
+A clipboard.
+
+A carefully prepared observation sheet.
+
+Then **Dr. Marion Wayne** tore through the entire run like someone had announced the parking garage closes in five minutes.
+
+Your result was immediately labeled:
+
+**"STATISTICAL OUTLIER — DO NOT USE."**
+
+Senior leadership found it five minutes later.
+
+It is now the new benchmark.
+
+The analyst has objected in writing.
+
+His objection has been attached to the benchmark as supporting documentation.
+
+**Reward:** One imaginary stopwatch with smoke coming off it, a destroyed baseline study, and responsibility for a performance standard nobody else agreed to.
+
+---
+
+### Variant 3
+**Badge:** ⏱️
+**Title:** SCHEDULE VARIANCE: SUSPICIOUSLY POSITIVE
+
+**Body:**
+Congratulations!
+
+For once, the schedule dashboard is green for a reason that isn't formatting.
+
+You completed Levels 1–6 under the target time.
+
+Project Management confirmed the result.
+
+Finance then asked the question everyone feared:
+
+**"If it can be done this quickly, do we still need all the resources?"**
+
+The room became silent.
+
+**Dr. Marion Wayne** attempted to explain the difference between a speedrun and sustainable staffing methodology.
+
+Finance wrote down **"staffing methodology."**
+
+A follow-up meeting has been scheduled.
+
+Your name is in the subject line.
+
+**Reward:** One imaginary green Gantt-chart bar, a favorable schedule variance, and the knowledge that finishing early somehow created more work than finishing late would have.
+
+---
+
+### Variant 4
+**Badge:** ⏱️
+**Title:** EARLY COMPLETION IS ITS OWN PUNISHMENT
+
+**Body:**
+Congratulations!
+
+You finished Levels 1–6 under the target time.
+
+You are done early.
+
+This briefly felt good.
+
+Then someone noticed.
+
+A supervisor has reviewed the remaining calendar and identified several **"quick things"** you can help with now that you have extra time.
+
+There are nine quick things.
+
+Two have attachments.
+
+One begins with the phrase:
+
+**"Since you're already in there..."**
+
+**Dr. Marion Wayne** has learned an important professional lesson:
+
+Never let anyone know exactly how fast you can finish something.
+
+He will remember this during all future estimates.
+
+**Reward:** One imaginary gold stopwatch, undeniable proof of your speed, and precisely zero additional free time.
+
+---
+
+## 📝 DESIGNED: Perfectionist "No Coin Left Behind" (4 flavor variants)
+
+**Trigger:** Collect 100% of a SINGLE level's medallions.
+**Frequency:** Once per session (per-level).
+**Badge:** 💯 (same badge for all 4 variants)
+**Behavior:** When earned, the game randomly displays ONE of the 4 variants below.
+
+The on-screen header for all of them is: **NEW ACHIEVEMENT UNLOCKED!**
+
+---
+
+### Variant 1
+**Badge:** 💯
+**Title:** NO COIN LEFT BEHIND
+
+**Body:**
+Congratulations!
+
+You collected 100% of the medallions in a single level.
+
+Yes, we know they are medallions.
+
+The achievement name was approved before anyone from Records Management reviewed the terminology.
+
+Changing it now would require a governance request.
+
+So here we are.
+
+Every medallion is accounted for.
+
+No gaps.
+
+No exceptions.
+
+No tiny collectible sitting somewhere off-screen quietly ruining your percentage.
+
+**Dr. Marion Wayne** has reviewed the final count and described your behavior as **"admirably thorough, with concerning follow-through."**
+
+Management calls it attention to detail.
+
+Your family may use a different phrase.
+
+**Reward:** One imaginary 100% stamp, a perfectly clean collection report, and official permission to stop checking that last corner again.
+
+---
+
+### Variant 2
+**Badge:** 💯
+**Title:** LOCALIZED AUDIT MIRACLE
+
+**Body:**
+Congratulations!
+
+An audit has been completed for this level.
+
+For the first time in recent memory, the finding is:
+
+**Nothing.**
+
+You collected every available medallion.
+
+The auditor checked the count twice, then checked the formula because perfection felt more likely to be a spreadsheet error.
+
+It was not.
+
+**Dr. Marion Wayne** has achieved full local compliance without a corrective action plan, remediation memo, or panicked email beginning with **"Can everyone please check their folders?"**
+
+The audit team is unsure what to do next.
+
+They have scheduled a meeting to discuss the absence of findings.
+
+**Reward:** One imaginary audit stamp reading NO EXCEPTIONS, a complete medallion count, and a meeting created solely because there was nothing to fix.
+
+---
+
+### Variant 3
+**Badge:** 💯
+**Title:** ONE LEVEL, ZERO EXCUSES
+
+**Body:**
+Congratulations!
+
+You collected every medallion in the level.
+
+You could have left one.
+
+Nobody would have arrested you.
+
+There is no Medallion Police.
+
+We checked.
+
+But something inside you saw **99%** and took it personally.
+
+So you went back.
+
+You searched.
+
+You found the missing one.
+
+And now the number says **100%.**
+
+**Dr. Marion Wayne** would like to congratulate you while also gently suggesting that perfection is not required in every area of life.
+
+You have ignored him and are already looking at the next level.
+
+**Reward:** One imaginary perfect-score sticker and the temporary silence of the tiny voice in your head that knew one was missing.
+
+---
+
+### Variant 4
+**Badge:** 💯
+**Title:** THE CHECKLIST HAS NO EMPTY BOXES
+
+**Body:**
+Congratulations!
+
+Every medallion in this level has been collected.
+
+The checklist is complete.
+
+Every box is checked.
+
+This has produced an unfamiliar sensation within the organization known as **closure.**
+
+Several employees initially mistook it for a system outage.
+
+**Dr. Marion Wayne** has submitted the completed list for approval.
+
+It was returned because the approver wanted to know why there were no comments.
+
+The explanation **"because everything is done"** has been deemed insufficiently detailed.
+
+Please provide comments confirming that no comments are required.
+
+**Reward:** One imaginary clipboard full of checkmarks, a flawless level completion record, and proof that even perfection can generate a follow-up email.
+
+---
+
+## 📝 DESIGNED: Minimalist (4 flavor variants)
+
+**Trigger:** Finish a level collecting ZERO medallions.
+**Frequency:** Once per session (per-level).
+**Badge:** 🪶 (same badge for all 4 variants)
+**Behavior:** When earned, the game randomly displays ONE of the 4 variants below.
+
+The on-screen header for all of them is: **NEW ACHIEVEMENT UNLOCKED!**
+
+---
+
+### Variant 1
+**Badge:** 🪶
+**Title:** STRATEGIC NON-ACQUISITION
+
+**Body:**
+Congratulations!
+
+You completed an entire level without collecting a single medallion.
+
+Zero assets acquired.
+
+Zero inventory growth.
+
+Zero temptation acknowledged.
+
+Procurement has reviewed your performance and declared it **"exceptionally cost-conscious."**
+
+This is generous.
+
+You mostly just walked past everything shiny.
+
+**Dr. Marion Wayne** has demonstrated a bold new operational strategy known as:
+
+**Not Picking Stuff Up.**
+
+Finance loves it.
+
+Records Management loves it even more because nothing new needs cataloged.
+
+The medallions themselves appear hurt.
+
+**Reward:** One imaginary empty folder, a zero-dollar acquisition report, and the rare satisfaction of completing a mission without bringing home additional clutter.
+
+---
+
+### Variant 2
+**Badge:** 🪶
+**Title:** NOTHING TO DECLARE
+
+**Body:**
+Congratulations!
+
+You reached the end of the level carrying absolutely nothing you did not start with.
+
+The customs officer looked at your inventory.
+
+Then at you.
+
+Then back at the inventory.
+
+**"Nothing to declare?"**
+
+Correct.
+
+You passed every medallion without touching one.
+
+Not accidentally.
+
+Not even the easy one sitting directly in your path like it wanted attention.
+
+**Dr. Marion Wayne** has been cleared through Medallion Customs in record time.
+
+The officer seems disappointed.
+
+He had already opened the inspection form.
+
+**Reward:** One imaginary blank declaration card, an empty collection ledger, and the knowledge that for once nobody can accuse you of taking office property home.
+
+---
+
+### Variant 3
+**Badge:** 🪶
+**Title:** ZERO ASSET EXPOSURE
+
+**Body:**
+Congratulations!
+
+You completed the level with **0 medallions acquired.**
+
+Risk Management is thrilled.
+
+You cannot lose assets you never possess.
+
+You cannot misplace them.
+
+You cannot fail to inventory them.
+
+You cannot receive an email asking why Asset #M-17 is showing in two locations.
+
+This may be the safest strategy anyone has ever developed.
+
+**Dr. Marion Wayne** simply passed every collectible and allowed someone else to worry about custody.
+
+The Asset Accountability Office has called this **"cowardly but administratively elegant."**
+
+**Reward:** One imaginary zero-risk asset register, no chain-of-custody paperwork, and complete freedom from knowing where any of those medallions are now.
+
+---
+
+### Variant 4
+**Badge:** 🪶
+**Title:** MINIMUM VIABLE PARTICIPATION
+
+**Body:**
+Congratulations!
+
+You finished the level while collecting absolutely nothing.
+
+You arrived.
+
+You traversed the required environment.
+
+You reached the objective.
+
+You did not volunteer for anything extra.
+
+This is perhaps the purest expression of scope discipline ever recorded.
+
+A supervisor asked why you ignored every medallion.
+
+**Dr. Marion Wayne** replied:
+
+**"Was it in the performance standard?"**
+
+The supervisor checked.
+
+It was not.
+
+The conversation ended immediately.
+
+Somewhere, a federal employee felt a disturbance in the Force and smiled.
+
+**Reward:** One imaginary certificate for Meeting Minimum Requirements With Exceptional Precision and exactly zero additional duties assumed.
+
+---
+
+## 📝 DESIGNED: Overtime Hero (4 flavor variants)
+
+**Trigger:** Complete the bonus "Legacy Labyrinth" level.
+**Frequency:** On completion of the bonus level.
+**Badge:** 🌀 (same badge for all 4 variants)
+**Behavior:** When earned, the game randomly displays ONE of the 4 variants below.
+
+The on-screen header for all of them is: **NEW ACHIEVEMENT UNLOCKED!**
+
+---
+
+### Variant 1
+**Badge:** 🌀
+**Title:** LEGACY LABYRINTH: AFTER-HOURS ACCESS
+
+**Body:**
+Congratulations!
+
+You completed the **Legacy Labyrinth.**
+
+The bonus level.
+
+The part nobody actually required you to enter.
+
+The doors were confusing.
+
+The route made no sense.
+
+Several passages appeared to exist solely because removing them would require locating the original contract.
+
+In other words, it was a legacy system.
+
+**Dr. Marion Wayne** successfully navigated the entire thing without a map, migration plan, or the retired employee everyone swore used to understand it.
+
+IT would like documentation of the route.
+
+You did not take notes.
+
+The knowledge has already become tribal again.
+
+**Reward:** One imaginary after-hours access badge, completion of the Legacy Labyrinth, and the privilege of becoming the new person everyone calls when they get lost in it.
+
+---
+
+### Variant 2
+**Badge:** 🌀
+**Title:** YOU STAYED LATE FOR THIS?
+
+**Body:**
+Congratulations!
+
+The normal game was over.
+
+You could have stopped.
+
+You could have gone home.
+
+Instead, you entered the Legacy Labyrinth because apparently free time made you uncomfortable.
+
+Hours later, **Dr. Marion Wayne** emerged victorious, tired, and carrying the expression of someone who has just solved a problem that should never have existed.
+
+Management is impressed by your dedication.
+
+They would like to clarify that this does **not** constitute authorized overtime.
+
+Please adjust your timecard accordingly.
+
+**Reward:** One imaginary lukewarm break-room coffee, a completed bonus level, and heartfelt appreciation that cannot be converted into compensatory time.
+
+---
+
+### Variant 3
+**Badge:** 🌀
+**Title:** BONUS DUTY, NO BONUS PAY
+
+**Body:**
+Congratulations!
+
+You completed the Legacy Labyrinth.
+
+The word **"bonus"** may have created unreasonable expectations.
+
+There is no bonus pay.
+
+No special leave.
+
+No retention incentive.
+
+There is, however, another achievement popup.
+
+Finance has confirmed this is substantially cheaper.
+
+**Dr. Marion Wayne** navigated an optional maze of obsolete logic and questionable architecture entirely for the satisfaction of saying he did it.
+
+Leadership has classified this as **employee engagement.**
+
+Your union representative may classify it differently.
+
+**Reward:** One imaginary overtime voucher marked DENIED, bragging rights, and a bonus that consists exclusively of the word "bonus."
+
+---
+
+### Variant 4
+**Badge:** 🌀
+**Title:** THE HALLWAY THAT SHOULD NOT EXIST
+
+**Body:**
+Congratulations!
+
+You survived the Legacy Labyrinth.
+
+During your journey, you encountered corridors that connected to nothing, turns that appeared to violate planning principles, and at least one route that felt like it had been added in 2009 as a temporary workaround.
+
+It is still there.
+
+Facilities insists the hallway is not on the official floor plan.
+
+IT insists it belongs to Facilities.
+
+Facilities insists it is probably an IT hallway.
+
+**Dr. Marion Wayne** walked through it anyway and somehow reached the exit.
+
+A work order has been submitted to determine why the Labyrinth exists.
+
+Status: **Pending Assignment.**
+
+**Reward:** One imaginary ball of string, an unofficial map nobody will maintain, and the distinction of successfully navigating infrastructure that all responsible departments deny owning.
+
+---
+
+## 📝 DESIGNED: Extensive User Acceptance Testing (4 flavor variants)
+
+**Trigger:** Die 7+ times total in a session.
+**Frequency:** Once per session.
+**Badge:** 🧪 (same badge for all 4 variants)
+**Behavior:** Anti-achievement. When earned, the game randomly displays ONE of the 4 variants below.
+
+The on-screen header for all of them is: **NEW ACHIEVEMENT UNLOCKED!**
+
+---
+
+### Variant 1
+**Badge:** 🧪
+**Title:** EXTENSIVE USER ACCEPTANCE TESTING
+
+**Body:**
+Congratulations!
+
+You have died at least seven times this session.
+
+We could call this failure.
+
+But that is not how mature organizations speak.
+
+You have conducted **Extensive User Acceptance Testing.**
+
+Each death generated valuable information.
+
+For example:
+
+That pit works.
+
+That enemy works.
+
+Gravity remains fully operational.
+
+And **Dr. Marion Wayne** continues to be surprisingly vulnerable to all three.
+
+Quality Assurance appreciates your commitment to repeatedly validating features that had already been validated.
+
+No defects were found.
+
+In you, several were suspected.
+
+**Reward:** One imaginary test-completion certificate, seven or more confirmed functioning hazards, and permission to describe the entire session as "data collection."
+
+---
+
+### Variant 2
+**Badge:** 🧪
+**Title:** QUALITY ASSURANCE BY REPEATED IMPACT
+
+**Body:**
+Congratulations!
+
+You have now died enough times for the failures to qualify as a methodology.
+
+QA reviewed the evidence.
+
+Your testing protocol appears to be:
+
+1. Approach hazard.
+2. Make questionable decision.
+3. Experience consequence.
+4. Repeat for confidence.
+
+Traditional testers might stop after confirming the issue once.
+
+You demanded statistical certainty.
+
+**Dr. Marion Wayne** has personally verified that pits remain deep, enemies remain hostile, and restarting remains available.
+
+Your dedication to reproducibility is unmatched.
+
+Your dedication to survival is less impressive.
+
+**Reward:** One imaginary crash-test helmet, an extremely well-validated respawn system, and a QA report containing the phrase **"unable to reproduce because user eventually learned."**
+
+---
+
+### Variant 3
+**Badge:** 🧪
+**Title:** SEVEN FAILURES, ONE DELIVERABLE
+
+**Body:**
+Congratulations!
+
+You died seven or more times and still kept going.
+
+Project Management has chosen to focus on the second half of that sentence.
+
+The first six deaths were classified as **developmental iterations.**
+
+The seventh triggered governance review.
+
+A manager asked whether lessons had been learned.
+
+**Dr. Marion Wayne** confidently said yes.
+
+The next death occurred approximately forty seconds later.
+
+The minutes have been amended to read:
+
+**"Lessons identified."**
+
+This is different from lessons learned and considerably easier to defend.
+
+**Reward:** One imaginary lessons-learned document containing no actual lessons, continued access to the retry button, and recognition for delivering results despite aggressively testing the definition of progress.
+
+---
+
+### Variant 4
+**Badge:** 🧪
+**Title:** WORKING AS INTENDED (PROBABLY)
+
+**Body:**
+Congratulations!
+
+After seven or more deaths, IT has completed its investigation.
+
+The game is working.
+
+The controls are working.
+
+The enemies are working.
+
+The pits are definitely working.
+
+Attention has therefore shifted to the remaining variable:
+
+**You.**
+
+**Dr. Marion Wayne** requested escalation.
+
+Tier 2 support watched the replay and quietly closed the ticket with the resolution code:
+
+**USER TRAINING.**
+
+You reopened it.
+
+They closed it again.
+
+You died during the argument.
+
+The ticket remains closed.
+
+**Reward:** One imaginary support ticket marked RESOLVED, a fully functional death counter, and the comforting assurance that the system has been thoroughly tested by the least predictable component available.
+
+---
+
 **Open items to finish these:**
-1. Write BADGE/TITLE/BODY/REWARD text for the remaining designed achievements.
-2. Set the Speedrun target time (time a clean run first).
-3. Have Claude build the detection + screens (can be built with placeholder text first).
+1. Set the Speedrun target time by timing a clean Levels 1–6 run.
+2. Build the detection logic and achievement screens for all designed achievements (placeholder text is no longer needed).
