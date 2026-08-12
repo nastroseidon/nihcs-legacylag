@@ -301,14 +301,14 @@ You completed an entire level while hopping nonstop, forcing Dr. Marion Wayne to
 
 ## 📝 DESIGNED (not yet coded) — need flavor text + build
 
-These have agreed-upon detection rules but are NOT yet coded. Pacifist, No-Death Run, and Completionist now have completed flavor text; the remaining achievements still need theirs.
+These have agreed-upon detection rules but are NOT yet coded. Pacifist, No-Death Run, Completionist, and Stomp Specialist now have completed flavor text; the remaining achievements still need theirs.
 
 | Achievement | Rule | Notes |
 |---|---|---|
 | **Pacifist** | Finish Levels 1–6 stomping ZERO enemies | Full run from Level 1 only; flavor text complete |
 | **No-Death Run** | Finish Levels 1–6 with ZERO deaths | Full run from Level 1 only; flavor text complete |
 | **Completionist "100% Data Recovery"** | Collect EVERY medallion across all 6 levels | Full run; flavor text complete |
-| **Stomp Specialist "Aggressive Prioritization"** | Stomp EVERY enemy across Levels 1–6 | Full run; opposite of Pacifist |
+| **Stomp Specialist "Aggressive Prioritization"** | Stomp EVERY enemy across Levels 1–6 | Full run; opposite of Pacifist; flavor text complete |
 | **Janitor** | EVERY enemy stomped AND EVERY medallion collected, Levels 1–6 | Also grants Completionist + Stomp Specialist |
 | **Speedrun "Ahead of Schedule (For Once)"** | Finish Levels 1–6 under a target time | ⚠️ Target time NOT set — needs a timed run |
 | **Perfectionist "No Coin Left Behind"** | Collect 100% of a SINGLE level's medallions | Once per session (per-level) |
@@ -1028,6 +1028,330 @@ There will be no escape.
 **Reward:** One imaginary paperclip attachment icon, permanent membership in the unofficial Lost File Recovery Team, and a lifetime subscription to emails beginning with **"Quick question..."**
 
 There is never a quick question.
+
+---
+
+## 📝 DESIGNED: Stomp Specialist "Aggressive Prioritization" (4 flavor variants)
+
+**Trigger:** Stomp EVERY enemy across Levels 1–6.
+**Frequency:** Full run from Level 1 only.
+**Badge:** 👢 (same badge for all 4 variants)
+**Behavior:** When earned, the game randomly displays ONE of the 4 variants below.
+
+The on-screen header for all of them is: **NEW ACHIEVEMENT UNLOCKED!**
+
+---
+
+### Variant 1
+**Badge:** 👢
+**Title:** AGGRESSIVE PRIORITIZATION: BACKLOG ELIMINATED
+
+**Body:**
+Congratulations!
+
+You stomped **every enemy across all six levels.**
+
+Every.
+
+Single.
+
+One.
+
+There are no remaining hostiles.
+
+No unresolved threats.
+
+No carryover items.
+
+No pending action plans.
+
+The Enemy Management Dashboard is completely empty.
+
+Management has never seen anything like it.
+
+They are both impressed and increasingly concerned about what you believe the word **"management"** means.
+
+At the beginning of this initiative, leadership asked **Dr. Marion Wayne** to:
+
+**"Identify barriers and aggressively drive them down."**
+
+This was corporate language.
+
+They meant process improvement.
+
+Maybe a workflow review.
+
+Possibly a Lean event.
+
+At most, somebody expected a fishbone diagram.
+
+You interpreted the instruction **literally.**
+
+Six levels later, there are no barriers.
+
+Mostly because you jumped on all of them.
+
+The Post-Implementation Review has already begun.
+
+**QUESTION 1: Were all identified threats successfully addressed?**
+
+Yes.
+
+**QUESTION 2: Were alternative mitigation strategies considered?**
+
+Technically.
+
+**QUESTION 3: For how long?**
+
+Approximately zero seconds.
+
+**QUESTION 4: Could some of these encounters have been avoided entirely?**
+
+Absolutely.
+
+**QUESTION 5: Why weren't they?**
+
+Because apparently **Dr. Marion Wayne had metrics to hit.**
+
+The review board then discovered something even more disturbing.
+
+You did not merely stomp every enemy you happened to encounter.
+
+You **looked for the ones you missed.**
+
+You went back.
+
+You checked corners.
+
+You investigated suspicious platforms.
+
+You actively sought out creatures that had successfully avoided you and introduced them to the bottom of Dr. Wayne's shoes.
+
+This has caused Legal to recommend that the phrase **"Aggressive Prioritization"** never again appear in an official performance plan.
+
+Human Resources has proposed replacing it with:
+
+**"100% Hostile Stakeholder Resolution."**
+
+Legal rejected that too.
+
+Risk Management suggested:
+
+**"Comprehensive Environmental Deconfliction."**
+
+Nobody knows what that means, so it has been provisionally approved.
+
+Meanwhile, senior leadership has reviewed your results and made the worst possible decision:
+
+They are impressed.
+
+A PowerPoint presentation is already being developed.
+
+The working title is:
+
+**"Doing More With Less: Lessons From Dr. Marion Wayne."**
+
+Slide 7 contains a picture of a boot.
+
+Slide 8 says **ACCOUNTABILITY** for no apparent reason.
+
+Slide 9 contains an upward-trending arrow despite there being no numerical data whatsoever.
+
+You have become a best practice.
+
+May God have mercy on everyone.
+
+**Reward:** One imaginary steel-toed performance award, a completely empty enemy backlog, and permanent recognition as the employee who was told to **"remove obstacles"** and somehow made everyone regret not being more specific.
+
+---
+
+### Variant 2
+**Badge:** 👢
+**Title:** NO OPEN ACTION ITEMS
+
+**Body:**
+Congratulations!
+
+You stomped every enemy across Levels 1–6.
+
+The action-item tracker is empty.
+
+Completely empty.
+
+There are no overdue items.
+
+No yellow items.
+
+No red items.
+
+No mysterious items assigned to someone who left the organization three years ago.
+
+This should be cause for celebration.
+
+Instead, the Program Management Office has launched an investigation.
+
+They have never seen a tracker with nothing on it before and initially assumed the spreadsheet had failed to load.
+
+IT confirmed the spreadsheet is functioning normally.
+
+That made things worse.
+
+A review of your methodology determined that **Dr. Marion Wayne** personally engaged every outstanding hostile and applied the same corrective action:
+
+**Stomp.**
+
+The PMO asked whether issues were categorized by severity before remediation.
+
+No.
+
+Whether root-cause analysis was performed.
+
+No.
+
+Whether stakeholders were consulted.
+
+Some of them made noises.
+
+That has been entered into the minutes as **"limited stakeholder feedback."**
+
+The committee then noticed that several enemies had been well outside the normal travel path.
+
+Meaning you did not merely close the action items assigned to you.
+
+You searched for additional action items.
+
+Nobody does that.
+
+The PMO is now worried you may discover their other trackers.
+
+**Dr. Marion Wayne** has been instructed to take the rest of the day off before he starts resolving things that leadership was hoping would quietly roll into next quarter.
+
+**Reward:** One pristine imaginary action-item log showing ZERO OPEN ITEMS, a ceremonial green status indicator, and the privilege of watching management immediately create four new action items to determine how you closed the old ones.
+
+---
+
+### Variant 3
+**Badge:** 👢
+**Title:** PROCESS IMPROVEMENT, BUT WITH BOOTS
+
+**Body:**
+Congratulations!
+
+You eliminated every enemy across all six levels.
+
+A Lean process-improvement team has reviewed your run.
+
+They have concerns.
+
+The assignment was to identify waste, remove unnecessary barriers, and improve flow.
+
+You heard the words **"remove unnecessary barriers."**
+
+Everything after that appears to have been drowned out by stomping noises.
+
+The team arrived with sticky notes, process maps, stopwatches, and enough dry-erase markers to survive a minor institutional collapse.
+
+You arrived with shoes.
+
+Somehow, your method was faster.
+
+The analysts documented several forms of waste traditionally recognized in process improvement:
+
+Waiting.
+
+Excess motion.
+
+Defects.
+
+Overprocessing.
+
+And now, apparently:
+
+**Enemies.**
+
+One certified Black Belt objected that enemies are not an officially recognized category of operational waste.
+
+Then an enemy walked into him.
+
+The objection was withdrawn.
+
+**Dr. Marion Wayne** has since achieved perfect enemy-removal throughput with a standardized work instruction consisting entirely of:
+
+1. Locate problem.
+2. Gain altitude.
+3. Apply footwear.
+4. Continue mission.
+
+Leadership has requested that this process be scaled across the enterprise.
+
+The Lean team has strongly recommended against this.
+
+Leadership has scheduled a meeting to discuss their lack of innovation.
+
+**Reward:** One imaginary process-improvement certificate with a boot print across the signature line, a current-state map containing absolutely no enemies, and the dangerous organizational reputation of being someone who actually eliminates the problems identified during workshops.
+
+---
+
+### Variant 4
+**Badge:** 👢
+**Title:** FULL-CONTACT STAKEHOLDER ENGAGEMENT
+
+**Body:**
+Congratulations!
+
+You achieved a **100% stakeholder engagement rate.**
+
+Unfortunately, Legal would like to discuss your definition of engagement.
+
+You stomped every enemy across Levels 1–6.
+
+Nobody was overlooked.
+
+Nobody was skipped.
+
+Nobody successfully hid behind scenery and waited for you to leave.
+
+You made contact with **everyone.**
+
+The Stakeholder Engagement Office initially celebrated when the dashboard reached 100%.
+
+There were balloons.
+
+Someone ordered cupcakes.
+
+Then they reviewed the methodology.
+
+The balloons were removed.
+
+The cupcakes remained because they were nonrefundable.
+
+According to the engagement plan, **Dr. Marion Wayne** was expected to identify affected parties, establish communication channels, solicit feedback, and document outcomes.
+
+You completed one of those four steps with extraordinary consistency.
+
+The documented outcome for every hostile stakeholder is simply:
+
+**"Resolved."**
+
+A compliance reviewer asked for additional detail.
+
+The revised entry reads:
+
+**"Resolved vertically."**
+
+This did not help.
+
+More troublingly, your stakeholder map shows that several enemies required deliberate backtracking to reach.
+
+In other words, some stakeholders made every reasonable effort not to engage with you.
+
+You engaged them anyway.
+
+Communications has asked that you never represent the organization at a town hall.
+
+**Dr. Marion Wayne** considers this an unexpected secondary reward.
+
+**Reward:** One imaginary stakeholder matrix consisting entirely of green checkmarks, a 100% contact rate that nobody is permitted to cite publicly, and a leftover cupcake from the celebration that ended the moment Legal opened the methodology tab.
 
 ---
 
