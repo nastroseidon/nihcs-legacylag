@@ -240,10 +240,6 @@ const LEVELS=[
  { name:'Super User Training', bg:'bg3', goal:'goal3', climb:false, worldW:4300, start:[80,GROUND-72],
    ground:[[0,700],[900,600],[1650,600],[2400,700],[3300,1000]],
    plats:[[600,380,150],[1200,520,150],[1550,360,150],[2000,500,150],[2350,340,160],[2800,500,150],[3150,360,160],[3600,480,160],[3950,340,160]],
-   // Spans the third pit (2250-2400), halfway between the platform before it at
-   // y=500 and the one after at y=340. Without it the only way across is a jump
-   // that lands inside the third bot's patrol, so Pacifist was unwinnable here.
-   phase:[[2250,420,150]],
    spikes:[[1350,GROUND],[2550,GROUND],[3450,GROUND]],
    coins:[[350,560],[650,330],[1250,470],[1600,310],[2050,450],[2400,290],[2850,450],[3200,310],[3700,430],[4000,290]],
    // The bot that used to patrol 2400-2540 is gone: it sat in the only landing
