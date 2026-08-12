@@ -301,12 +301,12 @@ You completed an entire level while hopping nonstop, forcing Dr. Marion Wayne to
 
 ## 📝 DESIGNED (not yet coded) — need flavor text + build
 
-These have agreed-upon detection rules but are NOT yet coded. Pacifist now has completed flavor text; the remaining achievements still need theirs.
+These have agreed-upon detection rules but are NOT yet coded. Pacifist and No-Death Run now have completed flavor text; the remaining achievements still need theirs.
 
 | Achievement | Rule | Notes |
 |---|---|---|
 | **Pacifist** | Finish Levels 1–6 stomping ZERO enemies | Full run from Level 1 only; flavor text complete |
-| **No-Death Run** | Finish Levels 1–6 with ZERO deaths | Full run from Level 1 only |
+| **No-Death Run** | Finish Levels 1–6 with ZERO deaths | Full run from Level 1 only; flavor text complete |
 | **Completionist "100% Data Recovery"** | Collect EVERY medallion across all 6 levels | Full run |
 | **Stomp Specialist "Aggressive Prioritization"** | Stomp EVERY enemy across Levels 1–6 | Full run; opposite of Pacifist |
 | **Janitor** | EVERY enemy stomped AND EVERY medallion collected, Levels 1–6 | Also grants Completionist + Stomp Specialist |
@@ -524,6 +524,249 @@ IT has confirmed that it was.
 **Reward:** One spotless disciplinary record, an imaginary plaque reading "Employee Retention Champion," and a 0.00% reduction in your actual workload.
 
 Congratulations on achieving excellence without receiving anything useful in return.
+
+---
+
+## 📝 DESIGNED: No-Death Run (4 flavor variants)
+
+**Trigger:** Finish Levels 1–6 with ZERO deaths.
+**Frequency:** Full run from Level 1 only.
+**Badge:** 💀 (same badge for all 4 variants)
+**Behavior:** When earned, the game randomly displays ONE of the 4 variants below.
+
+The on-screen header for all of them is: **NEW ACHIEVEMENT UNLOCKED!**
+
+---
+
+### Variant 1
+**Badge:** 💀
+**Title:** SUSPICIOUSLY ALIVE
+
+**Body:**
+Congratulations!
+
+You completed Levels 1–6 without dying.
+
+Not once.
+
+This is statistically inconvenient.
+
+The game has pits.
+
+Enemies.
+
+Bad decisions.
+
+Questionable collision detection.
+
+And several architectural features that appear to have been designed by someone who considered guardrails a sign of weakness.
+
+Yet somehow, **Dr. Marion Wayne remains alive.**
+
+The Office of Expected Casualties has reviewed your run and determined that your survival falls well outside normal operating parameters.
+
+An investigation has been opened.
+
+Current theories include:
+
+Exceptional skill.
+
+Unusually cautious decision-making.
+
+A clerical error.
+
+Divine intervention.
+
+Or the possibility that you simply refused to die because doing so would require completing additional paperwork.
+
+That final theory currently has the most support.
+
+The Mortality Review Committee has requested access to your save file.
+
+Their request was denied after Legal discovered that the committee itself had no documented authority, no approved charter, and apparently no reason to exist beyond occupying Conference Room B every other Thursday.
+
+**Dr. Marion Wayne** has been advised not to celebrate prematurely.
+
+He has ignored this advice.
+
+He is currently informing anyone within hearing distance that he has completed six consecutive hostile environments without becoming a workplace statistic.
+
+Risk Management has asked him to stop phrasing it that way.
+
+He has also ignored this advice.
+
+**Reward:** One completely unused emergency contact form, a pristine imaginary body bag that can now be returned to inventory, and the deeply uncomfortable realization that the game has been keeping track of how often you die this entire time.
+
+---
+
+### Variant 2
+**Badge:** 💀
+**Title:** MORTALITY RATE: 0.00%
+
+**Body:**
+Congratulations!
+
+You completed Levels 1–6 without dying.
+
+The actuarial department has been notified.
+
+They are furious.
+
+Your continued survival has invalidated three projections, two risk models, and one extremely confident PowerPoint presentation titled:
+
+**"Why Dr. Marion Wayne Will Absolutely Not Make It."**
+
+The presentation contained charts.
+
+There were arrows.
+
+One slide simply said **"THE PIT"** in 44-point font.
+
+You have made all of it useless.
+
+An emergency statistical review determined that you encountered enough hostile creatures, environmental hazards, questionable jumps, and poorly placed edges to produce an expected casualty rate described by analysts as:
+
+**"Well... more than zero."**
+
+Instead, you survived.
+
+Every level.
+
+Every hazard.
+
+Every opportunity to convert a minor mistake into a dramatic restart.
+
+The Chief Actuary has accused you of manipulating the data.
+
+IT checked.
+
+You did not.
+
+He has now accused reality of manipulating the data.
+
+That investigation is ongoing.
+
+**Dr. Marion Wayne** has responded to his newly calculated 100% survival rate by requesting a reduction in his life insurance premiums.
+
+The request was denied.
+
+Apparently, "being very good at platformers" is not currently recognized as a protected actuarial category.
+
+**Reward:** One commemorative pie chart showing absolutely nothing in the "Deaths" category, an imaginary 0% mortality ribbon, and the satisfaction of personally ruining someone's quarterly risk forecast.
+
+---
+
+### Variant 3
+**Badge:** 💀
+**Title:** RETURN TO SENDER
+
+**Body:**
+Congratulations!
+
+Death came looking for **Dr. Marion Wayne.**
+
+Repeatedly.
+
+It had the correct address.
+
+It had identification.
+
+It had all the required forms.
+
+It even scheduled an appointment.
+
+You were not available.
+
+You completed Levels 1–6 without dying a single time.
+
+As a result, the Department of Final Outcomes has been forced to return your file marked:
+
+**"UNDELIVERABLE."**
+
+This has created a significant administrative backlog.
+
+Death would like everyone to understand that this is not a failure of service.
+
+According to the official incident report, you repeatedly avoided pits, enemies, collisions, and several opportunities that were considered **"basically guaranteed."**
+
+One field agent wrote:
+
+"He just jumped over it."
+
+Another wrote:
+
+"Again."
+
+A third simply attached a resignation letter.
+
+**Dr. Marion Wayne** has requested that his case be permanently closed.
+
+The request was denied because, according to department policy, everyone eventually becomes eligible.
+
+He has asked to appeal.
+
+Legal has strongly advised him not to antagonize the concept of mortality.
+
+He has filed the appeal anyway.
+
+**Reward:** One imaginary envelope stamped RETURN TO SENDER, temporary removal from Death's active workload, and the comforting knowledge that somewhere, a supernatural bureaucracy has your file sitting in the wrong tray.
+
+---
+
+### Variant 4
+**Badge:** 💀
+**Title:** INCIDENT REPORT NOT REQUIRED
+
+**Body:**
+Congratulations!
+
+For the first time in recorded organizational history, nobody needs to fill out Form 27-B:
+
+**"Unexpected Employee Death During Routine Mascot Operations."**
+
+You completed Levels 1–6 without dying.
+
+This may not sound impressive until you understand what normally happens after an incident.
+
+First, the supervisor must be notified.
+
+Then Safety.
+
+Then Risk Management.
+
+Then Human Resources.
+
+Then someone asks whether the employee was wearing the appropriate footwear.
+
+Then twelve people attend a meeting that could have been an email.
+
+Then the email gets sent anyway.
+
+By staying alive, you prevented all of this.
+
+Productivity across the organization increased by an estimated 3.7%.
+
+Nobody knows what to do with the extra time.
+
+One manager has already scheduled a meeting to discuss it.
+
+Safety reviewed your run and confirmed that **Dr. Marion Wayne** successfully avoided all fatal hazards despite receiving absolutely no additional protective equipment, hazard pay, or meaningful institutional support.
+
+This has been classified as:
+
+**"A personal achievement and therefore not budget-relevant."**
+
+Finance is very pleased with this determination.
+
+**Dr. Marion Wayne** has requested that the unused incident-report packet be shredded.
+
+Records Management denied the request.
+
+It must be retained for seven years.
+
+Just in case.
+
+**Reward:** One untouched stack of mandatory forms, zero post-incident meetings, and the rare privilege of costing the organization absolutely nothing in preventable death-related administrative labor.
 
 ---
 
