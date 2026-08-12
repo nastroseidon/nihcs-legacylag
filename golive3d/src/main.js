@@ -79,7 +79,10 @@ addEventListener('message', e => {
     }
     return;
   }
+  // the speaker toggle lives in the host, and drives this document too
+  if (d.type === 'mute') { audio.setMuted(d.muted); return; }
   if (d.type !== 'begin') return;
+  if (typeof d.muted === 'boolean') audio.setMuted(d.muted);
   carriedScore = parseInt(d.score, 10) || 0;
   startLives = Math.max(1, parseInt(d.lives, 10) || 3);
   newGame();

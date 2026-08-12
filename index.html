@@ -12,6 +12,24 @@
   #hud{position:absolute;top:10px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:center;
        color:#fff;font-weight:700;font-size:clamp(13px,2.2vw,20px);text-shadow:0 2px 4px rgba(0,0,0,.7);pointer-events:none;}
   #levelTxt{font-size:clamp(12px,2vw,18px);opacity:.95;}
+  /* Sound toggle. Sits above every screen (fader aside) so it is reachable from
+     the menu, mid-level, and over the achievement and victory screens alike. */
+  #soundBtn{position:absolute;top:46px;right:14px;z-index:9;
+            width:clamp(30px,4.4vw,40px);height:clamp(30px,4.4vw,40px);padding:5px;
+            border:none;background:rgba(6,14,8,.42);border-radius:8px;cursor:pointer;
+            display:flex;align-items:center;justify-content:center;
+            filter:drop-shadow(0 2px 4px rgba(0,0,0,.8));transition:background .12s ease;}
+  #soundBtn:hover{background:rgba(6,14,8,.7);}
+  #soundBtn:focus-visible{outline:2px solid #ffd54a;outline-offset:2px;}
+  #soundBtn svg{width:100%;height:100%;display:block;}
+  #soundBtn .cone{fill:#fff;}
+  #soundBtn .wave{fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;}
+  #soundBtn .slash{stroke:#ff7a6b;stroke-width:2.4;stroke-linecap:round;display:none;}
+  #soundBtn.muted .cone{fill:#c9cfe0;}
+  #soundBtn.muted .wave{display:none;}
+  #soundBtn.muted .slash{display:block;}
+  #soundBtn:hover .cone{fill:#ffd54a;}
+  #soundBtn:hover .wave{stroke:#ffd54a;}
   #overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
            background:rgba(10,25,12,.85);color:#fff;text-align:center;padding:20px;cursor:pointer;}
   #overlay h1{font-size:clamp(20px,4vw,40px);margin:.2em 0;color:#ffd54a;text-shadow:0 3px 6px rgba(0,0,0,.8);line-height:1.2;}
@@ -105,6 +123,14 @@
       <span id="levelTxt"></span>
       <span id="livesTxt">Lives: 3</span>
     </div>
+    <button id="soundBtn" type="button" title="Sound on/off (M)" aria-label="Mute sound" aria-pressed="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path class="cone" d="M4 9.3h3.4L12 5v14l-4.6-4.3H4z"/>
+        <path class="wave" d="M15.1 9.3a3.9 3.9 0 0 1 0 5.4"/>
+        <path class="wave" d="M17.5 6.9a7.4 7.4 0 0 1 0 10.2"/>
+        <line class="slash" x1="4.2" y1="19.8" x2="19.8" y2="4.2"/>
+      </svg>
+    </button>
     <div id="touch">
       <div class="side">
         <div class="tbtn" data-k="left">&#9664;</div>
@@ -594,11 +620,22 @@ function audioReady(){
   if(actx.state==='suspended'){ try{ actx.resume(); }catch(e){} }
   return true;
 }
+function syncSoundBtn(){
+  const b=document.getElementById('soundBtn'); if(!b)return;
+  b.classList.toggle('muted',muted);
+  b.setAttribute('aria-pressed',muted?'true':'false');
+  b.setAttribute('aria-label',muted?'Unmute sound':'Mute sound');
+}
 function toggleMute(){
   muted=!muted;
   try{ localStorage.setItem('dmw_mute',muted?'1':'0'); }catch(e){}
   if(actx){ try{ muted?actx.suspend():actx.resume(); }catch(e){} }
+  syncSoundBtn(); tellGoLiveMuted();
 }
+// The 3D Level 6 has its own audio in its own document, so the switch has to
+// travel to it. The host bridge replaces this; the offline build has no iframe
+// and leaves it as the no-op.
+let tellGoLiveMuted=function(){};
 function tone(type,freq,at,dur,peak,glideTo){
   const o=actx.createOscillator(), g=actx.createGain();
   o.type=type;
@@ -874,8 +911,13 @@ function preloadGoLive(){
   golivePreloaded=false; pendingBegin=null;
   golive3dFrame.src='golive3d/index.html?embed=1&preload=1';
 }
+tellGoLiveMuted=function(){
+  if(!goliveActive&&!golivePreloaded)return;
+  try{ golive3dFrame.contentWindow.postMessage(
+    {source:'golive3d-host',type:'mute',muted:muted},'*'); }catch(e){}
+};
 function beginGoLive(){
-  const msg={source:'golive3d-host',type:'begin',score:score,lives:lives};
+  const msg={source:'golive3d-host',type:'begin',score:score,lives:lives,muted:muted};
   if(golivePreloaded){ golive3dFrame.contentWindow.postMessage(msg,'*'); }
   else pendingBegin=msg;         // still loading; sent the moment it reports ready
 }
@@ -1170,6 +1212,12 @@ document.getElementById('achieveBtn').addEventListener('click',function(e){ e.st
   const nx=afterAchieve; afterAchieve=null;
   if(stateBeforeAchieve){ state=stateBeforeAchieve; stateBeforeAchieve=null; }
   if(nx)fadeTo(nx); });
+
+// blur after the click, or a focused button would swallow SPACE as "press me"
+// instead of letting it jump.
+document.getElementById('soundBtn').addEventListener('click',function(e){
+  e.stopPropagation(); toggleMute(); this.blur(); });
+syncSoundBtn();
 
 function overlayAction(){
   if(state==='start'||state==='won'){ fadeTo(function(){ score=0; resetRun(true); loadLevel(0); }); }

@@ -22,6 +22,7 @@ export function createAudio() {
 
   // node graph refs
   let master, comp, reverb, reverbGain, sfxBus, musicBus, analyser;
+  let muted = false;
   const stateBus = {};        // name -> GainNode (music crossfade buses)
   const stateOn = {};         // name -> target level (0/1)
   let prevState = null, prevStateDroppedAt = 0;
@@ -82,7 +83,7 @@ export function createAudio() {
     comp.threshold.value = -18; comp.knee.value = 20;
     comp.ratio.value = 5; comp.attack.value = 0.004; comp.release.value = 0.22;
 
-    master = ctx.createGain(); master.gain.value = 0.9;
+    master = ctx.createGain(); master.gain.value = muted ? 0 : 0.9;
     analyser = ctx.createAnalyser(); analyser.fftSize = 2048;
 
     comp.connect(master); master.connect(analyser); analyser.connect(ctx.destination);
@@ -509,6 +510,12 @@ export function createAudio() {
         if (musicState === 'explore' && threatTicks >= 30) api.setMusic('danger');
         else if (musicState === 'danger' && calmTicks >= 120 && !revertAt) api.setMusic('explore');
       }
+    },
+    // Host mute. The 2D game owns the speaker toggle and forwards the state in,
+    // so one switch covers both documents.
+    setMuted(on) {
+      muted = !!on;
+      if (master) master.gain.value = muted ? 0 : 0.9;
     },
     // debug/verification hooks (not part of the game contract)
     _debug() {
