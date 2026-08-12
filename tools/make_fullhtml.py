@@ -64,7 +64,7 @@ edits += 1
 
 cut('function leaveGoLive(){ if(goliveActive||golivePreloaded||pendingBegin)stop3DGoLive(); }\n',
     '', 'leaveGoLive')
-cut('  leaveGoLive();\n', '', 'leaveGoLive call in goMain')
+cut('  leaveGoLive(); stopMusic();\n', '  stopMusic();\n', 'leaveGoLive call in goMain')
 
 
 # --------------------------------------------------------- scanner mechanic
@@ -153,6 +153,19 @@ cut("Move: A / D or Arrows&nbsp;&nbsp;&middot;&nbsp;&nbsp;Jump: SPACE / W / Up"
     "&nbsp;&nbsp;&middot;&nbsp;&nbsp;Scanner: E&nbsp;&nbsp;&middot;&nbsp;&nbsp;Mute: M"
     "&nbsp;&nbsp;&middot;&nbsp;&nbsp;Pause: ESC",
     'controls hint')
+
+
+# ------------------------------------------------------------ level 6 music
+# Level 6 here is an ordinary canvas level rather than the 3D stage, so it has no
+# music of its own and takes the same bed as the levels either side of it.
+cut("""// Two looping beds, scheduled a quarter-second ahead of the audio clock so the
+// loop joins without a seam. Level 6 in this build is the 3D stage, which brings
+// its own music, so the host plays nothing there.
+const LEVEL_MUSIC=['cavern','cavern','cavern','legacy','legacy',null,'legacy'];""",
+    """// Two looping beds, scheduled a quarter-second ahead of the audio clock so the
+// loop joins without a seam.
+const LEVEL_MUSIC=['cavern','cavern','cavern','legacy','legacy','legacy','legacy'];""",
+    'level music map')
 
 
 # -------------------------------------------------- high scores come out

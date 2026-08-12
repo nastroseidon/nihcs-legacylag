@@ -30,6 +30,21 @@
   #soundBtn.muted .slash{display:block;}
   #soundBtn:hover .cone{fill:#ffd54a;}
   #soundBtn:hover .wave{stroke:#ffd54a;}
+  /* Sound settings. Sits on top of whatever opened it -- the menu or the pause
+     screen -- so neither has to be torn down and put back. */
+  #audio{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;
+         align-items:center;justify-content:center;background:rgba(6,14,8,.94);
+         color:#fff;padding:20px;box-sizing:border-box;}
+  #audio h2{color:#ffd54a;font-size:clamp(20px,4.4vw,34px);margin:0 0 6px;
+            text-shadow:0 3px 6px rgba(0,0,0,.8);}
+  #audio .sub{font-size:clamp(11px,2vw,14px);opacity:.7;margin:0 0 20px;letter-spacing:1px;}
+  #mix{width:min(94%,440px);display:flex;flex-direction:column;gap:16px;margin-bottom:22px;}
+  .mixRow{display:grid;grid-template-columns:1fr 4ch;gap:4px 12px;align-items:center;}
+  .mixRow label{font-size:clamp(12px,2.2vw,16px);font-weight:700;letter-spacing:1px;}
+  .mixRow output{font-size:clamp(12px,2.2vw,16px);color:#ffd54a;font-weight:800;
+                 text-align:right;font-variant-numeric:tabular-nums;}
+  .mixRow input{grid-column:1/3;width:100%;accent-color:#ffd54a;height:22px;cursor:pointer;}
+  .mixRow.off label,.mixRow.off output{opacity:.45;}
   #overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
            background:rgba(10,25,12,.85);color:#fff;text-align:center;padding:20px;cursor:pointer;}
   #overlay h1{font-size:clamp(20px,4vw,40px);margin:.2em 0;color:#ffd54a;text-shadow:0 3px 6px rgba(0,0,0,.8);line-height:1.2;}
@@ -150,6 +165,7 @@
       </div>
       <div class="btn hidden" id="bonusBtn" style="background:#b98cff;box-shadow:0 4px 0 #7a52c0;color:#1a0e33;">BONUS: The Legacy Labyrinth</div>
       <div class="btn" id="scoresBtn" style="background:#7ad0ff;box-shadow:0 4px 0 #3f9fd0;color:#06263a;">High Scores</div>
+      <div class="btn" id="soundSettingsBtn" style="background:#b9c6e8;box-shadow:0 4px 0 #7d8bb0;color:#131c33;">Sound</div>
       <!-- Level select: shown once Go Live has been beaten, or via Shift+P. -->
       <div id="levelSelect" class="hidden">
         <div class="lsLabel">Choose a level</div>
@@ -169,6 +185,7 @@
       <h2>Paused</h2>
       <button class="pBtn" id="pResume">Resume</button>
       <button class="pBtn" id="pRestart">Restart Level</button>
+      <button class="pBtn" id="pSound">Sound</button>
       <button class="pBtn" id="pMain">Return to Main Screen</button>
     </div>
     <div id="victory" class="hidden">
@@ -210,6 +227,25 @@
         <div id="achieveReward"></div>
         <button class="pBtn" id="achieveBtn">Continue</button>
       </div>
+    </div>
+    <div id="audio" class="hidden">
+      <h2>Sound</h2>
+      <p class="sub">SETTINGS ARE REMEMBERED ON THIS DEVICE</p>
+      <div id="mix">
+        <div class="mixRow" id="mixAll">
+          <label for="volAll">All Sounds</label><output id="volAllOut">80%</output>
+          <input id="volAll" type="range" min="0" max="100" step="5" value="80">
+        </div>
+        <div class="mixRow" id="mixSfx">
+          <label for="volSfx">Effects</label><output id="volSfxOut">100%</output>
+          <input id="volSfx" type="range" min="0" max="100" step="5" value="100">
+        </div>
+        <div class="mixRow" id="mixMusic">
+          <label for="volMusic">Music</label><output id="volMusicOut">70%</output>
+          <input id="volMusic" type="range" min="0" max="100" step="5" value="70">
+        </div>
+      </div>
+      <button class="pBtn" id="audioBack">Back</button>
     </div>
     <!-- Level 6 "Go Live" runs as a 2.5D ThreeJS stage embedded here. It reports
          its result back by postMessage so the victory / game-over / bonus-unlock
@@ -601,36 +637,59 @@ function awardAtGoal(extra){
 // Browsers keep an AudioContext suspended until the page has had a real user
 // gesture, so the context is created on the first one; calls before that are
 // silent no-ops rather than errors. M toggles mute, and the choice sticks.
-let actx=null, sfxBus=null, hall=null, muted=false;
+// Graph: effects and music each get their own bus, both feeding a master the
+// three sliders control. Music passes through a duck stage that drops it under
+// the achievement screens so the fanfare is not fighting the level loop.
+let actx=null, masterBus=null, sfxBus=null, musicBus=null, musicDuck=null, hall=null;
+let muted=false, vol={all:0.80,sfx:1.00,music:0.70};
 try{ muted=localStorage.getItem('dmw_mute')==='1'; }catch(e){}
+try{ const v=JSON.parse(localStorage.getItem('dmw_vol')||'null');
+     if(v&&typeof v==='object'){ for(const k in vol) if(typeof v[k]==='number')vol[k]=Math.min(1,Math.max(0,v[k])); }
+}catch(e){}
+function saveVolumes(){ try{ localStorage.setItem('dmw_vol',JSON.stringify(vol)); }catch(e){} }
+function applyVolumes(){
+  if(!actx)return;
+  masterBus.gain.value=muted?0:vol.all;
+  sfxBus.gain.value=0.55*vol.sfx;      // effects run hotter than the bed
+  musicBus.gain.value=0.30*vol.music;
+}
 function audioReady(){
-  if(muted)return false;
+  if(muted||vol.all<=0)return false;
   if(!actx){
     const AC=window.AudioContext||window.webkitAudioContext;
     if(!AC)return false;
     try{ actx=new AC(); }catch(e){ actx=null; return false; }
-    sfxBus=actx.createGain(); sfxBus.gain.value=0.55; sfxBus.connect(actx.destination);
+    masterBus=actx.createGain(); masterBus.connect(actx.destination);
+    sfxBus=actx.createGain(); sfxBus.connect(masterBus);
+    musicDuck=actx.createGain(); musicDuck.gain.value=1; musicDuck.connect(masterBus);
+    musicBus=actx.createGain(); musicBus.connect(musicDuck);
     // a filtered feedback delay, so the brass has somewhere to ring
     hall=actx.createDelay(1.0); hall.delayTime.value=0.105;
     const fb=actx.createGain(); fb.gain.value=0.34;
     const lp=actx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=2800;
     const wet=actx.createGain(); wet.gain.value=0.30;
     hall.connect(fb); fb.connect(hall); hall.connect(lp); lp.connect(wet); wet.connect(sfxBus);
+    applyVolumes();
   }
   if(actx.state==='suspended'){ try{ actx.resume(); }catch(e){} }
   return true;
 }
+function silent(){ return muted||vol.all<=0; }
 function syncSoundBtn(){
   const b=document.getElementById('soundBtn'); if(!b)return;
-  b.classList.toggle('muted',muted);
-  b.setAttribute('aria-pressed',muted?'true':'false');
-  b.setAttribute('aria-label',muted?'Unmute sound':'Mute sound');
+  const off=silent();
+  b.classList.toggle('muted',off);
+  b.setAttribute('aria-pressed',off?'true':'false');
+  b.setAttribute('aria-label',off?'Unmute sound':'Mute sound');
 }
 function toggleMute(){
   muted=!muted;
+  // Unmuting with All Sounds at zero would leave the speaker looking live and
+  // sounding dead, so bring the master back to something audible.
+  if(!muted&&vol.all<=0){ vol.all=0.6; saveVolumes(); }
   try{ localStorage.setItem('dmw_mute',muted?'1':'0'); }catch(e){}
-  if(actx){ try{ muted?actx.suspend():actx.resume(); }catch(e){} }
-  syncSoundBtn(); tellGoLiveMuted();
+  applyVolumes(); refreshMusic();
+  syncSoundBtn(); syncAudioUI(); tellGoLiveMuted();
 }
 // The 3D Level 6 has its own audio in its own document, so the switch has to
 // travel to it. The host bridge replaces this; the offline build has no iframe
@@ -728,6 +787,112 @@ function sfx(name){
   if(!audioReady())return;
   const cue=SFX[name]; if(!cue)return;
   try{ cue(actx.currentTime+0.02); }catch(e){}
+}
+
+// ---- level music ----
+// Two looping beds, scheduled a quarter-second ahead of the audio clock so the
+// loop joins without a seam. Level 6 in this build is the 3D stage, which brings
+// its own music, so the host plays nothing there.
+const LEVEL_MUSIC=['cavern','cavern','cavern','legacy','legacy',null,'legacy'];
+function mtone(type,freq,at,dur,peak,cutoff){
+  const o=actx.createOscillator(), g=actx.createGain();
+  o.type=type; o.frequency.setValueAtTime(freq,at);
+  if(cutoff){
+    const f=actx.createBiquadFilter(); f.type='lowpass'; f.Q.value=1;
+    f.frequency.setValueAtTime(cutoff*2.2,at);
+    f.frequency.exponentialRampToValueAtTime(cutoff,at+dur*0.6);
+    o.connect(f); f.connect(g);
+  } else o.connect(g);
+  g.gain.setValueAtTime(0.0001,at);
+  g.gain.exponentialRampToValueAtTime(peak,at+0.015);
+  g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
+  g.connect(musicBus);
+  o.start(at); o.stop(at+dur+0.02);
+}
+function mpad(freqs,at,dur,peak){
+  for(const fr of freqs){
+    const o=actx.createOscillator(), g=actx.createGain(), f=actx.createBiquadFilter();
+    o.type='sawtooth'; o.frequency.value=fr; o.detune.value=Math.random()*10-5;
+    f.type='lowpass'; f.frequency.value=900; f.Q.value=0.7;
+    g.gain.setValueAtTime(0.0001,at);
+    g.gain.linearRampToValueAtTime(peak,at+dur*0.35);
+    g.gain.linearRampToValueAtTime(0.0001,at+dur);
+    o.connect(f); f.connect(g); g.connect(musicBus);
+    o.start(at); o.stop(at+dur+0.05);
+  }
+}
+function mdrum(at,peak,cutoff,dur){
+  const n=Math.floor(actx.sampleRate*dur), b=actx.createBuffer(1,n,actx.sampleRate), d=b.getChannelData(0);
+  for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  const s=actx.createBufferSource(); s.buffer=b;
+  const f=actx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=cutoff;
+  const g=actx.createGain();
+  g.gain.setValueAtTime(peak,at); g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
+  s.connect(f); f.connect(g); g.connect(musicBus);
+  s.start(at); s.stop(at+dur);
+}
+function mkick(at,peak){
+  const o=actx.createOscillator(), g=actx.createGain();
+  o.type='sine'; o.frequency.setValueAtTime(120,at);
+  o.frequency.exponentialRampToValueAtTime(42,at+0.09);
+  g.gain.setValueAtTime(peak,at); g.gain.exponentialRampToValueAtTime(0.0001,at+0.20);
+  o.connect(g); g.connect(musicBus); o.start(at); o.stop(at+0.22);
+}
+const CAVERN_BASS=[73.42,0,0,0,0,0,110.00,0,82.41,0,0,0,0,0,98.00,0];
+const LEGACY_CHORDS=[[220.00,261.63,329.63],[174.61,220.00,261.63],
+                     [196.00,246.94,293.66],[164.81,207.65,261.63]];
+const MUSIC={
+  // Levels 1-3: slow bass under a sparse bell figure, written to disappear
+  cavern:{bpm:92,steps:32,run:function(s,t){
+    const b=CAVERN_BASS[s%16]; if(b)mtone('triangle',b,t,0.62,0.16,420);
+    if(s===0||s===18)mtone('sine',587.33,t,1.10,0.055);
+    if(s===8)mtone('sine',698.46,t,0.90,0.045);
+    if(s===24)mtone('sine',880.00,t,1.30,0.040);
+    if(s===12||s===28)mtone('sine',440.00,t,0.70,0.030);
+  }},
+  // Levels 4 on: a four-chord arpeggio over a soft kick that never quite settles
+  legacy:{bpm:104,steps:32,run:function(s,t){
+    const ch=LEGACY_CHORDS[Math.floor(s/8)%4];
+    mtone('square',ch[s%3],t,0.16,0.045,1400);
+    if(s%8===0){ mtone('triangle',ch[0]/2,t,0.70,0.14,380); mkick(t,0.26); }
+    if(s%8===4)mdrum(t,0.055,4200,0.06);
+    if(s===0||s===16)mpad([ch[0]/2,ch[2]/2],t,2.0,0.030);
+  }}
+};
+let musicTimer=null, musicBed=null, musicStep=0, musicNext=0, wantBed=null;
+function musicPump(){
+  const bed=MUSIC[musicBed]; if(!bed||!actx)return;
+  const spb=60/bed.bpm/4;
+  // a backgrounded tab throttles the timer; resync rather than dump a burst of
+  // notes that are all already in the past
+  if(musicNext<actx.currentTime)musicNext=actx.currentTime+0.05;
+  while(musicNext<actx.currentTime+0.25){
+    try{ bed.run(musicStep%bed.steps,musicNext); }catch(e){}
+    musicStep++; musicNext+=spb;
+  }
+}
+function stopMusic(keepWanted){
+  if(musicTimer){ clearInterval(musicTimer); musicTimer=null; }
+  musicBed=null;
+  if(!keepWanted)wantBed=null;
+}
+function startMusic(name){
+  wantBed=name||null;
+  if(!wantBed){ stopMusic(); return; }
+  if(silent()||vol.music<=0){ stopMusic(true); return; }
+  if(!audioReady())return;
+  if(musicBed===wantBed&&musicTimer)return;      // already running this bed
+  stopMusic(true);
+  musicBed=wantBed; musicStep=0; musicNext=actx.currentTime+0.08;
+  musicTimer=setInterval(musicPump,60); musicPump();
+}
+// re-evaluate after a volume or mute change: start, stop or leave alone
+function refreshMusic(){ startMusic(wantBed); }
+function duckMusic(on){
+  if(!actx||!musicDuck)return;
+  const g=musicDuck.gain;
+  try{ g.cancelScheduledValues(actx.currentTime);
+       g.setTargetAtTime(on?0.28:1,actx.currentTime,0.08); }catch(e){ g.value=on?0.28:1; }
 }
 
 // ===== Bonus (LEVELS[6]) "The Legacy Labyrinth": 71-row tile map, single source of truth =====
@@ -882,6 +1047,7 @@ function loadLevel(i){
   // hideAllScreens rather than naming screens one by one, so a screen added
   // later can never be left covering the level (the game-over screen was).
   hideAllScreens(); updateHud();
+  startMusic(LEVEL_MUSIC[i]);
   // Level 5 is the run-up to Go Live: start fetching the 3D stage now.
   if(i===4) preloadGoLive();
 }
@@ -925,6 +1091,7 @@ function start3DGoLive(){
   currentLevel=5; levelStartScore=score; state='golive3d'; paused=false;
   lives=pendingLives||lives; pendingLives=0;
   goliveActive=true;
+  stopMusic();                    // the 3D stage runs its own music
   buildFrom(LEVELS[5]);           // keeps the HUD label and level name in sync
   hideAllScreens(); updateHud();
   // No preloaded frame (e.g. Try Again, or jumped straight here) — load now.
@@ -1118,7 +1285,8 @@ function exportScores(){
   setTimeout(function(){ URL.revokeObjectURL(a.href); },1000);
 }
 
-function hideAllScreens(){ overlay.classList.add('hidden'); pauseMenu.classList.add('hidden'); victory.classList.add('hidden'); gameoverScreen.classList.add('hidden'); scores.classList.add('hidden'); achieve.classList.add('hidden'); }
+function hideAllScreens(){ duckMusic(false); audioOpen=false; audioScreen.classList.add('hidden');
+  overlay.classList.add('hidden'); pauseMenu.classList.add('hidden'); victory.classList.add('hidden'); gameoverScreen.classList.add('hidden'); scores.classList.add('hidden'); achieve.classList.add('hidden'); }
 function leaveGoLive(){ if(goliveActive||golivePreloaded||pendingBegin)stop3DGoLive(); }
 function updateBonusBtn(){
   const bb=document.getElementById('bonusBtn');
@@ -1146,7 +1314,7 @@ function showOverlay(title,text,btn){
   hideAllScreens(); overlay.classList.remove('hidden'); updateBonusBtn(); updateLevelSelect();
 }
 function goMain(){
-  leaveGoLive();
+  leaveGoLive(); stopMusic();
   state='start'; score=0;
   document.getElementById('ovTitle').innerHTML='The Adventures of Dr. Marion Wayne<br><span style="font-size:.72em">and his Journey to the Electronic Health Record</span>';
   document.getElementById('ovText').textContent='Collect the golden medallions \u2014 grab every one in a level for a bonus life! Stomp the Legacy Lag bots from above to spring high, but never touch them from the side. Avoid the spikes and the pits!';
@@ -1156,7 +1324,7 @@ function goMain(){
 }
 // Reached only by finishing the run. Save a score, head to the bonus level, or bail out.
 function showVictory(){
-  state='victory'; unlockedBonus=true; sfx('victory');
+  state='victory'; unlockedBonus=true; stopMusic(); sfx('victory');
   levelSelectUnlocked=true;
   try{ localStorage.setItem('dmw_beatGoLive','1'); }catch(e){}
   document.getElementById('victoryScore').textContent='Victory! Total Medallions: '+score;
@@ -1168,7 +1336,7 @@ function showVictory(){
 }
 // Reached only by running out of lives. Retry the level on one last life, or quit out.
 function showGameOver(){
-  state='gameover'; sfx('gameover');
+  state='gameover'; stopMusic(); sfx('gameover');
   document.getElementById('gameoverScore').textContent='Total Medallions: '+score;
   hideAllScreens(); gameoverScreen.classList.remove('hidden');
 }
@@ -1195,7 +1363,7 @@ function showAchievement(a,next,cue){
   if(v.reward){ rw.style.display=''; rw.textContent=v.reward; } else rw.style.display='none';
   document.getElementById('achieveBox').scrollTop=0;   // chained screens start at the top
   afterAchieve=next; stateBeforeAchieve=state; state='achieve';
-  hideAllScreens(); achieve.classList.remove('hidden');
+  hideAllScreens(); achieve.classList.remove('hidden'); duckMusic(true);
 }
 // One goal touch can earn several at once (Janitor also grants Completionist and
 // Stomp Specialist), so they queue up and are shown one screen after another
@@ -1217,7 +1385,41 @@ document.getElementById('achieveBtn').addEventListener('click',function(e){ e.st
 // instead of letting it jump.
 document.getElementById('soundBtn').addEventListener('click',function(e){
   e.stopPropagation(); toggleMute(); this.blur(); });
-syncSoundBtn();
+
+// ---- sound settings ----
+// It layers over whatever opened it rather than replacing the screen, so there
+// is no state to save and restore: closing it just uncovers what was there.
+const audioScreen=document.getElementById('audio');
+let audioOpen=false;
+const MIX=[['all','volAll','mixAll'],['sfx','volSfx','mixSfx'],['music','volMusic','mixMusic']];
+function syncAudioUI(){
+  for(const [key,id,row] of MIX){
+    const pct=Math.round(vol[key]*100);
+    const el=document.getElementById(id);
+    if(el&&document.activeElement!==el)el.value=pct;   // don't fight a dragging thumb
+    const out=document.getElementById(id+'Out'); if(out)out.textContent=pct+'%';
+    const r=document.getElementById(row);
+    if(r)r.classList.toggle('off',key!=='all'&&(muted||vol.all<=0));
+  }
+}
+for(const [key,id] of MIX){
+  document.getElementById(id).addEventListener('input',function(){
+    vol[key]=Math.min(1,Math.max(0,parseInt(this.value,10)/100));
+    if(key==='all'&&vol.all>0&&muted){        // moving the master off zero un-mutes
+      muted=false;
+      try{ localStorage.setItem('dmw_mute','0'); }catch(e){}
+      tellGoLiveMuted();
+    }
+    saveVolumes(); applyVolumes(); refreshMusic(); syncSoundBtn(); syncAudioUI();
+  });
+}
+function openAudioSettings(){ audioOpen=true; syncAudioUI(); audioScreen.classList.remove('hidden'); }
+function closeAudioSettings(){ audioOpen=false; audioScreen.classList.add('hidden'); }
+document.getElementById('soundSettingsBtn').addEventListener('click',function(e){ e.stopPropagation(); openAudioSettings(); });
+document.getElementById('pSound').addEventListener('click',function(e){ e.stopPropagation(); openAudioSettings(); });
+document.getElementById('audioBack').addEventListener('click',function(e){ e.stopPropagation(); closeAudioSettings(); this.blur(); });
+audioScreen.addEventListener('click',function(e){ e.stopPropagation(); });
+syncSoundBtn(); syncAudioUI();
 
 function overlayAction(){
   if(state==='start'||state==='won'){ fadeTo(function(){ score=0; resetRun(true); loadLevel(0); }); }
@@ -1264,6 +1466,8 @@ document.querySelectorAll('.lsBtn').forEach(function(b){
 const keys={left:false,right:false,jump:false};
 addEventListener('keydown',function(e){
   if(e.target&&e.target.tagName==='INPUT')return;   // don't capture keys while typing (e.g. name entry)
+  // sound settings are open on top: ESC closes them, everything else is theirs
+  if(audioOpen){ if(e.code==='Escape'||e.code==='Enter'){ closeAudioSettings(); e.preventDefault(); } return; }
   if(['ArrowLeft','ArrowRight','ArrowUp','Space','KeyA','KeyD','KeyW'].includes(e.code))e.preventDefault();
   if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;
   if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;
@@ -1324,7 +1528,7 @@ function hitPlayer(){
   // survivable ones would mean seven deaths could never actually be reached.
   const won=award(achievementFacts({}));
   if(out){ fadeTo(function(){ showAchievements(won,showGameOver); }); }
-  else if(won.length){ fadeTo(function(){ showAchievements(won,function(){ achieve.classList.add('hidden'); }); }); }
+  else if(won.length){ fadeTo(function(){ showAchievements(won,function(){ achieve.classList.add('hidden'); duckMusic(false); }); }); }
 }
 function safetyFloorY(){ return player.highY + FALL_CAP; }
 
@@ -1402,7 +1606,7 @@ function update(){
       if(won.length){ state='achieve'; fadeTo(function(){ showAchievements(won,showVictory,'coronation'); }); }
       else { state='victory'; fadeTo(showVictory); }
     } else { const sc=score;
-      const showWin=function(){ state='won'; showOverlay('LABYRINTH CONQUERED!','You escaped The Legacy Labyrinth with '+sc+' medallions. Legendary run!','START'); };
+      const showWin=function(){ state='won'; stopMusic(); showOverlay('LABYRINTH CONQUERED!','You escaped The Legacy Labyrinth with '+sc+' medallions. Legendary run!','START'); };
       if(won.length){ state='achieve'; fadeTo(function(){ showAchievements(won,showWin,'coronation'); }); }
       else { state='won'; fadeTo(showWin); } }
   }
@@ -1560,6 +1764,7 @@ window.__dmw={ jumpTo:function(i){ loadLevel(i); },
   // achievements: what the run has banked, and what it has already won
   get run(){ return run; }, get earned(){ return earned; }, get badges(){ return earnedBadges; },
   runMs:function(){ return Date.now()-run.startedAt; },
+  get sound(){ return {bed:musicBed,wanted:wantBed,running:!!musicTimer,muted:muted,vol:vol}; },
   resetRun:function(fromStart){ resetRun(fromStart!==false); } };
 
 buildFrom(LEVELS[0]); updateHud(); updateLevelSelect();
