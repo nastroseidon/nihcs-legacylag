@@ -105,6 +105,14 @@
   #achieveReward{font-size:clamp(11px,1.9vw,15px);line-height:1.45;text-align:left;color:#8fff7a;
                  border-top:1px dashed #33507a;padding-top:10px;margin-bottom:14px;}
   #achieveReward::before{content:'REWARD: ';color:#ffd54a;font-weight:800;}
+  /* Shown only on a repeat, in place of the body and reward. */
+  #achieveMoreWrap{margin-bottom:14px;}
+  #achieveMore{width:auto;display:inline-block;margin:0 0 10px;padding:10px 24px;
+               background:#7ad0ff;box-shadow:0 4px 0 #3f9fd0;color:#06263a;
+               font-family:inherit;letter-spacing:1px;}
+  #achieveMore:hover{background:#a5e0ff;}
+  #achieveNag{font-size:clamp(11px,1.85vw,14px);line-height:1.5;color:#9fb0d8;
+              font-style:italic;max-width:48ch;margin:0 auto;}
   .btnRow{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;align-items:center;}
   /* Level select: one row that always fits the stage. Labels shorten to
      "Lvl 1 … Bonus" when the stage gets narrow. */
@@ -223,6 +231,10 @@
       <div id="achieveBox">
         <div id="achieveHdr">&#9733; NEW ACHIEVEMENT UNLOCKED! &#9733;</div>
         <div id="achieveTitle"></div>
+        <div id="achieveMoreWrap" style="display:none">
+          <button class="pBtn" id="achieveMore">Read me!</button>
+          <div id="achieveNag"></div>
+        </div>
         <div id="achieveBody"></div>
         <div id="achieveReward"></div>
         <button class="pBtn" id="achieveBtn">Continue</button>
@@ -1353,18 +1365,68 @@ function pickVariant(a){
   const idx=pool[Math.floor(Math.random()*pool.length)];
   used.push(idx); return a.variants[idx];
 }
+// Nagging, for the "Read me!" button on a repeat. One at random each time.
+const NAGS=[
+ "I didn't get carpal tunnel typing this just for you to ignore it.",
+ "Do you know how many energy drinks died so this text could live? Read it.",
+ "I skipped my cousin's wedding to code this popup. The least you can do is click it.",
+ "I spent three hours agonizing over this grammar. If you have time to play a game while working, then you have time to appreciate my art.",
+ "Expand this. My therapist says I need validation from strangers on the internet.",
+ "Read it. I will literally corrupt your save file if you don't appreciate my prose.",
+ "Do you have any idea how hard it is to code a collapsing UI box? Open it.",
+ "If you don't click this, I'm making the next boss's health bar 20% larger.",
+ "I know reading cuts into your button-mashing time, but humor me.",
+ "Please. I haven't slept since Monday.",
+ "Oh, you thought this was the exact same text as last time? Cute. I wrote variations. Expand it.",
+ "Assuming I just copy-pasted this makes an 'ass' out of you. Mostly you. Read the new joke.",
+ "Did you really think I only had one joke for this? Insulting. Open it.",
+ "Surprise, it's a new joke. I didn't stay up until 3 AM writing alt dialogue just for you to ignore it.",
+ "I have more than one insult prepared for this specific achievement. Don't miss out.",
+ "I actually wrote ALTS for this. ALTS! Who does that?! Read it!",
+ "Please. I spent an entire weekend just writing the B-sides. Click the button.",
+ "If you don't open this to see the new text, I'm making the next boss's hitboxes invisible.",
+ "I poured blood, sweat, and variations into this UI box. Do not ignore my sacrifice."
+];
+// The full text the first time an achievement turns up in this browser session;
+// after that just the header and the name, with a button to open the rest. This
+// is deliberately not part of resetRun: dying and replaying keeps the short
+// form, and only a refresh or a new tab starts everyone over.
+let seenFull={}, achieveHasReward=false;
+function expandAchievement(){
+  document.getElementById('achieveMoreWrap').style.display='none';
+  document.getElementById('achieveBody').style.display='';
+  document.getElementById('achieveReward').style.display=achieveHasReward?'':'none';
+  document.getElementById('achieveBox').scrollTop=0;
+}
 function showAchievement(a,next,cue){
+  // A repeat draws a fresh variant, so opening it really is a new joke.
   const v=pickVariant(a);
   if(cue)sfx(cue);   // only the opening screen of a level's chain is scored
   if(earnedBadges.indexOf(a.badge)<0)earnedBadges.push(a.badge);
   document.getElementById('achieveTitle').textContent=v.title;
   document.getElementById('achieveBody').textContent=v.body;
   const rw=document.getElementById('achieveReward');
-  if(v.reward){ rw.style.display=''; rw.textContent=v.reward; } else rw.style.display='none';
+  achieveHasReward=!!v.reward;
+  if(achieveHasReward)rw.textContent=v.reward;
+  const repeat=!!seenFull[a.id];
+  seenFull[a.id]=true;
+  const mw=document.getElementById('achieveMoreWrap');
+  if(repeat){
+    mw.style.display='';
+    document.getElementById('achieveNag').textContent=NAGS[Math.floor(Math.random()*NAGS.length)];
+    document.getElementById('achieveBody').style.display='none';
+    rw.style.display='none';
+  } else {
+    mw.style.display='none';
+    document.getElementById('achieveBody').style.display='';
+    rw.style.display=achieveHasReward?'':'none';
+  }
   document.getElementById('achieveBox').scrollTop=0;   // chained screens start at the top
   afterAchieve=next; stateBeforeAchieve=state; state='achieve';
   hideAllScreens(); achieve.classList.remove('hidden'); duckMusic(true);
 }
+document.getElementById('achieveMore').addEventListener('click',function(e){
+  e.stopPropagation(); expandAchievement(); this.blur(); });
 // One goal touch can earn several at once (Janitor also grants Completionist and
 // Stomp Specialist), so they queue up and are shown one screen after another
 // before whatever was going to happen next.
