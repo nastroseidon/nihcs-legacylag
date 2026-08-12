@@ -8,7 +8,7 @@ export const Y = (py) => (GROUND - py) / BLOCK;
 export const LEVEL6 = {
   name: 'Go Live',
   worldW: 5200,                    // px → 104 units
-  start: [80, GROUND - 70],
+  start: [80, GROUND - 72],
   // ground islands: [x, width] at GROUND, 600px deep
   ground: [[0, 820], [1010, 540], [1740, 510], [2950, 600], [3750, 1450]],
   // solid walls: [x, y, w, h]
@@ -25,7 +25,9 @@ export const LEVEL6 = {
   coins: [[300, 560], [560, 560], [760, 560], [900, 440], [1180, 360], [1390, 300],
           [1880, 340], [2090, 280], [2390, 450], [2650, 450], [2840, 450],
           [3080, 540], [3330, 370], [3930, 430], [4230, 350], [4420, 310], [4470, 310],
-          [4580, 430], [4880, 350], [5050, 560]],
+          // the last one stays clear of the goal's hitbox so it can be jumped
+          // over — otherwise the flag cannot be reached without collecting it
+          [4580, 430], [4880, 350], [4960, 560]],
   // enemies: [startX, minX, maxX] on GROUND
   enemies: [[1100, 1010, 1540], [1900, 1740, 2240], [3050, 2950, 3540],
             [4300, 3750, 4700], [4900, 4750, 5190]],

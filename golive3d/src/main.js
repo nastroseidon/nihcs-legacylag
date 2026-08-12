@@ -67,7 +67,19 @@ function tellHost(type, extra = {}) {
 }
 addEventListener('message', e => {
   const d = e.data;
-  if (!d || d.source !== 'golive3d-host' || d.type !== 'begin') return;
+  if (!d || d.source !== 'golive3d-host') return;
+  // Keys the host forwarded because focus was sitting on the parent page. Handled
+  // exactly as a local key event, so the controls work without clicking the stage.
+  if (d.type === 'key') {
+    const k = KEYMAP[d.code]; if (k) keys[k] = !!d.down;
+    if (d.down) {
+      audio.unlock();
+      if (d.code === 'Escape') togglePause();
+      if (state && state.status !== 'playing' && (d.code === 'Space' || d.code === 'Enter')) uiAction();
+    }
+    return;
+  }
+  if (d.type !== 'begin') return;
   carriedScore = parseInt(d.score, 10) || 0;
   startLives = Math.max(1, parseInt(d.lives, 10) || 3);
   newGame();
@@ -93,15 +105,21 @@ const events = {
   onHurt: () => { hud.setLives(state.lives); vfx.flashHurt(); audio.play('hurt'); audio.setMusic('danger', 2.5); },
   onGameOver: () => {
     audio.play('gameover'); audio.setMusic('fail');
-    if (embedded) setTimeout(() => tellHost('gameover', { score: state.score }), 1400);
+    if (embedded) setTimeout(() => tellHost('gameover', { score: state.score, deaths: state.deaths }), 1400);
     else hud.showGameOver(state.score);
   },
   onWin: () => {
     audio.play('win'); audio.setMusic('victory');
     vfx.spawnVictory(px2(state.goal.x + 45, state.goal.y + 80));
     // let the victory animation and confetti land before handing back
+    // The host folds these into its run totals for the full-run achievements.
+    // Only stomps count as stomps: a bot dissolved by the scanner is not one.
     if (embedded) setTimeout(() => tellHost('complete', {
       score: state.score, lives: state.lives, walkedOnGround: state.walkedOnGround,
+      deaths: state.deaths,
+      coins: state.coins.filter(c => c.got).length, coinsTotal: state.coins.length,
+      stomps: state.enemies.filter(e => e.deathBy === 'stomp').length,
+      enemiesTotal: state.enemies.length,
     }), 2600);
     else hud.showVictory(state.score);
   },
@@ -215,5 +233,6 @@ window.__test = {
     return { x: state.player.x, y: state.player.y, score: state.score, lives: state.lives, status: state.status, tick: state.tick };
   },
   newGame, start() { document.getElementById('startBtn').click(); },
+  get keys() { return keys; },   // live input, so host key forwarding can be checked
   render() { playerVis.update(state, 1 / 60); enemyVis.update(state, 1 / 60); world.update(1 / 60, state.tick / 60, state); updateCamera(1 / 60); renderer.render(scene, camera); },
 };

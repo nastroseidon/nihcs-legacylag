@@ -9,11 +9,14 @@ export function createEngine(events) {
   const solids = L.ground.map(g => ({ x: g[0], y: GROUND, w: g[1], h: 600 }))
     .concat(L.walls.map(w => ({ x: w[0], y: w[1], w: w[2], h: w[3] })));
   const state = {
-    tick: 0, score: 0, lives: 3, status: 'playing', // playing|dead|won|gameover
+    tick: 0, score: 0, lives: 3, deaths: 0, status: 'playing', // playing|dead|won|gameover
     allCoinsAwarded: false, phaseSolid: false, phaseAlpha: 0,
     walkedOnGround: false,        // false for a whole run == the hop achievement
     player: { x: L.start[0], y: L.start[1], w: PHYS.PLAYER_W, h: PHYS.PLAYER_H,
-      vx: 0, vy: 0, onGround: false, face: 1, prevBottom: 0, invuln: 60, lock: 0,
+      // lock: the same brief input lockout respawn uses. The host now focuses the
+      // stage the moment it appears, so a direction held from Level 5 would
+      // otherwise act on frame one, before the player has settled on the floor.
+      vx: 0, vy: 0, onGround: false, face: 1, prevBottom: 0, invuln: 60, lock: 12,
       scanCd: 0, anim: 'idle' },
     coins: L.coins.map(c => ({ x: c[0], y: c[1], got: false })),
     enemies: L.enemies.map(e => ({ x: e[0], minX: e[1], maxX: e[2], dir: 1, alive: true,
@@ -31,6 +34,7 @@ export function createEngine(events) {
   function hitPlayer() {
     const p = state.player;
     if (p.invuln > 0) return;
+    state.deaths++;      // the host adds these to its run total for the achievements
     state.lives--;
     events.onHurt?.();
     if (state.lives <= 0) { state.status = 'gameover'; events.onGameOver?.(); }

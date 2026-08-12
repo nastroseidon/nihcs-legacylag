@@ -1,22 +1,22 @@
 # The Adventures of Dr. Marion Wayne — Achievements Reference
 
-## ✅ ACHIEVEMENT DESIGN & FLAVOR TEXT — COMPLETE
+## ✅ ACHIEVEMENT DESIGN & FLAVOR TEXT — COMPLETE AND IMPLEMENTED
 
-All achievement names, emojis, rules, notes, and flavor-text variants are complete. Implementation status and any remaining gameplay-specific setup are noted below.
+All achievement names, emojis, rules, notes, and flavor-text variants are complete, and all eleven are implemented in `index.html` (and so in the generated `FullHTML.html`). Implementation status and any remaining gameplay-specific setup are noted below.
 
 | Achievement | Emoji | Rule | Notes |
 |---|---|---|---|
 | **Pogo** | 🦘 | Complete any single level while hopping the whole way; never move left/right while standing on the ground. Landing between hops is fine; walking is not. | Built and working; once per session; 12 flavor variants. |
-| **Pacifist** | 🕊️ | Finish Levels 1–6 stomping ZERO enemies. | Full run from Level 1 only; 4 flavor variants; detection/screens still to be built. |
-| **No-Death Run** | 💀 | Finish Levels 1–6 with ZERO deaths. | Full run from Level 1 only; 4 flavor variants; detection/screens still to be built. |
-| **Completionist "100% Data Recovery"** | 💾 | Collect EVERY medallion across all 6 levels. | Full run from Level 1 only; 4 flavor variants; detection/screens still to be built. |
-| **Stomp Specialist "Aggressive Prioritization"** | 👢 | Stomp EVERY enemy across Levels 1–6. | Full run from Level 1 only; opposite of Pacifist; 4 flavor variants; detection/screens still to be built. |
-| **Janitor** | 🧹 | Stomp EVERY enemy AND collect EVERY medallion across Levels 1–6. | Full run from Level 1 only; also grants Completionist + Stomp Specialist; 4 flavor variants; detection/screens still to be built. |
-| **Speedrun "Ahead of Schedule (For Once)"** | ⏱️ | Finish Levels 1–6 under the final target time. | Full run from Level 1 only; 4 flavor variants; target time still needs to be established from a clean timed run; detection/screens still to be built. |
-| **Perfectionist "No Coin Left Behind"** | 💯 | Collect 100% of a SINGLE level's medallions. | Once per session, per level; 4 flavor variants; detection/screens still to be built. |
-| **Minimalist** | 🪶 | Finish a level collecting ZERO medallions. | Once per session, per level; 4 flavor variants; detection/screens still to be built. |
-| **Overtime Hero** | 🌀 | Complete the bonus "Legacy Labyrinth" level. | Earned on bonus-level completion; 4 flavor variants; detection/screens still to be built. |
-| **Extensive User Acceptance Testing** | 🧪 | Die 7+ times total in a session. | Anti-achievement; once per session; 4 flavor variants; detection/screens still to be built. |
+| **Pacifist** | 🕊️ | Finish Levels 1–6 stomping ZERO enemies. | Full run from Level 1 only; 4 flavor variants; built and working. |
+| **No-Death Run** | 💀 | Finish Levels 1–6 with ZERO deaths. | Full run from Level 1 only; 4 flavor variants; built and working. |
+| **Completionist "100% Data Recovery"** | 💾 | Collect EVERY medallion across all 6 levels. | Full run from Level 1 only; 4 flavor variants; built and working. |
+| **Stomp Specialist "Aggressive Prioritization"** | 👢 | Stomp EVERY enemy across Levels 1–6. | Full run from Level 1 only; opposite of Pacifist; 4 flavor variants; built and working. |
+| **Janitor** | 🧹 | Stomp EVERY enemy AND collect EVERY medallion across Levels 1–6. | Full run from Level 1 only; also grants Completionist + Stomp Specialist; 4 flavor variants; built and working. |
+| **Speedrun "Ahead of Schedule (For Once)"** | ⏱️ | Finish Levels 1–6 in under 4 minutes. | Full run from Level 1 only; 4 flavor variants; built and working; target is under 4 minutes (SPEEDRUN_TARGET_MS in index.html). |
+| **Perfectionist "No Coin Left Behind"** | 💯 | Collect 100% of a SINGLE level's medallions. | Once per session, per level; 4 flavor variants; built and working. |
+| **Minimalist** | 🪶 | Finish a level collecting ZERO medallions. | Once per session, per level; 4 flavor variants; built and working. |
+| **Overtime Hero** | 🌀 | Complete the bonus "Legacy Labyrinth" level. | Earned on bonus-level completion; 4 flavor variants; built and working. |
+| **Extensive User Acceptance Testing** | 🧪 | Die 7+ times total in a session. | Anti-achievement; once per session; 4 flavor variants; built and working. |
 
 ---
 

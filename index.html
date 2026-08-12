@@ -220,7 +220,7 @@ for(const k in files){const im=new Image();ok[k]=false;
 
 // ---------- level definitions (1-6 + bonus) ----------
 const LEVELS=[
- { name:'Kick-off', bg:'bg1', goal:'goal1', climb:false, worldW:3400, start:[80,GROUND-70],
+ { name:'Kick-off', bg:'bg1', goal:'goal1', climb:false, worldW:3400, start:[80,GROUND-72],
    ground:[[0,900],[1050,900],[2100,1300]],
    walls:[[560,GROUND-64,64,64],[2300,GROUND-128,64,128]],
    plats:[[700,510,160],[1500,500,160],[2400,500,170]],
@@ -229,7 +229,7 @@ const LEVELS=[
    enemies:[[1200,1100,1500,GROUND],[2600,2500,3050,GROUND]],
    goalRect:[3200,GROUND-160,90,160] },
 
- { name:'Future State Planning', bg:'bg2', goal:'goal2', climb:false, worldW:4300, start:[80,GROUND-70],
+ { name:'Future State Planning', bg:'bg2', goal:'goal2', climb:false, worldW:4300, start:[80,GROUND-72],
    ground:[[0,600],[760,500],[1400,500],[2050,700],[2900,1400]],
    plats:[[600,520,150],[980,430,150],[1350,520,150],[1750,430,150],[2150,520,150],[2550,420,160],[3050,500,160],[3450,400,160],[3850,500,160]],
    spikes:[[900,GROUND],[2200,GROUND]],
@@ -237,7 +237,7 @@ const LEVELS=[
    enemies:[[1000,760,1260,GROUND],[2300,2050,2750,GROUND],[3200,2900,3800,GROUND]],
    goalRect:[4050,GROUND-160,90,160] },
 
- { name:'Super User Training', bg:'bg3', goal:'goal3', climb:false, worldW:4300, start:[80,GROUND-70],
+ { name:'Super User Training', bg:'bg3', goal:'goal3', climb:false, worldW:4300, start:[80,GROUND-72],
    ground:[[0,700],[900,600],[1650,600],[2400,700],[3300,1000]],
    plats:[[600,380,150],[1200,520,150],[1550,360,150],[2000,500,150],[2350,340,160],[2800,500,150],[3150,360,160],[3600,480,160],[3950,340,160]],
    spikes:[[1350,GROUND],[2550,GROUND],[3450,GROUND]],
@@ -245,7 +245,7 @@ const LEVELS=[
    enemies:[[1000,900,1440,GROUND],[1850,1650,2200,GROUND],[2450,2400,2540,GROUND],[2800,2620,3060,GROUND],[3600,3520,4150,GROUND]],
    goalRect:[4100,GROUND-160,90,160] },
 
- { name:'End User Training', bg:'bg4', goal:'goal4', climb:false, worldW:4900, start:[80,GROUND-70],
+ { name:'End User Training', bg:'bg4', goal:'goal4', climb:false, worldW:4900, start:[80,GROUND-72],
    ground:[[0,700],[870,650],[1650,500],[2280,700],[3130,650],[3900,1250]],
    walls:[[450,GROUND-64,64,64]],
    plats:[[600,500,150],[1000,400,150],[1450,500,150],[1850,400,150],[2250,500,150],[2650,380,160],[3050,490,150],[3450,390,160],[3800,490,160],[4200,400,160],[4550,500,160]],
@@ -254,7 +254,7 @@ const LEVELS=[
    enemies:[[1050,870,1520,GROUND],[1900,1650,2150,GROUND],[2700,2280,2980,GROUND],[3500,3130,3780,GROUND],[4250,3900,4700,GROUND]],
    goalRect:[4700,GROUND-160,90,160] },
 
- { name:'Data Migration', bg:'bg5', goal:'goal5', climb:true, worldW:1200, camMinY:-700, start:[100,GROUND-70],
+ { name:'Data Migration', bg:'bg5', goal:'goal5', climb:true, worldW:1200, camMinY:-700, start:[100,GROUND-72],
    ground:[[0,1200]],
    plats:[[300,485,340,'girder'],[780,485,300,'girder'],[1160,485,40,'girder'],[20,330,900,'girder'],[200,175,700,'girder'],[1040,175,140,'girder'],[20,20,600,'girder'],[520,-135,660,'girder'],[20,-290,700,'girder']],
    walls:[[980,275,64,210],[600,120,64,210]],
@@ -263,7 +263,7 @@ const LEVELS=[
    enemies:[[820,780,980,485],[150,40,560,330],[300,220,560,175],[200,40,600,20],[700,540,1160,-135]],
    goalRect:[120,-440,90,150] },
 
- { name:'Go Live', bg:'bg6', goal:'goal6', climb:false, worldW:5200, start:[80,GROUND-70],
+ { name:'Go Live', bg:'bg6', goal:'goal6', climb:false, worldW:5200, start:[80,GROUND-72],
    ground:[[0,820],[1010,540],[1740,510],[2950,600],[3750,1450]],
    walls:[[500,GROUND-64,64,64],[3200,GROUND-128,64,128]],
    plats:[[900,490,120],[1150,410,140],[1360,350,130],[1850,390,140],[2060,330,130],
@@ -274,7 +274,9 @@ const LEVELS=[
    coins:[[300,560],[560,560],[760,560],[900,440],[1180,360],[1390,300],
           [1880,340],[2090,280],[2390,450],[2650,450],[2840,450],
           [3080,540],[3330,370],[3930,430],[4230,350],[4420,310],[4470,310],
-          [4580,430],[4880,350],[5050,560]],
+          [4580,430],[4880,350],[4960,560]],   // last one clear of the goal, so
+          // it can be jumped over: at 5050 its hitbox overlapped the goal's and
+          // no run could reach the flag without collecting it (Minimalist)
    enemies:[[1100,1010,1540,GROUND],[1900,1740,2240,GROUND],[3050,2950,3540,GROUND],
             [4300,3750,4700,GROUND],[4900,4750,5190,GROUND]],
    goalRect:[5080,GROUND-160,90,160] },
@@ -284,53 +286,282 @@ const LEVELS=[
 ];
 const shortName=['Kick-off','Planning','Super User','End User','Migration','Go Live','Labyrinth'];
 
-// ===== Achievements: "hopped the whole level" (lenient = never walked on ground) =====
-// Each: badge (emoji shown in High Scores), title, body (\n\n = paragraph break), reward.
-// Add the other 11 as more objects in this array; one is picked at random when earned.
-const HOP_ACHIEVEMENTS=[
- { badge:'\uD83E\uDD98', title:'1978 Pogo Stick Champion of Lower Sheboygan, Wisconsin',
-   body:'Congratulations!\n\nAfter 48 years, three lawsuits, one congressional hearing that accomplished absolutely nothing, and an independent investigation led by a retired mall security guard, the results of the 1978 Lower Sheboygan Pogo Stick Championship have finally been corrected.\n\nThe committee determined that Kelly "The Kangaroo" Kapowski secured her victory through an aggressive campaign of distributing free burgers and shakes from The Max to the judging panel. While technically delicious, this was later ruled to be "extremely unsportsmanlike."\n\nHer title has been revoked. It now belongs to you.\n\nTake a moment to appreciate this historic achievement. Thousands trained. Dozens competed. One person finally received the trophy... almost half a century late.\n\nOr...\n\nYou completed an entire level by hopping the whole way instead of walking like a reasonably efficient healthcare professional. Dr. Marion Wayne would like to remind you that knees are not a renewable resource.',
-   reward:'Eternal bragging rights, imaginary trophy, and the unquestionable privilege of adding "1978 Lower Sheboygan Pogo Stick Champion" to your r\u00e9sum\u00e9. Human Resources cannot verify this accomplishment, but they also can\u2019t prove it didn\u2019t happen.' },
- { badge:'\uD83E\uDD98', title:'1983 Consecutive Bunny Hop Endurance Champion of Kalamazoo, Michigan',
-   body:'Congratulations!\n\nFollowing a 17-year audit, two hastily assembled review boards, and the accidental discovery of an unlabeled VHS tape behind a vending machine at the Kalamazoo Civic Center, officials have officially overturned the results of the 1983 Consecutive Bunny Hop Endurance Championship.\n\nThe investigation concluded that Steve Urkel had unknowingly competed while wearing prototype orthopedic shoes containing experimental industrial-grade springs. Although the manufacturer marketed them as "business casual," the rulebook was later amended to classify them as "unfairly bouncy."\n\nHis title has been revoked. It now belongs to you.\n\nHistory rarely remembers those who finish second. Fortunately for you, history occasionally loses its paperwork for several decades.\n\nOr...\n\nYou completed an entire level by jumping from beginning to end without allowing Dr. Marion Wayne the luxury of taking a single normal step. Dr. Marion Wayne would like to point out that gravity is supposed to be an occasional inconvenience, not a lifestyle.',
-   reward:'Lifetime membership in the Kalamazoo Association of Competitive Hoppers, one imaginary championship belt, and the satisfaction of knowing your knees are now officially someone else\u2019s problem.' },
- { badge:'\uD83E\uDD98', title:'1991 Grand Champion of the Floor-Is-Lava Invitational of Oconomowoc, Wisconsin',
-   body:'Congratulations!\n\nAfter the original scorecards were rediscovered inside a library book that had been overdue since the Clinton administration, the International Committee for Extremely Questionable Sports convened an emergency session to review the 1991 Floor-Is-Lava Invitational.\n\nTheir findings were... troubling.\n\nThe committee determined that Joey Gladstone had repeatedly requested "bathroom breaks" during the competition, only to re-enter the course several feet farther along each time. While undeniably creative, this strategy was eventually categorized as "advanced teleportation," which violated at least three paragraphs of the official rules.\n\nHis championship has been rescinded. It now belongs to you.\n\nJustice moves slowly, but apparently not as slowly as municipal library systems.\n\nOr...\n\nYou refused to let Dr. Marion Wayne touch the ground for an entire level because apparently walking has become optional. Dr. Marion Wayne would like everyone to know he fully supports exercise. This was not exercise.',
-   reward:'An honorary lava-proof certificate, a commemorative trophy of questionable historical significance, and bragging rights that absolutely nobody can disprove.' },
- { badge:'\uD83E\uDD98', title:'1987 Vertical Persistence Cup of Walla Walla, Washington',
-   body:'Congratulations!\n\nThe results of the 1987 Vertical Persistence Cup have finally been corrected following testimony from four eyewitnesses, a retired scorekeeper, and one remarkably detailed diary kept by a concession stand employee.\n\nInvestigators determined that Carlton Banks spent nearly one-third of the competition stopping to admire his own footwork after every successful jump. While judges originally interpreted this as confidence, the official rulebook clearly specifies that contestants must continue hopping "without excessive celebration."\n\nAfter thirty-nine years, the record has finally been amended. The championship is now yours.\n\nEnjoy the moment. These opportunities don\u2019t come around often, mostly because they require decades of administrative delays.\n\nOr...\n\nYou completed an entire level by hopping nonstop, forcing Dr. Marion Wayne to reconsider several life choices. He\u2019d also appreciate it if your next accomplishment involved walking. Just once.',
-   reward:'A personalized participation ribbon that has somehow become a championship ribbon, one invisible trophy, and permission to mention this accomplishment during annual performance reviews. Human Resources will pretend not to hear you.' },
- { badge:'\uD83E\uDD98', title:'1985 Perpetual Motion Trophy of Ho-Ho-Kus, New Jersey',
-   body:'Congratulations!\n\nAfter years of speculation, the Office of Retroactive Athletic Corrections has completed its review of the 1985 Ho-Ho-Kus Perpetual Motion Tournament.\n\nOfficials discovered that Balki Bartokomous had interpreted the phrase "continuous hopping" to include performing the Dance of Joy between jumps. While the judges initially applauded his enthusiasm, subsequent review determined that choreography and athletic competition occupy two very different sections of the rulebook.\n\nHis championship has officially been vacated. It now belongs to you.\n\nSometimes greatness isn\u2019t about being the best. Sometimes it\u2019s about waiting forty years for someone else to read the fine print.\n\nOr...\n\nYou spent an entire level jumping without ever letting Dr. Marion Wayne experience the simple pleasure of walking like a normal mascot. He\u2019s beginning to suspect you enjoy this.',
-   reward:'One commemorative plaque, an honorary title nobody asked for, and exclusive membership in a club that almost certainly doesn\u2019t exist.' },
- { badge:'\uD83E\uDD98', title:'1990 Elastic Kneecap Invitational of Peculiar, Missouri',
-   body:'Congratulations!\n\nThe 1990 Elastic Kneecap Invitational has been under review ever since a local newspaper published an article titled "Did We Measure That Correctly?" Although widely dismissed at the time, the question refused to go away.\n\nA recent forensic analysis of the original measuring equipment determined that Cosmo Kramer had unknowingly competed on a practice course that was approximately 18% shorter than regulation length.\n\nWhile undeniably energetic, his performance no longer qualifies for the record books. The title has officially been transferred to you.\n\nSometimes history isn\u2019t rewritten by heroes. Sometimes it\u2019s rewritten by surveyors with better tape measures.\n\nOr...\n\nYou completed an entire level while hopping continuously because apparently the ground had personally offended you. Dr. Marion Wayne would like to remind everyone that he possesses legs for reasons beyond decoration.',
-   reward:'A regulation-sized imaginary trophy, unlimited storytelling privileges, and one exceptionally impressive line for your r\u00e9sum\u00e9.' },
- { badge:'\uD83E\uDD98', title:'1988 Order of Relentless Boinging of Truth or Consequences, New Mexico',
-   body:'Congratulations!\n\nFor nearly four decades, the Order of Relentless Boinging maintained that the 1988 championship results were beyond question. They were mistaken.\n\nFollowing an anonymous tip, investigators uncovered an administrative error revealing that Norm Peterson had accidentally been credited with an additional 2,000 hops after a scorekeeper spilled root beer onto the official tally sheet. Rather than admit the mistake, the committee simply rounded up and hoped no one would notice.\n\nEventually... someone noticed.\n\nThe championship has now been awarded to its rightful recipient. You.\n\nTake pride in this achievement. Very few people receive a trophy that should have been delivered before the invention of the internet.\n\nOr...\n\nYou completed an entire level by jumping nonstop and somehow convinced Dr. Marion Wayne that touching the ground was no longer part of his job description. He\u2019s requesting a brief meeting with your space bar.',
-   reward:'A beautifully engraved trophy that exists entirely in your imagination, eternal bragging rights, and the unquestionable honor of becoming the official 1988 Order of Relentless Boinging Champion of Truth or Consequences, New Mexico.' },
- { badge:'\uD83E\uDD98', title:'1986 Continuous Boing Cup of Mukwonago, Wisconsin',
-   body:'Congratulations!\n\nFor nearly forty years, the official results of the 1986 Continuous Boing Cup remained unchallenged. That changed when a documentary crew filming a completely unrelated special on municipal water towers accidentally uncovered the original judging notes tucked inside a folding chair.\n\nThe findings were conclusive.\n\nThe committee determined that Danny Tanner paused every twelve jumps to stop and straighten the lane markers because they "looked a little crooked." While his commitment to cleanliness was universally admired, the official rules clearly state that the clock continues to run during unsolicited housekeeping.\n\nHis championship has been vacated. It now belongs to you.\n\nJustice may not be swift, but it is surprisingly thorough once enough retirees have free afternoons.\n\nOr...\n\nYou completed an entire level by hopping from beginning to end, denying Dr. Marion Wayne the opportunity to enjoy something as basic as walking. He respects your determination. He does not respect what it has done to his knees.',
-   reward:'One commemorative championship sash, an invisible trophy polished to imaginary perfection, and the unquestionable privilege of telling everyone you peaked in Mukwonago.' },
- { badge:'\uD83E\uDD98', title:'1992 Grand Champion of the Airborne Appreciation Festival of Boring, Oregon',
-   body:'Congratulations!\n\nFollowing years of rumors, speculation, and an unfortunate incident involving a mislabeled filing cabinet, the Bureau of Historical Athletic Corrections has officially completed its review of the 1992 Airborne Appreciation Festival.\n\nTheir investigation revealed that Uncle Jesse Katsopolis had hired a fog machine for what he described as "dramatic entrances." Unfortunately, the resulting smoke prevented judges from verifying whether he had actually completed several sections of the course.\n\nWhile undeniably stylish, invisible athleticism is difficult to score.\n\nHis title has been revoked. It now belongs to you.\n\nHistory remembers champions. Paperwork remembers everyone else.\n\nOr...\n\nYou completed an entire level without allowing Dr. Marion Wayne to touch the ground for even a moment. He would like to remind you that hopping is generally considered an occasional activity, not a transportation strategy.',
-   reward:'An honorary key to the City of Boring (which opens absolutely nothing), a gold-plated imaginary medal, and lifelong bragging rights.' },
- { badge:'\uD83E\uDD98', title:'1984 National Spring-Heel Invitational of Normal, Illinois',
-   body:'Congratulations!\n\nThe results of the 1984 National Spring-Heel Invitational have officially been overturned after accountants performing a routine audit discovered that the championship bracket had been printed upside down.\n\nSeveral phone calls, two independent reviews, and one very awkward apology later, officials confirmed that Cliff Clavin had advanced through the tournament despite technically losing his opening match.\n\nWhen asked for comment, Cliff insisted the reversal was "part of a little-known postal regulation." It was not.\n\nHis championship has been rescinded. It now belongs to you.\n\nSometimes destiny is written by the victors. Sometimes it\u2019s written by whoever finally notices the spreadsheet is backwards.\n\nOr...\n\nYou bounced through an entire level because walking was apparently beneath you. Dr. Marion Wayne has begun researching ergonomic pogo sticks.',
-   reward:'A framed certificate of improbable excellence, one invisible championship trophy, and the satisfaction of knowing bureaucracy occasionally gets something right... eventually.' },
- { badge:'\uD83E\uDD98', title:'1989 Golden Kangaroo Trophy of Ding Dong, Texas',
-   body:'Congratulations!\n\nAfter thirty-seven years, the Ding Dong Historical Society finally agreed to digitize its athletic archives. During the process, volunteers discovered an envelope labeled "DO NOT OPEN UNTIL EVERYONE HAS CALMED DOWN."\n\nInside was the official protest against Kimmy Gibbler, who had reportedly distracted every other competitor by enthusiastically cheering for all of them at the exact same time.\n\nAlthough the rulebook encourages sportsmanship, it specifically prohibits "weaponized encouragement."\n\nThe protest should have been reviewed in 1989. Better late than never.\n\nHer title has been revoked. It now belongs to you.\n\nVery few people receive recognition for an event that predates online banking.\n\nOr...\n\nYou completed an entire level by jumping continuously, leaving Dr. Marion Wayne wondering if the floor had somehow become lava without informing him. It hadn\u2019t. You were simply committed to the bit.',
-   reward:'One spectacularly unnecessary championship trophy, unlimited storytelling rights, and the eternal admiration of absolutely no licensed orthopedic professionals.' },
- { badge:'\uD83E\uDD98', title:'1993 Why, Arizona Invitational for Exceptional Vertical Decision-Making',
-   body:'Congratulations!\n\nFor decades, historians believed the results of the 1993 Invitational were beyond dispute. That assumption changed when a former scorekeeper admitted he had accidentally been using the judging rubric from a regional pie-baking competition.\n\nThe revised calculations painted a very different picture.\n\nOfficials concluded that George Costanza had received bonus points for "excellent crust consistency," a category that, while important elsewhere, had no measurable impact on competitive jumping.\n\nFollowing an emergency session of the International Committee for Extremely Questionable Sports, his championship has officially been nullified. It now belongs to you.\n\nThe committee regrets the inconvenience. George regrets answering his phone.\n\nOr...\n\nYou completed an entire level while hopping nonstop, forcing Dr. Marion Wayne to question whether you understand the purpose of legs. He\u2019d like to assure everyone that walking remains fully supported by modern medicine.',
-   reward:'A championship jacket that exists only in spirit, one beautifully engraved imaginary trophy, and the unquestionable distinction of becoming the 1993 Invitational Champion of Why, Arizona. It\u2019s a title nobody can take away... mostly because nobody else wants it.' }
+// ===== Achievements =====
+// Eleven of them, each holding several interchangeable flavour variants. The
+// wording lives in achievements-doc.md; this array is the game's copy of it.
+//
+//   id       stable name, and the bookkeeping key
+//   badge    emoji shown in the High Scores "Achievements" column; keep it short
+//   scope    how often it can be won in one run:
+//              'level' once per level      'run' once per run      'once' one-off
+//   when(f)  predicate over the facts object built by achievementFacts()
+//   variants one is chosen at random each time it is awarded
+//
+// Variant text: \n\n separates paragraphs (#achieveBody is white-space:pre-wrap),
+// \n keeps a short punchline hugging the line above it. Non-ASCII stays escaped.
+// `reward` renders under the dashed rule and is auto-prefixed "REWARD: " by CSS,
+// so don't repeat the word.
+
+// How long Levels 1-6 may take and still count as a speedrun.
+// __dmw.runMs() reports the elapsed time of the run in progress.
+const SPEEDRUN_TARGET_MS=4*60*1000;   // under 4 minutes
+
+const ACHIEVEMENTS=[
+ { id:'pogo', badge:'\uD83E\uDD98', scope:'level',
+   // Clear a level having hopped the whole way.
+   when:function(f){ return f.atGoal && f.hopped; },
+   variants:[
+  { title:'1978 Pogo Stick Champion of Lower Sheboygan, Wisconsin',
+    body:'Congratulations!\n\nAfter 48 years, three lawsuits, one congressional hearing that accomplished absolutely nothing, and an independent investigation led by a retired mall security guard, the results of the 1978 Lower Sheboygan Pogo Stick Championship have finally been corrected.\n\nThe committee determined that Kelly "The Kangaroo" Kapowski secured her victory through an aggressive campaign of distributing free burgers and shakes from The Max to the judging panel. While technically delicious, this was later ruled to be "extremely unsportsmanlike."\n\nHer title has been revoked. It now belongs to you.\n\nTake a moment to appreciate this historic achievement. Thousands trained. Dozens competed. One person finally received the trophy... almost half a century late.\n\nOr...\n\nYou completed an entire level by hopping the whole way instead of walking like a reasonably efficient healthcare professional. Dr. Marion Wayne would like to remind you that knees are not a renewable resource.',
+    reward:'Eternal bragging rights, imaginary trophy, and the unquestionable privilege of adding "1978 Lower Sheboygan Pogo Stick Champion" to your r\u00e9sum\u00e9. Human Resources cannot verify this accomplishment, but they also can\u2019t prove it didn\u2019t happen.' },
+  { title:'1983 Consecutive Bunny Hop Endurance Champion of Kalamazoo, Michigan',
+    body:'Congratulations!\n\nFollowing a 17-year audit, two hastily assembled review boards, and the accidental discovery of an unlabeled VHS tape behind a vending machine at the Kalamazoo Civic Center, officials have officially overturned the results of the 1983 Consecutive Bunny Hop Endurance Championship.\n\nThe investigation concluded that Steve Urkel had unknowingly competed while wearing prototype orthopedic shoes containing experimental industrial-grade springs. Although the manufacturer marketed them as "business casual," the rulebook was later amended to classify them as "unfairly bouncy."\n\nHis title has been revoked. It now belongs to you.\n\nHistory rarely remembers those who finish second. Fortunately for you, history occasionally loses its paperwork for several decades.\n\nOr...\n\nYou completed an entire level by jumping from beginning to end without allowing Dr. Marion Wayne the luxury of taking a single normal step. Dr. Marion Wayne would like to point out that gravity is supposed to be an occasional inconvenience, not a lifestyle.',
+    reward:'Lifetime membership in the Kalamazoo Association of Competitive Hoppers, one imaginary championship belt, and the satisfaction of knowing your knees are now officially someone else\u2019s problem.' },
+  { title:'1991 Grand Champion of the Floor-Is-Lava Invitational of Oconomowoc, Wisconsin',
+    body:'Congratulations!\n\nAfter the original scorecards were rediscovered inside a library book that had been overdue since the Clinton administration, the International Committee for Extremely Questionable Sports convened an emergency session to review the 1991 Floor-Is-Lava Invitational.\n\nTheir findings were... troubling.\n\nThe committee determined that Joey Gladstone had repeatedly requested "bathroom breaks" during the competition, only to re-enter the course several feet farther along each time. While undeniably creative, this strategy was eventually categorized as "advanced teleportation," which violated at least three paragraphs of the official rules.\n\nHis championship has been rescinded. It now belongs to you.\n\nJustice moves slowly, but apparently not as slowly as municipal library systems.\n\nOr...\n\nYou refused to let Dr. Marion Wayne touch the ground for an entire level because apparently walking has become optional. Dr. Marion Wayne would like everyone to know he fully supports exercise. This was not exercise.',
+    reward:'An honorary lava-proof certificate, a commemorative trophy of questionable historical significance, and bragging rights that absolutely nobody can disprove.' },
+  { title:'1987 Vertical Persistence Cup of Walla Walla, Washington',
+    body:'Congratulations!\n\nThe results of the 1987 Vertical Persistence Cup have finally been corrected following testimony from four eyewitnesses, a retired scorekeeper, and one remarkably detailed diary kept by a concession stand employee.\n\nInvestigators determined that Carlton Banks spent nearly one-third of the competition stopping to admire his own footwork after every successful jump. While judges originally interpreted this as confidence, the official rulebook clearly specifies that contestants must continue hopping "without excessive celebration."\n\nAfter thirty-nine years, the record has finally been amended. The championship is now yours.\n\nEnjoy the moment. These opportunities don\u2019t come around often, mostly because they require decades of administrative delays.\n\nOr...\n\nYou completed an entire level by hopping nonstop, forcing Dr. Marion Wayne to reconsider several life choices. He\u2019d also appreciate it if your next accomplishment involved walking. Just once.',
+    reward:'A personalized participation ribbon that has somehow become a championship ribbon, one invisible trophy, and permission to mention this accomplishment during annual performance reviews. Human Resources will pretend not to hear you.' },
+  { title:'1985 Perpetual Motion Trophy of Ho-Ho-Kus, New Jersey',
+    body:'Congratulations!\n\nAfter years of speculation, the Office of Retroactive Athletic Corrections has completed its review of the 1985 Ho-Ho-Kus Perpetual Motion Tournament.\n\nOfficials discovered that Balki Bartokomous had interpreted the phrase "continuous hopping" to include performing the Dance of Joy between jumps. While the judges initially applauded his enthusiasm, subsequent review determined that choreography and athletic competition occupy two very different sections of the rulebook.\n\nHis championship has officially been vacated. It now belongs to you.\n\nSometimes greatness isn\u2019t about being the best. Sometimes it\u2019s about waiting forty years for someone else to read the fine print.\n\nOr...\n\nYou spent an entire level jumping without ever letting Dr. Marion Wayne experience the simple pleasure of walking like a normal mascot. He\u2019s beginning to suspect you enjoy this.',
+    reward:'One commemorative plaque, an honorary title nobody asked for, and exclusive membership in a club that almost certainly doesn\u2019t exist.' },
+  { title:'1990 Elastic Kneecap Invitational of Peculiar, Missouri',
+    body:'Congratulations!\n\nThe 1990 Elastic Kneecap Invitational has been under review ever since a local newspaper published an article titled "Did We Measure That Correctly?" Although widely dismissed at the time, the question refused to go away.\n\nA recent forensic analysis of the original measuring equipment determined that Cosmo Kramer had unknowingly competed on a practice course that was approximately 18% shorter than regulation length.\n\nWhile undeniably energetic, his performance no longer qualifies for the record books. The title has officially been transferred to you.\n\nSometimes history isn\u2019t rewritten by heroes. Sometimes it\u2019s rewritten by surveyors with better tape measures.\n\nOr...\n\nYou completed an entire level while hopping continuously because apparently the ground had personally offended you. Dr. Marion Wayne would like to remind everyone that he possesses legs for reasons beyond decoration.',
+    reward:'A regulation-sized imaginary trophy, unlimited storytelling privileges, and one exceptionally impressive line for your r\u00e9sum\u00e9.' },
+  { title:'1988 Order of Relentless Boinging of Truth or Consequences, New Mexico',
+    body:'Congratulations!\n\nFor nearly four decades, the Order of Relentless Boinging maintained that the 1988 championship results were beyond question. They were mistaken.\n\nFollowing an anonymous tip, investigators uncovered an administrative error revealing that Norm Peterson had accidentally been credited with an additional 2,000 hops after a scorekeeper spilled root beer onto the official tally sheet. Rather than admit the mistake, the committee simply rounded up and hoped no one would notice.\n\nEventually... someone noticed.\n\nThe championship has now been awarded to its rightful recipient. You.\n\nTake pride in this achievement. Very few people receive a trophy that should have been delivered before the invention of the internet.\n\nOr...\n\nYou completed an entire level by jumping nonstop and somehow convinced Dr. Marion Wayne that touching the ground was no longer part of his job description. He\u2019s requesting a brief meeting with your space bar.',
+    reward:'A beautifully engraved trophy that exists entirely in your imagination, eternal bragging rights, and the unquestionable honor of becoming the official 1988 Order of Relentless Boinging Champion of Truth or Consequences, New Mexico.' },
+  { title:'1986 Continuous Boing Cup of Mukwonago, Wisconsin',
+    body:'Congratulations!\n\nFor nearly forty years, the official results of the 1986 Continuous Boing Cup remained unchallenged. That changed when a documentary crew filming a completely unrelated special on municipal water towers accidentally uncovered the original judging notes tucked inside a folding chair.\n\nThe findings were conclusive.\n\nThe committee determined that Danny Tanner paused every twelve jumps to stop and straighten the lane markers because they "looked a little crooked." While his commitment to cleanliness was universally admired, the official rules clearly state that the clock continues to run during unsolicited housekeeping.\n\nHis championship has been vacated. It now belongs to you.\n\nJustice may not be swift, but it is surprisingly thorough once enough retirees have free afternoons.\n\nOr...\n\nYou completed an entire level by hopping from beginning to end, denying Dr. Marion Wayne the opportunity to enjoy something as basic as walking. He respects your determination. He does not respect what it has done to his knees.',
+    reward:'One commemorative championship sash, an invisible trophy polished to imaginary perfection, and the unquestionable privilege of telling everyone you peaked in Mukwonago.' },
+  { title:'1992 Grand Champion of the Airborne Appreciation Festival of Boring, Oregon',
+    body:'Congratulations!\n\nFollowing years of rumors, speculation, and an unfortunate incident involving a mislabeled filing cabinet, the Bureau of Historical Athletic Corrections has officially completed its review of the 1992 Airborne Appreciation Festival.\n\nTheir investigation revealed that Uncle Jesse Katsopolis had hired a fog machine for what he described as "dramatic entrances." Unfortunately, the resulting smoke prevented judges from verifying whether he had actually completed several sections of the course.\n\nWhile undeniably stylish, invisible athleticism is difficult to score.\n\nHis title has been revoked. It now belongs to you.\n\nHistory remembers champions. Paperwork remembers everyone else.\n\nOr...\n\nYou completed an entire level without allowing Dr. Marion Wayne to touch the ground for even a moment. He would like to remind you that hopping is generally considered an occasional activity, not a transportation strategy.',
+    reward:'An honorary key to the City of Boring (which opens absolutely nothing), a gold-plated imaginary medal, and lifelong bragging rights.' },
+  { title:'1984 National Spring-Heel Invitational of Normal, Illinois',
+    body:'Congratulations!\n\nThe results of the 1984 National Spring-Heel Invitational have officially been overturned after accountants performing a routine audit discovered that the championship bracket had been printed upside down.\n\nSeveral phone calls, two independent reviews, and one very awkward apology later, officials confirmed that Cliff Clavin had advanced through the tournament despite technically losing his opening match.\n\nWhen asked for comment, Cliff insisted the reversal was "part of a little-known postal regulation." It was not.\n\nHis championship has been rescinded. It now belongs to you.\n\nSometimes destiny is written by the victors. Sometimes it\u2019s written by whoever finally notices the spreadsheet is backwards.\n\nOr...\n\nYou bounced through an entire level because walking was apparently beneath you. Dr. Marion Wayne has begun researching ergonomic pogo sticks.',
+    reward:'A framed certificate of improbable excellence, one invisible championship trophy, and the satisfaction of knowing bureaucracy occasionally gets something right... eventually.' },
+  { title:'1989 Golden Kangaroo Trophy of Ding Dong, Texas',
+    body:'Congratulations!\n\nAfter thirty-seven years, the Ding Dong Historical Society finally agreed to digitize its athletic archives. During the process, volunteers discovered an envelope labeled "DO NOT OPEN UNTIL EVERYONE HAS CALMED DOWN."\n\nInside was the official protest against Kimmy Gibbler, who had reportedly distracted every other competitor by enthusiastically cheering for all of them at the exact same time.\n\nAlthough the rulebook encourages sportsmanship, it specifically prohibits "weaponized encouragement."\n\nThe protest should have been reviewed in 1989. Better late than never.\n\nHer title has been revoked. It now belongs to you.\n\nVery few people receive recognition for an event that predates online banking.\n\nOr...\n\nYou completed an entire level by jumping continuously, leaving Dr. Marion Wayne wondering if the floor had somehow become lava without informing him. It hadn\u2019t. You were simply committed to the bit.',
+    reward:'One spectacularly unnecessary championship trophy, unlimited storytelling rights, and the eternal admiration of absolutely no licensed orthopedic professionals.' },
+  { title:'1993 Why, Arizona Invitational for Exceptional Vertical Decision-Making',
+    body:'Congratulations!\n\nFor decades, historians believed the results of the 1993 Invitational were beyond dispute. That assumption changed when a former scorekeeper admitted he had accidentally been using the judging rubric from a regional pie-baking competition.\n\nThe revised calculations painted a very different picture.\n\nOfficials concluded that George Costanza had received bonus points for "excellent crust consistency," a category that, while important elsewhere, had no measurable impact on competitive jumping.\n\nFollowing an emergency session of the International Committee for Extremely Questionable Sports, his championship has officially been nullified. It now belongs to you.\n\nThe committee regrets the inconvenience. George regrets answering his phone.\n\nOr...\n\nYou completed an entire level while hopping nonstop, forcing Dr. Marion Wayne to question whether you understand the purpose of legs. He\u2019d like to assure everyone that walking remains fully supported by modern medicine.',
+    reward:'A championship jacket that exists only in spirit, one beautifully engraved imaginary trophy, and the unquestionable distinction of becoming the 1993 Invitational Champion of Why, Arizona. It\u2019s a title nobody can take away... mostly because nobody else wants it.' } ] },
+ { id:'perfectionist', badge:'\uD83D\uDCAF', scope:'level',
+   // Every medallion in one level.
+   when:function(f){ return f.atGoal && f.levelCoinsTotal>0 && f.levelCoins===f.levelCoinsTotal; },
+   variants:[
+  { title:'NO COIN LEFT BEHIND',
+    body:'Congratulations!\n\nYou collected 100% of the medallions in a single level.\nYes, we know they are medallions.\n\nThe achievement name was approved before anyone from Records Management reviewed the terminology.\n\nChanging it now would require a governance request.\nSo here we are.\nEvery medallion is accounted for.\nNo gaps.\nNo exceptions.\n\nNo tiny collectible sitting somewhere off-screen quietly ruining your percentage.\n\nDr. Marion Wayne has reviewed the final count and described your behavior as "admirably thorough, with concerning follow-through."\nManagement calls it attention to detail.\nYour family may use a different phrase.',
+    reward:'One imaginary 100% stamp, a perfectly clean collection report, and official permission to stop checking that last corner again.' },
+  { title:'LOCALIZED AUDIT MIRACLE',
+    body:'Congratulations!\n\nAn audit has been completed for this level.\n\nFor the first time in recent memory, the finding is:\nNothing.\nYou collected every available medallion.\n\nThe auditor checked the count twice, then checked the formula because perfection felt more likely to be a spreadsheet error.\nIt was not.\n\nDr. Marion Wayne has achieved full local compliance without a corrective action plan, remediation memo, or panicked email beginning with "Can everyone please check their folders?"\nThe audit team is unsure what to do next.\n\nThey have scheduled a meeting to discuss the absence of findings.',
+    reward:'One imaginary audit stamp reading NO EXCEPTIONS, a complete medallion count, and a meeting created solely because there was nothing to fix.' },
+  { title:'ONE LEVEL, ZERO EXCUSES',
+    body:'Congratulations!\n\nYou collected every medallion in the level.\nYou could have left one.\nNobody would have arrested you.\nThere is no Medallion Police.\nWe checked.\n\nBut something inside you saw 99% and took it personally.\nSo you went back.\nYou searched.\nYou found the missing one.\nAnd now the number says 100%.\n\nDr. Marion Wayne would like to congratulate you while also gently suggesting that perfection is not required in every area of life.\n\nYou have ignored him and are already looking at the next level.',
+    reward:'One imaginary perfect-score sticker and the temporary silence of the tiny voice in your head that knew one was missing.' },
+  { title:'THE CHECKLIST HAS NO EMPTY BOXES',
+    body:'Congratulations!\n\nEvery medallion in this level has been collected.\nThe checklist is complete.\nEvery box is checked.\n\nThis has produced an unfamiliar sensation within the organization known as closure.\n\nSeveral employees initially mistook it for a system outage.\n\nDr. Marion Wayne has submitted the completed list for approval.\n\nIt was returned because the approver wanted to know why there were no comments.\n\nThe explanation "because everything is done" has been deemed insufficiently detailed.\n\nPlease provide comments confirming that no comments are required.',
+    reward:'One imaginary clipboard full of checkmarks, a flawless level completion record, and proof that even perfection can generate a follow-up email.' } ] },
+ { id:'minimalist', badge:'\uD83E\uDEB6', scope:'level',
+   // Clear a level having collected none.
+   when:function(f){ return f.atGoal && f.levelCoinsTotal>0 && f.levelCoins===0; },
+   variants:[
+  { title:'STRATEGIC NON-ACQUISITION',
+    body:'Congratulations!\n\nYou completed an entire level without collecting a single medallion.\nZero assets acquired.\nZero inventory growth.\nZero temptation acknowledged.\n\nProcurement has reviewed your performance and declared it "exceptionally cost-conscious."\nThis is generous.\nYou mostly just walked past everything shiny.\n\nDr. Marion Wayne has demonstrated a bold new operational strategy known as:\nNot Picking Stuff Up.\nFinance loves it.\n\nRecords Management loves it even more because nothing new needs cataloged.\nThe medallions themselves appear hurt.',
+    reward:'One imaginary empty folder, a zero-dollar acquisition report, and the rare satisfaction of completing a mission without bringing home additional clutter.' },
+  { title:'NOTHING TO DECLARE',
+    body:'Congratulations!\n\nYou reached the end of the level carrying absolutely nothing you did not start with.\nThe customs officer looked at your inventory.\nThen at you.\nThen back at the inventory.\n"Nothing to declare?"\nCorrect.\nYou passed every medallion without touching one.\nNot accidentally.\n\nNot even the easy one sitting directly in your path like it wanted attention.\n\nDr. Marion Wayne has been cleared through Medallion Customs in record time.\nThe officer seems disappointed.\nHe had already opened the inspection form.',
+    reward:'One imaginary blank declaration card, an empty collection ledger, and the knowledge that for once nobody can accuse you of taking office property home.' },
+  { title:'ZERO ASSET EXPOSURE',
+    body:'Congratulations!\n\nYou completed the level with 0 medallions acquired.\nRisk Management is thrilled.\nYou cannot lose assets you never possess.\nYou cannot misplace them.\nYou cannot fail to inventory them.\n\nYou cannot receive an email asking why Asset #M-17 is showing in two locations.\n\nThis may be the safest strategy anyone has ever developed.\n\nDr. Marion Wayne simply passed every collectible and allowed someone else to worry about custody.\n\nThe Asset Accountability Office has called this "cowardly but administratively elegant."',
+    reward:'One imaginary zero-risk asset register, no chain-of-custody paperwork, and complete freedom from knowing where any of those medallions are now.' },
+  { title:'MINIMUM VIABLE PARTICIPATION',
+    body:'Congratulations!\n\nYou finished the level while collecting absolutely nothing.\nYou arrived.\nYou traversed the required environment.\nYou reached the objective.\nYou did not volunteer for anything extra.\n\nThis is perhaps the purest expression of scope discipline ever recorded.\n\nA supervisor asked why you ignored every medallion.\nDr. Marion Wayne replied:\n"Was it in the performance standard?"\nThe supervisor checked.\nIt was not.\nThe conversation ended immediately.\n\nSomewhere, a federal employee felt a disturbance in the Force and smiled.',
+    reward:'One imaginary certificate for Meeting Minimum Requirements With Exceptional Precision and exactly zero additional duties assumed.' } ] },
+ { id:'janitor', badge:'\uD83E\uDDF9', scope:'run',
+   // Every enemy AND every medallion. Grants the two below as well.
+   when:function(f){ return f.fullRun && f.coinsTotal>0 && f.coins===f.coinsTotal
+                                   && f.stompable>0 && f.stomps===f.stompable; },
+   variants:[
+  { title:'TERMINAL CLEAN: DISTURBINGLY THOROUGH',
+    body:'Congratulations!\n\nYou stomped every enemy and collected every medallion across all six levels.\nEverything.\nThere are no hostiles.\nNo missing assets.\nNo blinking objects in suspicious corners.\nYou have reduced six entire levels to:\nArchitecture.\nEnvironmental Services has been notified.\nThey are offended.\n\nA post-operation inspection was conducted to determine whether Dr. Marion Wayne had achieved the mythical organizational condition known as:\n"Completely Done."\n\nThe inspectors arrived with flashlights, clipboards, and the absolute certainty that you had missed something.\nThey checked behind things.\nNothing.\nUnder things.\nNothing.\n\nOne inspector triumphantly identified a tiny object in the corner.\nQuality Management confirmed it was a pixel.\nThe finding was withdrawn.\nEvery medallion was accounted for.\nEvery enemy was accounted for.\n\nTechnically, the enemies were accounted for through a collection of unusually flat incident locations, but Records Management accepted the documentation.\nSomeone then used the phrase:\n"Clean sweep."\nSenior leadership loved it.\nThere is now a Clean Sweep Initiative.\nIt has a logo.\nThere is a steering committee.\nNobody knows who is steering it.\n\nDr. Marion Wayne has been informed that his methods are now considered a best practice.\nHe regrets everything.',
+    reward:'One imaginary industrial custodial cart, a flawless white-glove inspection, and permanent designation as the person management calls when they need somebody to "just clean this mess up." They will never mean an actual mess.' },
+  { title:'CLOSEOUT CHECKLIST: NOTHING LEFT TO CLOSE',
+    body:'Congratulations!\n\nYou collected every medallion and stomped every enemy across all six levels.\n\nThe project closeout team has reviewed the numbers:\nAssets recovered: 100%.\nHostiles resolved: 100%.\nLoose ends: 0.\n\nThey checked twice because nobody trusted the zero.\nAn auditor finally asked the room:\n"So what\'s left?"\nNobody answered.\n\nThis was the first recorded instance of a closeout meeting ending because the work was actually complete.\n\nDr. Marion Wayne asked if that meant he could go home.\nManagement said yes.\n\nThen someone remembered the mandatory Lessons Learned session.\nIt has been scheduled for tomorrow morning.\n\nAttendance is required because your performance was described as "repeatable."\nIt is not.',
+    reward:'One imaginary signed closeout form, a dashboard containing nothing but green boxes, and a 90-minute meeting explaining how efficiently you eliminated the need for future meetings.' },
+  { title:'SCOPE CREEP: FULLY CONSUMED',
+    body:'Congratulations!\n\nThe original assignment was simple:\nMove through six levels.\n\nSomewhere along the way, you decided that wasn\'t enough.\nEvery medallion needed collecting.\nEvery enemy needed stomping.\nEvery suspicious corner needed inspection.\n\nThe scope expanded until there was literally nothing left on the map to add to it.\n\nChange Control has reviewed your run and determined that approximately 83% of what you did was "technically beyond minimum requirements."\n\nThey would like to deny the additional scope retroactively.\nUnfortunately, you already finished it.\n\nDr. Marion Wayne has therefore been praised for initiative and warned never to show this level of initiative again without completing the proper request form first.\nThe form is eleven pages.\nNobody knows where it is.\nYou probably do.',
+    reward:'One imaginary scope-management certificate, total completion of everything anybody could reasonably point at, and the dangerous precedent that "while you\'re there" is now considered a valid project plan.' },
+  { title:'WHITE-GLOVE APOCALYPSE',
+    body:'Congratulations!\n\nEvery medallion is gone.\nEvery enemy is gone.\n\nThe inspection team entered the level wearing white gloves and expressions of professional suspicion.\nThey were ready to find something.\nAnything.\nThey found nothing.\nOne inspector checked the same corner four times.\n\nAnother quietly asked whether the level had been replaced with a cleaner level.\nIT confirmed it had not.\n\nDr. Marion Wayne has achieved a condition Environmental Services refers to only in legends:\n"No deficiencies noted."\n\nThe lead inspector stared at the blank checklist for several seconds, signed it, and requested reassignment.\n\nQuality Management immediately scheduled a follow-up inspection because a perfect inspection is considered inherently suspicious.',
+    reward:'One imaginary white glove with absolutely nothing on it, a zero-deficiency report, and the certainty that somebody will inspect you again purely because you passed too well.' } ] },
+ { id:'completionist', badge:'\uD83D\uDCBE', scope:'run',
+   // Every medallion across Levels 1-6.
+   when:function(f){ return f.fullRun && f.coinsTotal>0 && f.coins===f.coinsTotal; },
+   variants:[
+  { title:'100% DATA RECOVERY: THIS WAS A MISTAKE',
+    body:'Congratulations!\n\nYou collected every medallion across all six levels.\nEvery.\nSingle.\nOne.\nSome were sitting directly in your path.\n\nOthers were hidden in locations no reasonable person would ever search unless specifically instructed by an auditor, a subpoena, or a supervisor saying:\n"I know it\'s in there somewhere."\n\nFor years, the Legacy Systems Recovery Team had classified several of these items as:\n"Functionally unrecoverable."\nThis is an industry term meaning:\n\n"We stopped looking and assumed everyone who remembered where it was would eventually retire."\nIt was a solid plan.\nThen you showed up.\nYou found everything.\nThis has created a problem.\nThe archive is now complete.\nRecords Management is ecstatic.\nIT is deeply uncomfortable.\n\nThree former project managers have changed their phone numbers.\n\nOne executive has asked whether recovered data can be "un-recovered."\n\nIT explained that yes, technically it can, but usually only by accident during scheduled maintenance.\n\nThe executive has requested scheduled maintenance.\nRequest denied.\n\nDr. Marion Wayne would like to congratulate you on recovering 100% of the available medallions and restoring several decades of institutional knowledge that absolutely nobody was prepared to have available again.\nYou have proven that nothing was truly lost.\nIt was merely extremely inconvenient to locate.\n\nThis distinction will now appear in several uncomfortable meetings.\n\nAnd because you successfully found everything, management has reached the obvious conclusion:\n\nYou are now the person who knows where everything is.\nThis designation is permanent.\n\nPeople you have never met will begin emailing you shortly.',
+    reward:'One write-protected imaginary floppy disk, a complete backup of information everyone preferred to believe was gone forever, and permanent organizational recognition as "the person who found it last time." Every future search request will now be forwarded to you until retirement.' },
+  { title:'THE ARCHIVE IS COMPLETE. PLEASE EXPLAIN WHY.',
+    body:'Congratulations!\n\nYou collected every medallion across all six levels.\nAll of them.\nThe obvious ones.\nThe inconvenient ones.\n\nThe ones hidden just far enough out of the way to make a normal person say:\n"Absolutely not."\nYou said yes.\nRepeatedly.\n\nThe Office of Records Integrity has compared your collection against the master inventory and reached a conclusion nobody expected to document during their natural lifetime:\n0 ITEMS MISSING.\nThis triggered an automatic alert.\nNot because anything is wrong.\n\nBecause the system was never programmed to expect this result.\n\nThe alert was escalated to IT, then Records Management, then Compliance, and finally to a contractor who retired in 2014 but whose email address remains on three distribution lists.\nHe replied:\n"How did you get this address?"\nNobody answered.\n\nMeanwhile, Dr. Marion Wayne has been informed that the medallion archive is now complete, indexed, reconciled, and ready for review.\nHe asked who plans to review it.\nSilence.\nHe asked why he collected it.\nMore silence.\n\nA manager eventually described the effort as "important for historical continuity," which is organizational language for:\n"We don\'t know, but deleting it now feels risky."\n\nThe collection will therefore be retained indefinitely.\n\nNobody will look at it again until an inspection is announced.\n\nAt that point, it will become the most important thing in the building.',
+    reward:'One perfectly reconciled imaginary archive, an audit finding of "No Exceptions Noted," and the crushing knowledge that your reward for completing the impossible is proving the impossible can now be assigned as a recurring task.' },
+  { title:'NO MEDALLION LEFT BEHIND',
+    body:'Congratulations!\n\nYou found every medallion in every level.\nThis stopped being normal several medallions ago.\n\nMost players see a collectible slightly off the main path and think:\n"Maybe next time."\n\nYou saw it and apparently took that as a personal accusation.\nWalls were checked.\nCorners were searched.\nPlatforms were revisited.\n\nEntire sections were crossed again because somewhere, deep inside your brain, a tiny compliance officer was whispering:\n"The numbers don\'t reconcile."\nEventually, they did.\n100%.\n\nThe Medallion Accountability Dashboard has turned green for the first time since anyone can remember.\n\nSenior leadership immediately requested a screenshot because they had heard rumors such a thing was theoretically possible.\n\nThe screenshot has been placed into a PowerPoint presentation titled:\n\n"Operational Excellence Through Personal Sacrifice."\nYour name is not on the slide.\n\nDr. Marion Wayne has asked whether collecting every medallion means the mission is finally complete.\nManagement has confirmed that it does.\nThen they added:\n"For this reporting period."\nDr. Wayne has stopped asking questions.',
+    reward:'One imaginary green checkmark, complete medallion accountability across six levels, and the honor of establishing a performance benchmark that everyone after you will quietly resent.' },
+  { title:'YOU FOUND THE MISSING ATTACHMENT',
+    body:'Congratulations!\n\nYou collected every medallion across all six levels.\n\nMore importantly, you have demonstrated a rare and dangerous ability:\nYou can actually find things.\n\nThe organization has been searching for someone like you.\nNot intentionally.\n\nBut now that you\'ve revealed yourself, there is no going back.\n\nWithin minutes of your accomplishment, the following requests were submitted:\n\n"Can you find the spreadsheet from the old shared drive?"\n\n"Do you remember where we saved the final-final version?"\n"There was an email sometime around 2017..."\n"I think somebody named Dave had it."\nAnd, most ominously:\n"It should be easy for you."\nYou did this to yourself.\n\nBy locating every medallion, you have become organizationally classified as Good At Finding Stuff.\n\nThis classification outranks job descriptions, workload limits, and basic human boundaries.\n\nDr. Marion Wayne attempted to explain that collecting medallions inside a platform game does not qualify him to reconstruct a decade of abandoned file-management practices.\nHis objection was documented.\n\nThen someone forwarded him a broken SharePoint link and wrote:\n"Thoughts?"\nThere will be no escape.',
+    reward:'One imaginary paperclip attachment icon, permanent membership in the unofficial Lost File Recovery Team, and a lifetime subscription to emails beginning with "Quick question..." There is never a quick question.' } ] },
+ { id:'stomper', badge:'\uD83D\uDC62', scope:'run',
+   // Stomp every enemy across Levels 1-6.
+   when:function(f){ return f.fullRun && f.stompable>0 && f.stomps===f.stompable; },
+   variants:[
+  { title:'AGGRESSIVE PRIORITIZATION: BACKLOG ELIMINATED',
+    body:'Congratulations!\n\nYou stomped every enemy across all six levels.\nEvery.\nSingle.\nOne.\nThere are no remaining hostiles.\nNo unresolved threats.\nNo carryover items.\nNo pending action plans.\n\nThe Enemy Management Dashboard is completely empty.\nManagement has never seen anything like it.\n\nThey are both impressed and increasingly concerned about what you believe the word "management" means.\n\nAt the beginning of this initiative, leadership asked Dr. Marion Wayne to:\n\n"Identify barriers and aggressively drive them down."\nThis was corporate language.\nThey meant process improvement.\nMaybe a workflow review.\nPossibly a Lean event.\nAt most, somebody expected a fishbone diagram.\nYou interpreted the instruction literally.\nSix levels later, there are no barriers.\nMostly because you jumped on all of them.\nThe Post-Implementation Review has already begun.\n\nQUESTION 1: Were all identified threats successfully addressed?\nYes.\n\nQUESTION 2: Were alternative mitigation strategies considered?\nTechnically.\nQUESTION 3: For how long?\nApproximately zero seconds.\n\nQUESTION 4: Could some of these encounters have been avoided entirely?\nAbsolutely.\nQUESTION 5: Why weren\'t they?\n\nBecause apparently Dr. Marion Wayne had metrics to hit.\n\nThe review board then discovered something even more disturbing.\n\nYou did not merely stomp every enemy you happened to encounter.\nYou looked for the ones you missed.\nYou went back.\nYou checked corners.\nYou investigated suspicious platforms.\n\nYou actively sought out creatures that had successfully avoided you and introduced them to the bottom of Dr. Wayne\'s shoes.\n\nThis has caused Legal to recommend that the phrase "Aggressive Prioritization" never again appear in an official performance plan.\nHuman Resources has proposed replacing it with:\n"100% Hostile Stakeholder Resolution."\nLegal rejected that too.\nRisk Management suggested:\n"Comprehensive Environmental Deconfliction."\n\nNobody knows what that means, so it has been provisionally approved.\n\nMeanwhile, senior leadership has reviewed your results and made the worst possible decision:\nThey are impressed.\n\nA PowerPoint presentation is already being developed.\nThe working title is:\n\n"Doing More With Less: Lessons From Dr. Marion Wayne."\nSlide 7 contains a picture of a boot.\n\nSlide 8 says ACCOUNTABILITY for no apparent reason.\n\nSlide 9 contains an upward-trending arrow despite there being no numerical data whatsoever.\nYou have become a best practice.\nMay God have mercy on everyone.',
+    reward:'One imaginary steel-toed performance award, a completely empty enemy backlog, and permanent recognition as the employee who was told to "remove obstacles" and somehow made everyone regret not being more specific.' },
+  { title:'NO OPEN ACTION ITEMS',
+    body:'Congratulations!\n\nYou stomped every enemy across Levels 1\u20136.\nThe action-item tracker is empty.\nCompletely empty.\nThere are no overdue items.\nNo yellow items.\nNo red items.\n\nNo mysterious items assigned to someone who left the organization three years ago.\nThis should be cause for celebration.\n\nInstead, the Program Management Office has launched an investigation.\n\nThey have never seen a tracker with nothing on it before and initially assumed the spreadsheet had failed to load.\n\nIT confirmed the spreadsheet is functioning normally.\nThat made things worse.\n\nA review of your methodology determined that Dr. Marion Wayne personally engaged every outstanding hostile and applied the same corrective action:\nStomp.\n\nThe PMO asked whether issues were categorized by severity before remediation.\nNo.\nWhether root-cause analysis was performed.\nNo.\nWhether stakeholders were consulted.\nSome of them made noises.\n\nThat has been entered into the minutes as "limited stakeholder feedback."\n\nThe committee then noticed that several enemies had been well outside the normal travel path.\n\nMeaning you did not merely close the action items assigned to you.\nYou searched for additional action items.\nNobody does that.\n\nThe PMO is now worried you may discover their other trackers.\n\nDr. Marion Wayne has been instructed to take the rest of the day off before he starts resolving things that leadership was hoping would quietly roll into next quarter.',
+    reward:'One pristine imaginary action-item log showing ZERO OPEN ITEMS, a ceremonial green status indicator, and the privilege of watching management immediately create four new action items to determine how you closed the old ones.' },
+  { title:'PROCESS IMPROVEMENT, BUT WITH BOOTS',
+    body:'Congratulations!\n\nYou eliminated every enemy across all six levels.\n\nA Lean process-improvement team has reviewed your run.\nThey have concerns.\n\nThe assignment was to identify waste, remove unnecessary barriers, and improve flow.\n\nYou heard the words "remove unnecessary barriers."\n\nEverything after that appears to have been drowned out by stomping noises.\n\nThe team arrived with sticky notes, process maps, stopwatches, and enough dry-erase markers to survive a minor institutional collapse.\nYou arrived with shoes.\nSomehow, your method was faster.\n\nThe analysts documented several forms of waste traditionally recognized in process improvement:\nWaiting.\nExcess motion.\nDefects.\nOverprocessing.\nAnd now, apparently:\nEnemies.\n\nOne certified Black Belt objected that enemies are not an officially recognized category of operational waste.\nThen an enemy walked into him.\nThe objection was withdrawn.\n\nDr. Marion Wayne has since achieved perfect enemy-removal throughput with a standardized work instruction consisting entirely of:\n1. Locate problem.\n2. Gain altitude.\n3. Apply footwear.\n4. Continue mission.\n\nLeadership has requested that this process be scaled across the enterprise.\n\nThe Lean team has strongly recommended against this.\n\nLeadership has scheduled a meeting to discuss their lack of innovation.',
+    reward:'One imaginary process-improvement certificate with a boot print across the signature line, a current-state map containing absolutely no enemies, and the dangerous organizational reputation of being someone who actually eliminates the problems identified during workshops.' },
+  { title:'FULL-CONTACT STAKEHOLDER ENGAGEMENT',
+    body:'Congratulations!\n\nYou achieved a 100% stakeholder engagement rate.\n\nUnfortunately, Legal would like to discuss your definition of engagement.\nYou stomped every enemy across Levels 1\u20136.\nNobody was overlooked.\nNobody was skipped.\n\nNobody successfully hid behind scenery and waited for you to leave.\nYou made contact with everyone.\n\nThe Stakeholder Engagement Office initially celebrated when the dashboard reached 100%.\nThere were balloons.\nSomeone ordered cupcakes.\nThen they reviewed the methodology.\nThe balloons were removed.\n\nThe cupcakes remained because they were nonrefundable.\n\nAccording to the engagement plan, Dr. Marion Wayne was expected to identify affected parties, establish communication channels, solicit feedback, and document outcomes.\n\nYou completed one of those four steps with extraordinary consistency.\n\nThe documented outcome for every hostile stakeholder is simply:\n"Resolved."\n\nA compliance reviewer asked for additional detail.\nThe revised entry reads:\n"Resolved vertically."\nThis did not help.\n\nMore troublingly, your stakeholder map shows that several enemies required deliberate backtracking to reach.\n\nIn other words, some stakeholders made every reasonable effort not to engage with you.\nYou engaged them anyway.\n\nCommunications has asked that you never represent the organization at a town hall.\n\nDr. Marion Wayne considers this an unexpected secondary reward.',
+    reward:'One imaginary stakeholder matrix consisting entirely of green checkmarks, a 100% contact rate that nobody is permitted to cite publicly, and a leftover cupcake from the celebration that ended the moment Legal opened the methodology tab.' } ] },
+ { id:'pacifist', badge:'\uD83D\uDD4A\uFE0F', scope:'run',
+   // Clear Levels 1-6 having stomped nothing. Scanning still counts as mercy.
+   when:function(f){ return f.fullRun && f.stomps===0; },
+   variants:[
+  { title:'MANDATORY CONFLICT AVOIDANCE TRAINING: COMPLETED',
+    body:'Congratulations!\n\nYou have successfully completed Levels 1\u20136 without stomping a single enemy.\nNot one.\n\nThere were creatures wandering directly in your path. Several were openly hostile. At least two of them had facial expressions that strongly suggested they had already imagined your funeral.\n\nAnd yet, somehow, every single one of them is still alive.\n\nThe Department of Unnecessarily Aggressive Solutions has reviewed your performance and classified it as:\n"Disturbingly reasonable."\nThis is unprecedented.\n\nA special review panel was immediately assembled to determine whether you misunderstood the controls, suffered a prolonged moral crisis, or simply refused to participate in the game\'s clearly established ecosystem of casual workplace violence.\n\nAfter fourteen hours of deliberation, the panel reached no conclusion.\nOne member called your restraint "inspiring."\n\nThat individual has been removed from the committee.\n\nDr. Marion Wayne, meanwhile, has completed the required Conflict De-Escalation documentation and would like it entered into the record that at no point did he kick, crush, flatten, concuss, compress, or otherwise dramatically rearrange another living creature.\n\nThis may be the cleanest personnel file he has ever had.\n\nUnfortunately, several enemies have now interpreted your mercy as weakness and are forming a committee.',
+    reward:'One imaginary white dove, a certificate recognizing your commitment to nonviolence, and the eternal satisfaction of knowing that dozens of hostile creatures went home safely to their families. Some of those families are probably planning revenge.' },
+  { title:'HOSTILE WORK ENVIRONMENT: SUCCESSFULLY AVOIDED',
+    body:'Congratulations!\n\nYou completed Levels 1\u20136 without stomping a single enemy.\n\nThis means that despite repeated exposure to hostile personnel, obstructive wildlife, questionable creatures, and at least several individuals whose entire job description appeared to be "walk directly into Dr. Marion Wayne," you chose not to retaliate.\nHuman Resources has reviewed the incident.\nAll of the incidents.\nThere were a surprising number of incidents.\n\nTheir official determination is that Dr. Marion Wayne demonstrated exceptional restraint, professionalism, and a frankly suspicious commitment to progressive discipline.\nEvery enemy received:\nA verbal warning.\nA second verbal warning.\nA strongly worded mental note.\n\nAnd eventually, the opportunity to wander away without consequence.\nSeveral declined.\nYou still let them live.\n\nLegal would like to personally thank you for preventing approximately 147 hypothetical workplace injury claims.\nRisk Management has calculated the savings.\n\nThey refuse to tell you the number because they are afraid someone will ask for part of it.\n\nDr. Marion Wayne has been nominated for the prestigious Golden Binder Award for Excellence in Not Creating Additional Paperwork.\n\nThe nomination was immediately lost inside a larger binder.',
+    reward:'One commemorative conflict-resolution pamphlet, zero workers\' compensation claims, and the knowledge that Legal Services briefly smiled when they saw your name. Nobody has been able to confirm whether this has ever happened before.' },
+  { title:'THE GENEVA SUGGESTIONS',
+    body:'Congratulations!\n\nAgainst all available evidence, you have decided that this is apparently a diplomatic mission.\n\nYou completed Levels 1\u20136 without stomping a single enemy.\nNot because the enemies stopped attacking you.\nThey absolutely did not.\nNot because they apologized.\nThey absolutely did not.\n\nNot because peace suddenly broke out across the land.\nIt very much did not.\n\nYou simply looked at an entire population of creatures whose primary method of communication was walking aggressively in your direction and decided:\n"No."\n\nMilitary historians have reviewed your strategy and determined that it technically qualifies as "leaving."\nInternational observers were initially skeptical.\n\nThen they saw you leap over seventeen consecutive hostile creatures without harming any of them and upgraded your classification to:\n"Advanced leaving."\n\nDr. Marion Wayne would like to clarify that he has not become a pacifist.\n\nHe has simply discovered that jumping over problems is considerably faster than completing the associated incident reports.\n\nSeveral enemies have since filed complaints alleging that being completely ignored was psychologically devastating.\nThose complaints are currently being ignored.',
+    reward:'One imaginary Nobel Peace Prize from an organization with absolutely no authority to issue one, diplomatic immunity from nothing whatsoever, and the permanent right to tell people you resolved six consecutive hostile situations without throwing a single punch. Mostly because this game does not have a punch button.' },
+  { title:'ZERO TERMINATIONS THIS QUARTER',
+    body:'Congratulations!\n\nManagement has reviewed your quarterly performance metrics.\nThere is a problem.\n\nAccording to the data, you completed Levels 1\u20136 while terminating zero employees.\nZero.\nNone.\n\nEvery hostile creature encountered during this reporting period remains gainfully employed.\nSomewhere.\nProbably.\n\nThis has caused significant confusion among senior leadership, who were previously operating under the assumption that "stomp everything that moves" was both an effective strategy and an unofficial organizational value.\nAn emergency meeting was scheduled.\nThe meeting produced three subcommittees.\n\nThe subcommittees produced eleven recommendations.\n\nNine of those recommendations involved additional meetings.\nThe remaining two recommended stomping.\nYou rejected all of them.\n\nDr. Marion Wayne instead implemented a revolutionary management philosophy known as "Going Around Them."\nEarly results have been extraordinary.\nEnemy mortality is down 100%.\nTravel time has increased slightly.\n\nMorale remains impossible to measure because nobody has distributed the survey.\n\nOne executive described your performance as "a bold new paradigm."\n\nAnother asked whether you were sure the stomp button was working.\nIT has confirmed that it was.',
+    reward:'One spotless disciplinary record, an imaginary plaque reading "Employee Retention Champion," and a 0.00% reduction in your actual workload. Congratulations on achieving excellence without receiving anything useful in return.' } ] },
+ { id:'nodeath', badge:'\uD83D\uDC80', scope:'run',
+   // Clear Levels 1-6 without dying once.
+   when:function(f){ return f.fullRun && f.deaths===0; },
+   variants:[
+  { title:'SUSPICIOUSLY ALIVE',
+    body:'Congratulations!\n\nYou completed Levels 1\u20136 without dying.\nNot once.\nThis is statistically inconvenient.\nThe game has pits.\nEnemies.\nBad decisions.\nQuestionable collision detection.\n\nAnd several architectural features that appear to have been designed by someone who considered guardrails a sign of weakness.\nYet somehow, Dr. Marion Wayne remains alive.\n\nThe Office of Expected Casualties has reviewed your run and determined that your survival falls well outside normal operating parameters.\nAn investigation has been opened.\nCurrent theories include:\nExceptional skill.\nUnusually cautious decision-making.\nA clerical error.\nDivine intervention.\n\nOr the possibility that you simply refused to die because doing so would require completing additional paperwork.\nThat final theory currently has the most support.\n\nThe Mortality Review Committee has requested access to your save file.\n\nTheir request was denied after Legal discovered that the committee itself had no documented authority, no approved charter, and apparently no reason to exist beyond occupying Conference Room B every other Thursday.\n\nDr. Marion Wayne has been advised not to celebrate prematurely.\nHe has ignored this advice.\n\nHe is currently informing anyone within hearing distance that he has completed six consecutive hostile environments without becoming a workplace statistic.\n\nRisk Management has asked him to stop phrasing it that way.\nHe has also ignored this advice.',
+    reward:'One completely unused emergency contact form, a pristine imaginary body bag that can now be returned to inventory, and the deeply uncomfortable realization that the game has been keeping track of how often you die this entire time.' },
+  { title:'MORTALITY RATE: 0.00%',
+    body:'Congratulations!\n\nYou completed Levels 1\u20136 without dying.\nThe actuarial department has been notified.\nThey are furious.\n\nYour continued survival has invalidated three projections, two risk models, and one extremely confident PowerPoint presentation titled:\n\n"Why Dr. Marion Wayne Will Absolutely Not Make It."\nThe presentation contained charts.\nThere were arrows.\nOne slide simply said "THE PIT" in 44-point font.\nYou have made all of it useless.\n\nAn emergency statistical review determined that you encountered enough hostile creatures, environmental hazards, questionable jumps, and poorly placed edges to produce an expected casualty rate described by analysts as:\n"Well... more than zero."\nInstead, you survived.\nEvery level.\nEvery hazard.\n\nEvery opportunity to convert a minor mistake into a dramatic restart.\n\nThe Chief Actuary has accused you of manipulating the data.\nIT checked.\nYou did not.\n\nHe has now accused reality of manipulating the data.\nThat investigation is ongoing.\n\nDr. Marion Wayne has responded to his newly calculated 100% survival rate by requesting a reduction in his life insurance premiums.\nThe request was denied.\n\nApparently, "being very good at platformers" is not currently recognized as a protected actuarial category.',
+    reward:'One commemorative pie chart showing absolutely nothing in the "Deaths" category, an imaginary 0% mortality ribbon, and the satisfaction of personally ruining someone\'s quarterly risk forecast.' },
+  { title:'RETURN TO SENDER',
+    body:'Congratulations!\n\nDeath came looking for Dr. Marion Wayne.\nRepeatedly.\nIt had the correct address.\nIt had identification.\nIt had all the required forms.\nIt even scheduled an appointment.\nYou were not available.\n\nYou completed Levels 1\u20136 without dying a single time.\n\nAs a result, the Department of Final Outcomes has been forced to return your file marked:\n"UNDELIVERABLE."\n\nThis has created a significant administrative backlog.\n\nDeath would like everyone to understand that this is not a failure of service.\n\nAccording to the official incident report, you repeatedly avoided pits, enemies, collisions, and several opportunities that were considered "basically guaranteed."\nOne field agent wrote:\n"He just jumped over it."\nAnother wrote:\n"Again."\nA third simply attached a resignation letter.\n\nDr. Marion Wayne has requested that his case be permanently closed.\n\nThe request was denied because, according to department policy, everyone eventually becomes eligible.\nHe has asked to appeal.\n\nLegal has strongly advised him not to antagonize the concept of mortality.\nHe has filed the appeal anyway.',
+    reward:'One imaginary envelope stamped RETURN TO SENDER, temporary removal from Death\'s active workload, and the comforting knowledge that somewhere, a supernatural bureaucracy has your file sitting in the wrong tray.' },
+  { title:'INCIDENT REPORT NOT REQUIRED',
+    body:'Congratulations!\n\nFor the first time in recorded organizational history, nobody needs to fill out Form 27-B:\n\n"Unexpected Employee Death During Routine Mascot Operations."\nYou completed Levels 1\u20136 without dying.\n\nThis may not sound impressive until you understand what normally happens after an incident.\nFirst, the supervisor must be notified.\nThen Safety.\nThen Risk Management.\nThen Human Resources.\n\nThen someone asks whether the employee was wearing the appropriate footwear.\n\nThen twelve people attend a meeting that could have been an email.\nThen the email gets sent anyway.\nBy staying alive, you prevented all of this.\n\nProductivity across the organization increased by an estimated 3.7%.\nNobody knows what to do with the extra time.\n\nOne manager has already scheduled a meeting to discuss it.\n\nSafety reviewed your run and confirmed that Dr. Marion Wayne successfully avoided all fatal hazards despite receiving absolutely no additional protective equipment, hazard pay, or meaningful institutional support.\nThis has been classified as:\n\n"A personal achievement and therefore not budget-relevant."\nFinance is very pleased with this determination.\n\nDr. Marion Wayne has requested that the unused incident-report packet be shredded.\nRecords Management denied the request.\nIt must be retained for seven years.\nJust in case.',
+    reward:'One untouched stack of mandatory forms, zero post-incident meetings, and the rare privilege of costing the organization absolutely nothing in preventable death-related administrative labor.' } ] },
+ { id:'speedrun', badge:'\u23F1\uFE0F', scope:'run',
+   // Clear Levels 1-6 inside the target time.
+   when:function(f){ return f.fullRun && f.timeMs<SPEEDRUN_TARGET_MS; },
+   variants:[
+  { title:'AHEAD OF SCHEDULE. PLEASE DON\'T TELL MANAGEMENT.',
+    body:'Congratulations!\n\nYou completed Levels 1\u20136 under the target time.\nThis is excellent news.\nIt is also extremely dangerous information.\n\nManagement has already asked whether the original schedule was "too conservative."\nIt was not.\nYou were just fast.\nThese are not the same thing.\n\nUnfortunately, somebody took a screenshot of your completion time and placed it into a briefing labeled:\n"NEW PERFORMANCE OPPORTUNITIES."\n\nDr. Marion Wayne has requested that everyone remember this was an exceptional run requiring concentration, skill, and several decisions he does not intend to repeat.\nLeadership heard only the word "repeat."\nNext quarter\'s timeline has been shortened.\nYou\'re welcome, everyone.',
+    reward:'One imaginary stopwatch, a personal best, and the privilege of proving that every future deadline can now be made slightly worse.' },
+  { title:'THE TIME STUDY HAS BEEN COMPROMISED',
+    body:'Congratulations!\n\nYou finished all six levels under the target time while a process analyst was trying to establish a normal baseline.\nYou have ruined everything.\nThe analyst had a stopwatch.\nA clipboard.\nA carefully prepared observation sheet.\n\nThen Dr. Marion Wayne tore through the entire run like someone had announced the parking garage closes in five minutes.\nYour result was immediately labeled:\n"STATISTICAL OUTLIER \u2014 DO NOT USE."\nSenior leadership found it five minutes later.\nIt is now the new benchmark.\nThe analyst has objected in writing.\n\nHis objection has been attached to the benchmark as supporting documentation.',
+    reward:'One imaginary stopwatch with smoke coming off it, a destroyed baseline study, and responsibility for a performance standard nobody else agreed to.' },
+  { title:'SCHEDULE VARIANCE: SUSPICIOUSLY POSITIVE',
+    body:'Congratulations!\n\nFor once, the schedule dashboard is green for a reason that isn\'t formatting.\nYou completed Levels 1\u20136 under the target time.\nProject Management confirmed the result.\nFinance then asked the question everyone feared:\n\n"If it can be done this quickly, do we still need all the resources?"\nThe room became silent.\n\nDr. Marion Wayne attempted to explain the difference between a speedrun and sustainable staffing methodology.\nFinance wrote down "staffing methodology."\nA follow-up meeting has been scheduled.\nYour name is in the subject line.',
+    reward:'One imaginary green Gantt-chart bar, a favorable schedule variance, and the knowledge that finishing early somehow created more work than finishing late would have.' },
+  { title:'EARLY COMPLETION IS ITS OWN PUNISHMENT',
+    body:'Congratulations!\n\nYou finished Levels 1\u20136 under the target time.\nYou are done early.\nThis briefly felt good.\nThen someone noticed.\n\nA supervisor has reviewed the remaining calendar and identified several "quick things" you can help with now that you have extra time.\nThere are nine quick things.\nTwo have attachments.\nOne begins with the phrase:\n"Since you\'re already in there..."\n\nDr. Marion Wayne has learned an important professional lesson:\n\nNever let anyone know exactly how fast you can finish something.\n\nHe will remember this during all future estimates.',
+    reward:'One imaginary gold stopwatch, undeniable proof of your speed, and precisely zero additional free time.' } ] },
+ { id:'overtime', badge:'\uD83C\uDF00', scope:'once',
+   // Clear the bonus Legacy Labyrinth.
+   when:function(f){ return f.atGoal && f.level===6; },
+   variants:[
+  { title:'LEGACY LABYRINTH: AFTER-HOURS ACCESS',
+    body:'Congratulations!\n\nYou completed the Legacy Labyrinth.\nThe bonus level.\nThe part nobody actually required you to enter.\nThe doors were confusing.\nThe route made no sense.\n\nSeveral passages appeared to exist solely because removing them would require locating the original contract.\nIn other words, it was a legacy system.\n\nDr. Marion Wayne successfully navigated the entire thing without a map, migration plan, or the retired employee everyone swore used to understand it.\nIT would like documentation of the route.\nYou did not take notes.\nThe knowledge has already become tribal again.',
+    reward:'One imaginary after-hours access badge, completion of the Legacy Labyrinth, and the privilege of becoming the new person everyone calls when they get lost in it.' },
+  { title:'YOU STAYED LATE FOR THIS?',
+    body:'Congratulations!\n\nThe normal game was over.\nYou could have stopped.\nYou could have gone home.\n\nInstead, you entered the Legacy Labyrinth because apparently free time made you uncomfortable.\n\nHours later, Dr. Marion Wayne emerged victorious, tired, and carrying the expression of someone who has just solved a problem that should never have existed.\nManagement is impressed by your dedication.\n\nThey would like to clarify that this does not constitute authorized overtime.\nPlease adjust your timecard accordingly.',
+    reward:'One imaginary lukewarm break-room coffee, a completed bonus level, and heartfelt appreciation that cannot be converted into compensatory time.' },
+  { title:'BONUS DUTY, NO BONUS PAY',
+    body:'Congratulations!\n\nYou completed the Legacy Labyrinth.\n\nThe word "bonus" may have created unreasonable expectations.\nThere is no bonus pay.\nNo special leave.\nNo retention incentive.\nThere is, however, another achievement popup.\n\nFinance has confirmed this is substantially cheaper.\n\nDr. Marion Wayne navigated an optional maze of obsolete logic and questionable architecture entirely for the satisfaction of saying he did it.\n\nLeadership has classified this as employee engagement.\n\nYour union representative may classify it differently.',
+    reward:'One imaginary overtime voucher marked DENIED, bragging rights, and a bonus that consists exclusively of the word "bonus."' },
+  { title:'THE HALLWAY THAT SHOULD NOT EXIST',
+    body:'Congratulations!\n\nYou survived the Legacy Labyrinth.\n\nDuring your journey, you encountered corridors that connected to nothing, turns that appeared to violate planning principles, and at least one route that felt like it had been added in 2009 as a temporary workaround.\nIt is still there.\n\nFacilities insists the hallway is not on the official floor plan.\nIT insists it belongs to Facilities.\nFacilities insists it is probably an IT hallway.\n\nDr. Marion Wayne walked through it anyway and somehow reached the exit.\n\nA work order has been submitted to determine why the Labyrinth exists.\nStatus: Pending Assignment.',
+    reward:'One imaginary ball of string, an unofficial map nobody will maintain, and the distinction of successfully navigating infrastructure that all responsible departments deny owning.' } ] },
+ { id:'uat', badge:'\uD83E\uDDEA', scope:'run',
+   // Anti-achievement: die seven times. Fires the moment it happens.
+   when:function(f){ return f.deaths>=7; },
+   variants:[
+  { title:'EXTENSIVE USER ACCEPTANCE TESTING',
+    body:'Congratulations!\n\nYou have died at least seven times this session.\nWe could call this failure.\nBut that is not how mature organizations speak.\n\nYou have conducted Extensive User Acceptance Testing.\nEach death generated valuable information.\nFor example:\nThat pit works.\nThat enemy works.\nGravity remains fully operational.\n\nAnd Dr. Marion Wayne continues to be surprisingly vulnerable to all three.\n\nQuality Assurance appreciates your commitment to repeatedly validating features that had already been validated.\nNo defects were found.\nIn you, several were suspected.',
+    reward:'One imaginary test-completion certificate, seven or more confirmed functioning hazards, and permission to describe the entire session as "data collection."' },
+  { title:'QUALITY ASSURANCE BY REPEATED IMPACT',
+    body:'Congratulations!\n\nYou have now died enough times for the failures to qualify as a methodology.\nQA reviewed the evidence.\nYour testing protocol appears to be:\n1. Approach hazard.\n2. Make questionable decision.\n3. Experience consequence.\n4. Repeat for confidence.\n\nTraditional testers might stop after confirming the issue once.\nYou demanded statistical certainty.\n\nDr. Marion Wayne has personally verified that pits remain deep, enemies remain hostile, and restarting remains available.\nYour dedication to reproducibility is unmatched.\nYour dedication to survival is less impressive.',
+    reward:'One imaginary crash-test helmet, an extremely well-validated respawn system, and a QA report containing the phrase "unable to reproduce because user eventually learned."' },
+  { title:'SEVEN FAILURES, ONE DELIVERABLE',
+    body:'Congratulations!\n\nYou died seven or more times and still kept going.\n\nProject Management has chosen to focus on the second half of that sentence.\n\nThe first six deaths were classified as developmental iterations.\nThe seventh triggered governance review.\nA manager asked whether lessons had been learned.\nDr. Marion Wayne confidently said yes.\n\nThe next death occurred approximately forty seconds later.\nThe minutes have been amended to read:\n"Lessons identified."\n\nThis is different from lessons learned and considerably easier to defend.',
+    reward:'One imaginary lessons-learned document containing no actual lessons, continued access to the retry button, and recognition for delivering results despite aggressively testing the definition of progress.' },
+  { title:'WORKING AS INTENDED (PROBABLY)',
+    body:'Congratulations!\n\nAfter seven or more deaths, IT has completed its investigation.\nThe game is working.\nThe controls are working.\nThe enemies are working.\nThe pits are definitely working.\n\nAttention has therefore shifted to the remaining variable:\nYou.\nDr. Marion Wayne requested escalation.\n\nTier 2 support watched the replay and quietly closed the ticket with the resolution code:\nUSER TRAINING.\nYou reopened it.\nThey closed it again.\nYou died during the argument.\nThe ticket remains closed.',
+    reward:'One imaginary support ticket marked RESOLVED, a fully functional death counter, and the comforting assurance that the system has been thoroughly tested by the least predictable component available.' } ] }
 ];
-// Each achievement can be earned once per run: hop-clear several levels and you
-// get a different one each time. Starting a new game puts them all back in play.
-let usedAchievements=[];            // indices already awarded this run
-let earnedBadges=[];                // badges collected this run (for High Scores)
-function achievementsLeft(){ return usedAchievements.length<HOP_ACHIEVEMENTS.length; }
-function resetRun(){ usedAchievements=[]; earnedBadges=[]; lives=3; }
+
+// ---- run bookkeeping ----
+// Everything the predicates above are judged against. A "run" is one attempt at
+// the game; resetRun() starts a fresh one.
+let earned={};                      // key -> true, so nothing is awarded twice
+let variantsUsed={};                // id -> variant indices already shown this run
+let earnedBadges=[];                // badges this run (feeds High Scores)
+let run={ fromStart:false, startedAt:0, deaths:0,
+          stomps:0, stompable:0, coins:0, coinsTotal:0 };
+let lvlCoins=0, lvlStomps=0;        // this level's tally, folded into the run at the goal
+// The full-run achievements only count when the player actually began at Level 1:
+// otherwise a jump to Level 6 from the level select would qualify for all of them.
+function resetRun(fromStart){
+  earned={}; variantsUsed={}; earnedBadges=[];
+  run={ fromStart:!!fromStart, startedAt:Date.now(), deaths:0,
+        stomps:0, stompable:0, coins:0, coinsTotal:0 };
+  lives=3;
+}
+function achievementFacts(extra){
+  const f={ level:currentLevel, atGoal:false, hopped:false,
+            levelCoins:lvlCoins, levelCoinsTotal:0, levelStomps:lvlStomps, levelStompable:0,
+            fromStart:run.fromStart, deaths:run.deaths,
+            stomps:run.stomps, stompable:run.stompable,
+            coins:run.coins, coinsTotal:run.coinsTotal,
+            timeMs:Date.now()-run.startedAt };
+  for(const k in extra) f[k]=extra[k];
+  // "the whole game, played properly": Levels 1-6, begun at Level 1, just finished
+  f.fullRun = f.atGoal && f.fromStart && f.level===5;
+  return f;
+}
+function achievementKey(a,level){ return a.scope==='level' ? a.id+'@'+level : a.id; }
+// Returns the achievements these facts have just earned, in array order, and
+// marks them so they can't be won again this run.
+function award(f){
+  const hits=[];
+  for(const a of ACHIEVEMENTS){
+    const k=achievementKey(a,f.level);
+    if(earned[k])continue;
+    if(!a.when(f))continue;
+    earned[k]=true; hits.push(a);
+  }
+  return hits;
+}
+// Called the instant a goal is touched: fold this level into the run totals
+// (the bonus level is outside the Levels 1-6 accounting), then judge the run.
+function awardAtGoal(extra){
+  extra.atGoal=true;
+  if(currentLevel<=5){
+    run.coins+=extra.levelCoins||0;   run.coinsTotal+=extra.levelCoinsTotal||0;
+    run.stomps+=extra.levelStomps||0; run.stompable+=extra.levelStompable||0;
+  }
+  return award(achievementFacts(extra));
+}
 
 // ===== Bonus (LEVELS[6]) "The Legacy Labyrinth": 71-row tile map, single source of truth =====
 // Legend: # tile_floating(wall)  = tile_ground  - tile_girder  ^ spikes  v ceiling-spikes
@@ -469,6 +700,7 @@ function buildFrom(def){
   enemies=def.enemies.map(function(e){return {x:e[0],minX:e[1],maxX:e[2],floorY:e[3],dir:1,alive:true,w:46,h:64};});
   const g=def.goalRect; goal={x:g[0],y:g[1],w:g[2],h:g[3]};
   allCoinsAwarded=false; fx=[];
+  lvlCoins=0; lvlStomps=0;   // per-level achievement tally; the 3D Level 6 reports its own
 }
 function loadLevel(i){
   if(i===5){ start3DGoLive(); return; }   // Go Live is the embedded 2.5D stage
@@ -476,6 +708,8 @@ function loadLevel(i){
   currentLevel=i; buildFrom(LEVELS[i]);
   player.x=L.start[0]; player.y=L.start[1]; player.vx=0; player.vy=0;
   player.onGround=false; player.face=1; player.invuln=60; player.highY=player.y;
+  player.lock=12;   // same brief input lockout respawn uses: a direction still
+                    // held from the previous level must not act on frame one
   camX=0; camY=0; lives=pendingLives||lives; pendingLives=0; levelStartScore=score; state='playing'; paused=false;
   player.walkedOnGround=false;   // reset hop-achievement tracking for this attempt
   // hideAllScreens rather than naming screens one by one, so a screen added
@@ -525,7 +759,29 @@ function start3DGoLive(){
   if(!golivePreloaded && !golive3dFrame.src.includes('preload=1')) preloadGoLive();
   beginGoLive();
   golive3dBox.classList.remove('hidden');
+  focusGoLive();
 }
+// An iframe only receives key events once it holds focus, which used to mean the
+// player had to click the stage before Level 6 would answer the controls at all.
+// Focus it as it appears - and again a moment later, since focusing an element
+// that is still being laid out silently does nothing.
+function focusGoLive(){
+  for(const delay of [0,60,250]) setTimeout(function(){
+    if(!goliveActive)return;
+    try{ golive3dFrame.focus(); golive3dFrame.contentWindow.focus(); }catch(e){}
+  },delay);
+}
+// Belt and braces: if focus ends up back on the host - the player clicked the
+// page border, tabbed away and back - forward what we get to the stage instead.
+// When the iframe does have focus these never fire, so nothing is doubled up.
+function forwardKeyToGoLive(e){
+  if(!goliveActive)return;
+  if(e.target&&e.target.tagName==='INPUT')return;
+  try{ golive3dFrame.contentWindow.postMessage(
+    {source:'golive3d-host',type:'key',code:e.code,down:e.type==='keydown'},'*'); }catch(err){}
+}
+addEventListener('keydown',forwardKeyToGoLive);
+addEventListener('keyup',forwardKeyToGoLive);
 function stop3DGoLive(){
   goliveActive=false; golivePreloaded=false; pendingBegin=null;
   golive3dBox.classList.add('hidden');
@@ -543,14 +799,19 @@ addEventListener('message',function(e){
   if(d.type==='complete'){
     score=levelStartScore+(d.score||0);
     if(typeof d.lives==='number') lives=d.lives;   // carry survivors into the bonus level
+    run.deaths+=d.deaths||0;
     updateHud();
-    const hopped=!d.walkedOnGround && achievementsLeft();
+    // The 3D stage keeps its own medallion and bot tallies, so it reports them
+    // rather than the host guessing from the 2D Level 6 definition.
+    const won=awardAtGoal({ hopped:!d.walkedOnGround,
+      levelCoins:d.coins||0, levelCoinsTotal:d.coinsTotal||0,
+      levelStomps:d.stomps||0, levelStompable:d.enemiesTotal||0 });
     stop3DGoLive(); unlockedBonus=true;
-    if(hopped){ state='achieve';
-      fadeTo(function(){ showAchievement(showVictory); }); }
+    if(won.length){ state='achieve';
+      fadeTo(function(){ showAchievements(won,showVictory); }); }
     else { state='victory'; fadeTo(showVictory); }
   } else if(d.type==='gameover'){
-    score=levelStartScore+(d.score||0); updateHud();
+    score=levelStartScore+(d.score||0); run.deaths+=d.deaths||0; updateHud();
     stop3DGoLive(); state='gameover'; fadeTo(showGameOver);
   }
 });
@@ -743,20 +1004,33 @@ function showScores(){ state='scores'; renderScores(); hideAllScreens(); scores.
 
 let afterAchieve=null;   // what to do when the achievement screen is dismissed
 let stateBeforeAchieve=null;   // restored on dismiss, else the next button does nothing
-function showAchievement(next){
-  // pick at random from the ones this run hasn't awarded yet
-  const pool=[]; for(let i=0;i<HOP_ACHIEVEMENTS.length;i++) if(usedAchievements.indexOf(i)<0) pool.push(i);
-  if(!pool.length){ if(next)next(); return; }
+// A different variant each time the same achievement comes up. Once they have
+// all been seen this run the set goes back into play rather than showing nothing.
+function pickVariant(a){
+  const used=variantsUsed[a.id]||(variantsUsed[a.id]=[]);
+  if(used.length>=a.variants.length)used.length=0;
+  const pool=[]; for(let i=0;i<a.variants.length;i++) if(used.indexOf(i)<0) pool.push(i);
   const idx=pool[Math.floor(Math.random()*pool.length)];
-  usedAchievements.push(idx);
-  const a=HOP_ACHIEVEMENTS[idx];
+  used.push(idx); return a.variants[idx];
+}
+function showAchievement(a,next){
+  const v=pickVariant(a);
   if(earnedBadges.indexOf(a.badge)<0)earnedBadges.push(a.badge);
-  document.getElementById('achieveTitle').textContent=a.title;
-  document.getElementById('achieveBody').textContent=a.body;
+  document.getElementById('achieveTitle').textContent=v.title;
+  document.getElementById('achieveBody').textContent=v.body;
   const rw=document.getElementById('achieveReward');
-  if(a.reward){ rw.style.display=''; rw.textContent=a.reward; } else rw.style.display='none';
+  if(v.reward){ rw.style.display=''; rw.textContent=v.reward; } else rw.style.display='none';
+  document.getElementById('achieveBox').scrollTop=0;   // chained screens start at the top
   afterAchieve=next; stateBeforeAchieve=state; state='achieve';
   hideAllScreens(); achieve.classList.remove('hidden');
+}
+// One goal touch can earn several at once (Janitor also grants Completionist and
+// Stomp Specialist), so they queue up and are shown one screen after another
+// before whatever was going to happen next.
+function showAchievements(list,next){
+  if(!list||!list.length){ if(next)next(); return; }
+  const rest=list.slice(1);
+  showAchievement(list[0], rest.length ? function(){ showAchievements(rest,next); } : next);
 }
 document.getElementById('achieveBtn').addEventListener('click',function(e){ e.stopPropagation();
   const nx=afterAchieve; afterAchieve=null;
@@ -764,13 +1038,13 @@ document.getElementById('achieveBtn').addEventListener('click',function(e){ e.st
   if(nx)fadeTo(nx); });
 
 function overlayAction(){
-  if(state==='start'||state==='won'){ fadeTo(function(){ score=0; resetRun(); loadLevel(0); }); }
+  if(state==='start'||state==='won'){ fadeTo(function(){ score=0; resetRun(true); loadLevel(0); }); }
   else if(state==='leveldone'){ fadeTo(function(){ loadLevel(currentLevel+1); }); }
   else if(state==='lost'){ fadeTo(function(){ score=levelStartScore; loadLevel(currentLevel); }); }
 }
 overlay.addEventListener('click',overlayAction);
 document.getElementById('ovMain').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(goMain); });
-document.getElementById('bonusBtn').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(function(){ score=0; resetRun(); loadLevel(6); }); });
+document.getElementById('bonusBtn').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(function(){ score=0; resetRun(false); loadLevel(6); }); });
 document.getElementById('scoresBtn').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(showScores); });
 document.getElementById('scoresBack').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(goMain); });
 document.getElementById('scoresExport').addEventListener('click',function(e){ e.stopPropagation(); exportScores(); });
@@ -800,7 +1074,8 @@ document.getElementById('pMain').addEventListener('click',function(e){ e.stopPro
 
 // ===== TESTING: level-select handlers (delete this block for production) =====
 document.querySelectorAll('.lsBtn').forEach(function(b){
-  b.addEventListener('click',function(e){ e.stopPropagation(); const n=parseInt(b.dataset.lvl,10); fadeTo(function(){ score=0; resetRun(); loadLevel(n); }); });
+  // starting at Level 1 here is a real run from the start; anywhere else is not
+  b.addEventListener('click',function(e){ e.stopPropagation(); const n=parseInt(b.dataset.lvl,10); fadeTo(function(){ score=0; resetRun(n===0); loadLevel(n); }); });
 });
 // ===== END TESTING handlers =====
 
@@ -854,9 +1129,17 @@ function drawFx(){
 function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;}
 function hitPlayer(){
   if(player.invuln>0)return;
-  if(INFINITE_LIVES){ respawn(); return; }   // TESTING: no life loss
-  lives--; updateHud();
-  if(lives<=0){ state='gameover'; fadeTo(showGameOver); } else respawn();
+  run.deaths++;
+  let out=false;
+  if(!INFINITE_LIVES){ lives--; updateHud(); out=lives<=0; }   // TESTING: no life loss
+  if(out)state='gameover'; else respawn();
+  // "Extensive User Acceptance Testing" is the one achievement earned by dying, so
+  // it is judged here rather than at a goal. It has to be judged on the way out as
+  // well: past the third death every death is a game over, so checking only the
+  // survivable ones would mean seven deaths could never actually be reached.
+  const won=award(achievementFacts({}));
+  if(out){ fadeTo(function(){ showAchievements(won,showGameOver); }); }
+  else if(won.length){ fadeTo(function(){ showAchievements(won,function(){ achieve.classList.add('hidden'); }); }); }
 }
 function safetyFloorY(){ return player.highY + FALL_CAP; }
 
@@ -906,7 +1189,7 @@ function update(){
   if(!climb&&player.y>H+120){ hitPlayer(); return; }   // stop processing this frame after a pit death
 
   for(const c of coins){ if(!c.got&&overlap(player,{x:c.x-4,y:c.y-4,w:44,h:44})){
-    c.got=true;score++;updateHud();
+    c.got=true;score++;lvlCoins++;updateHud();
     if(!allCoinsAwarded&&coins.every(function(cc){return cc.got;})){
       allCoinsAwarded=true;lives++;updateHud();spawn1Up(player.x+player.w/2,player.y);}
   } }
@@ -918,21 +1201,22 @@ function update(){
     const eb={x:e.x,y:e.floorY-e.h,w:e.w,h:e.h};
     if(overlap(player,eb)){
       if(player.vy>0&&player.prevBottom<=eb.y+16){
-        e.alive=false;player.vy=STOMP_SPRING;score++;updateHud();spawnBounce(e.x+e.w/2,eb.y+e.h/2);}
+        e.alive=false;player.vy=STOMP_SPRING;score++;lvlStomps++;updateHud();spawnBounce(e.x+e.w/2,eb.y+e.h/2);}
       else hitPlayer(); } }
   if(overlap(player,goal)){
-    const hopped = !player.walkedOnGround && achievementsLeft();
+    const won=awardAtGoal({ hopped:!player.walkedOnGround,
+      levelCoins:lvlCoins, levelCoinsTotal:coins.length,
+      levelStomps:lvlStomps, levelStompable:enemies.length });
     if(currentLevel<5){ state='leveldone'; const cl=L.name, nm=LEVELS[currentLevel+1].name, sc=score;
       const showDone=function(){ showOverlay('LEVEL COMPLETE!','"'+cl+'" cleared! Medallions so far: '+sc+'. Next stop: '+nm+'.','CONTINUE'); };
-      if(hopped){ fadeTo(function(){ showAchievement(showDone); }); }
-      else fadeTo(showDone);
+      fadeTo(function(){ showAchievements(won,showDone); });
     } else if(currentLevel===5){
-      if(hopped){ state='achieve'; unlockedBonus=true;
-        fadeTo(function(){ showAchievement(showVictory); }); }
-      else { state='victory'; unlockedBonus=true; fadeTo(showVictory); }
+      unlockedBonus=true;
+      if(won.length){ state='achieve'; fadeTo(function(){ showAchievements(won,showVictory); }); }
+      else { state='victory'; fadeTo(showVictory); }
     } else { const sc=score;
-      const showWin=function(){ showOverlay('LABYRINTH CONQUERED!','You escaped The Legacy Labyrinth with '+sc+' medallions. Legendary run!','START'); };
-      if(hopped){ state='achieve'; fadeTo(function(){ showAchievement(function(){ state='won'; showWin(); }); }); }
+      const showWin=function(){ state='won'; showOverlay('LABYRINTH CONQUERED!','You escaped The Legacy Labyrinth with '+sc+' medallions. Legendary run!','START'); };
+      if(won.length){ state='achieve'; fadeTo(function(){ showAchievements(won,showWin); }); }
       else { state='won'; fadeTo(showWin); } }
   }
 
@@ -1085,7 +1369,11 @@ window.__dmw={ jumpTo:function(i){ loadLevel(i); },
   kill:function(n){ for(var i=0;i<(n||1);i++){ player.invuln=0; hitPlayer(); } },
   get state(){ return state; }, get lives(){ return lives; }, get score(){ return score; },
   get player(){ return player; }, get enemies(){ return enemies; }, get coins(){ return coins; },
-  key:function(k,v){ keys[k]=v; } };
+  key:function(k,v){ keys[k]=v; },
+  // achievements: what the run has banked, and what it has already won
+  get run(){ return run; }, get earned(){ return earned; }, get badges(){ return earnedBadges; },
+  runMs:function(){ return Date.now()-run.startedAt; },
+  resetRun:function(fromStart){ resetRun(fromStart!==false); } };
 
 buildFrom(LEVELS[0]); updateHud(); updateLevelSelect();
 document.getElementById('levelTxt').textContent='';

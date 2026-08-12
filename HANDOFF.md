@@ -1,15 +1,15 @@
 # Handoff — Dr. Marion Wayne, achievements work
 
-Written to carry this project into a fresh conversation. The next job is
-**implementing the ten achievements that are written but not yet detected.**
+**Status: done.** All eleven achievements from `achievements-doc.md` — 52 flavor
+variants — are implemented in `index.html` and in the generated `FullHTML.html`.
+What follows is kept as a description of how the game is put together; §3 and §4
+describe the system as it was *before* that work, and §8 records what shipped.
 
 The spec is `achievements-doc.md` in the repo root — 11 achievement types, 52
-flavor variants, rules and emoji all decided. One of the eleven (Pogo) is built.
-This file covers how the game is put together and what implementing the rest
-will run into.
+flavor variants, rules and emoji all decided.
 
-Everything here is verified against the repo, not recalled. Line numbers are from
-`9317f87`; `achievements-doc.md` arrived in `0b6dc39`.
+Everything here is verified against the repo, not recalled. Line numbers in §3
+are from `9317f87` and no longer match the current file.
 
 ---
 
@@ -288,7 +288,88 @@ Files that matter for this work:
 - `tools/` — the two build scripts that produce `FullHTML.html`
 
 Present but not involved:
-- `golive3d/` — the ThreeJS Level 6 used by the hosted build
 - `leaderboard/` — an undeployed Cloudflare Worker for a shared score board;
   `LEADERBOARD_URL` in `index.html` is empty, so it is inert
 - `scores.json` — empty array; the optional committed high-score board
+
+---
+
+## 8. What was actually built
+
+`HOP_ACHIEVEMENTS` became `ACHIEVEMENTS`: eleven entries, each with an `id`, a
+`badge`, a `scope`, a `when(f)` predicate and a list of `variants`. One evaluator
+(`award`) replaces both old `hopped` computations. Variants are picked at random
+per achievement, so hop-clearing six levels still gives six different Pogo texts.
+
+Bookkeeping added next to the array: `run` (deaths, stomps, stompable, coins,
+coinsTotal, startedAt, fromStart) plus `lvlCoins` / `lvlStomps` for the level in
+progress. `resetRun(fromStart)` takes an argument now — true only when the run
+begins at Level 1, which is what gates the six full-run achievements.
+
+Where it hooks in:
+
+| Where | What |
+|---|---|
+| `buildFrom` | clears `lvlCoins` / `lvlStomps` |
+| coin pickup | `lvlCoins++` |
+| stomp branch | `lvlStomps++` (a scanner kill is deliberately not a stomp) |
+| `hitPlayer` | `run.deaths++`, then judges Extensive UAT — on the game-over path too, since past the third death every death is a game over |
+| goal overlap | `awardAtGoal(...)` banks the level and returns what was earned |
+| postMessage `complete` | the same, from the figures the 3D stage reports |
+
+`showAchievement(a,next)` shows one; `showAchievements(list,next)` chains them,
+because Janitor also grants Completionist and Stomp Specialist — a flawless run
+ends on seven screens in a row.
+
+The 3D Level 6 now reports `deaths`, `coins`, `coinsTotal`, `stomps` and
+`enemiesTotal` alongside its score (`golive3d/src/main.js`, `engine.js`), so the
+hosted build's full-run totals are the stage's real ones rather than a guess from
+the 2D Level 6 definition.
+
+Two follow-ups, both now settled:
+- `SPEEDRUN_TARGET_MS` is **4 minutes**. `__dmw.runMs()` reports the elapsed time
+  of the run in progress if it ever needs re-tuning.
+- Level 6's last medallion moved from x=5050 to **x=4960**, in both
+  `LEVELS[5]` (index.html) and `golive3d/src/leveldata.js`. At 5050 its hitbox
+  overlapped the goal's, so no run could touch the flag without collecting it and
+  Minimalist was unreachable on that level. At 4960 the two are 34 px apart: walk
+  through it to collect, jump over it to skip.
+
+### Spawning with a direction held
+
+Holding a direction as a level loaded killed you instantly, on every level, in
+both builds. Two causes, both fixed:
+
+- **Spawn points sat 2 px inside the floor.** `start:[80,GROUND-70]` dates from
+  when the player was 68 px tall; `buildFrom` has set `player.h=72` for a while,
+  so the spawn box overlapped the ground solid by 2 px. With no input this is
+  invisible — `vx` is 0, so the horizontal collision pass does nothing and the
+  vertical pass settles the player onto the floor. With a direction held on frame
+  one, the horizontal pass runs first and resolves the overlap by ejecting the
+  player to `r.x - player.w` — x = **-46**, outside the world, falling to their
+  death. Every `start` is now `GROUND-72`, flush with the floor, in `LEVELS` and
+  in `golive3d/src/leveldata.js`. (The Labyrinth was already correct.)
+- **The input lockout only ran on respawn.** `respawn()` sets `player.lock=12`;
+  `loadLevel` did not, and the 3D engine's initial state had `lock: 0`. Both now
+  start locked for the same 12 ticks, so a key still held from the previous level
+  cannot act before the player has settled.
+
+Either fix alone is sufficient; both are in, because a spawn point inside a solid
+is worth removing rather than masking. Verified across all seven levels holding
+left, right, left+jump and right+jump: no life lost through the lockout, and the
+player never leaves the world.
+
+### Level 6 input
+
+The stage runs in an iframe, and an iframe sees no key events until it holds
+focus — which meant clicking the screen before the controls answered at all.
+`start3DGoLive` now calls `focusGoLive()`, which focuses the frame at 0/60/250 ms
+(focusing an element mid-layout silently does nothing, so one attempt is not
+enough). As a fallback, `forwardKeyToGoLive` relays the host's own keydown/keyup
+to the stage by postMessage for the case where focus lands back on the parent;
+`main.js` handles `{type:'key'}` exactly as a local key event. When the iframe has
+focus the host sees no key events at all, so nothing is handled twice.
+
+Testing note: the preview pane suspends `requestAnimationFrame` outright, so the
+game cannot be driven there. The achievements were verified by running the script
+out of `FullHTML.html` under Node against a stub DOM and pumping frames by hand.
