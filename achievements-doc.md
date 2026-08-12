@@ -301,12 +301,11 @@ You completed an entire level while hopping nonstop, forcing Dr. Marion Wayne to
 
 ## 📝 DESIGNED (not yet coded) — need flavor text + build
 
-These have agreed-upon detection rules but no flavor text written and are NOT in the
-game yet. Each needs: BADGE (emoji) / TITLE / BODY / REWARD.
+These have agreed-upon detection rules but are NOT yet coded. Pacifist now has completed flavor text; the remaining achievements still need theirs.
 
 | Achievement | Rule | Notes |
 |---|---|---|
-| **Pacifist** | Finish Levels 1–6 stomping ZERO enemies | Full run from Level 1 only |
+| **Pacifist** | Finish Levels 1–6 stomping ZERO enemies | Full run from Level 1 only; flavor text complete |
 | **No-Death Run** | Finish Levels 1–6 with ZERO deaths | Full run from Level 1 only |
 | **Completionist "100% Data Recovery"** | Collect EVERY medallion across all 6 levels | Full run |
 | **Stomp Specialist "Aggressive Prioritization"** | Stomp EVERY enemy across Levels 1–6 | Full run; opposite of Pacifist |
@@ -317,7 +316,218 @@ game yet. Each needs: BADGE (emoji) / TITLE / BODY / REWARD.
 | **Overtime Hero** | Complete the bonus "Legacy Labyrinth" level | — |
 | **Extensive User Acceptance Testing** | Die 7+ times total in a session | Anti-achievement (comedic) |
 
+---
+
+## 📝 DESIGNED: Pacifist (4 flavor variants)
+
+**Trigger:** Finish Levels 1–6 while stomping ZERO enemies.
+**Frequency:** Full run from Level 1 only.
+**Badge:** 🕊️ (same badge for all 4 variants)
+**Behavior:** When earned, the game randomly displays ONE of the 4 variants below.
+
+The on-screen header for all of them is: **NEW ACHIEVEMENT UNLOCKED!**
+
+---
+
+### Variant 1
+**Badge:** 🕊️
+**Title:** MANDATORY CONFLICT AVOIDANCE TRAINING: COMPLETED
+
+**Body:**
+Congratulations!
+
+You have successfully completed Levels 1–6 without stomping a single enemy.
+
+Not one.
+
+There were creatures wandering directly in your path. Several were openly hostile. At least two of them had facial expressions that strongly suggested they had already imagined your funeral.
+
+And yet, somehow, **every single one of them is still alive.**
+
+The Department of Unnecessarily Aggressive Solutions has reviewed your performance and classified it as:
+
+**"Disturbingly reasonable."**
+
+This is unprecedented.
+
+A special review panel was immediately assembled to determine whether you misunderstood the controls, suffered a prolonged moral crisis, or simply refused to participate in the game's clearly established ecosystem of casual workplace violence.
+
+After fourteen hours of deliberation, the panel reached no conclusion.
+
+One member called your restraint "inspiring."
+
+That individual has been removed from the committee.
+
+**Dr. Marion Wayne**, meanwhile, has completed the required Conflict De-Escalation documentation and would like it entered into the record that at no point did he kick, crush, flatten, concuss, compress, or otherwise dramatically rearrange another living creature.
+
+This may be the cleanest personnel file he has ever had.
+
+Unfortunately, several enemies have now interpreted your mercy as weakness and are forming a committee.
+
+**Reward:** One imaginary white dove, a certificate recognizing your commitment to nonviolence, and the eternal satisfaction of knowing that dozens of hostile creatures went home safely to their families.
+
+Some of those families are probably planning revenge.
+
+---
+
+### Variant 2
+**Badge:** 🕊️
+**Title:** HOSTILE WORK ENVIRONMENT: SUCCESSFULLY AVOIDED
+
+**Body:**
+Congratulations!
+
+You completed Levels 1–6 without stomping a single enemy.
+
+This means that despite repeated exposure to hostile personnel, obstructive wildlife, questionable creatures, and at least several individuals whose entire job description appeared to be **"walk directly into Dr. Marion Wayne,"** you chose not to retaliate.
+
+Human Resources has reviewed the incident.
+
+All of the incidents.
+
+There were a surprising number of incidents.
+
+Their official determination is that **Dr. Marion Wayne demonstrated exceptional restraint, professionalism, and a frankly suspicious commitment to progressive discipline.**
+
+Every enemy received:
+
+A verbal warning.
+
+A second verbal warning.
+
+A strongly worded mental note.
+
+And eventually, the opportunity to wander away without consequence.
+
+Several declined.
+
+You still let them live.
+
+Legal would like to personally thank you for preventing approximately 147 hypothetical workplace injury claims.
+
+Risk Management has calculated the savings.
+
+They refuse to tell you the number because they are afraid someone will ask for part of it.
+
+**Dr. Marion Wayne** has been nominated for the prestigious Golden Binder Award for Excellence in Not Creating Additional Paperwork.
+
+The nomination was immediately lost inside a larger binder.
+
+**Reward:** One commemorative conflict-resolution pamphlet, zero workers' compensation claims, and the knowledge that Legal Services briefly smiled when they saw your name.
+
+Nobody has been able to confirm whether this has ever happened before.
+
+---
+
+### Variant 3
+**Badge:** 🕊️
+**Title:** THE GENEVA SUGGESTIONS
+
+**Body:**
+Congratulations!
+
+Against all available evidence, you have decided that this is apparently a diplomatic mission.
+
+You completed Levels 1–6 without stomping a single enemy.
+
+Not because the enemies stopped attacking you.
+
+They absolutely did not.
+
+Not because they apologized.
+
+They absolutely did not.
+
+Not because peace suddenly broke out across the land.
+
+It very much did not.
+
+You simply looked at an entire population of creatures whose primary method of communication was **walking aggressively in your direction** and decided:
+
+"No."
+
+Military historians have reviewed your strategy and determined that it technically qualifies as **"leaving."**
+
+International observers were initially skeptical.
+
+Then they saw you leap over seventeen consecutive hostile creatures without harming any of them and upgraded your classification to:
+
+**"Advanced leaving."**
+
+**Dr. Marion Wayne** would like to clarify that he has not become a pacifist.
+
+He has simply discovered that jumping over problems is considerably faster than completing the associated incident reports.
+
+Several enemies have since filed complaints alleging that being completely ignored was psychologically devastating.
+
+Those complaints are currently being ignored.
+
+**Reward:** One imaginary Nobel Peace Prize from an organization with absolutely no authority to issue one, diplomatic immunity from nothing whatsoever, and the permanent right to tell people you resolved six consecutive hostile situations without throwing a single punch.
+
+Mostly because this game does not have a punch button.
+
+---
+
+### Variant 4
+**Badge:** 🕊️
+**Title:** ZERO TERMINATIONS THIS QUARTER
+
+**Body:**
+Congratulations!
+
+Management has reviewed your quarterly performance metrics.
+
+There is a problem.
+
+According to the data, you completed Levels 1–6 while terminating **zero employees.**
+
+Zero.
+
+None.
+
+Every hostile creature encountered during this reporting period remains gainfully employed.
+
+Somewhere.
+
+Probably.
+
+This has caused significant confusion among senior leadership, who were previously operating under the assumption that "stomp everything that moves" was both an effective strategy and an unofficial organizational value.
+
+An emergency meeting was scheduled.
+
+The meeting produced three subcommittees.
+
+The subcommittees produced eleven recommendations.
+
+Nine of those recommendations involved additional meetings.
+
+The remaining two recommended stomping.
+
+You rejected all of them.
+
+**Dr. Marion Wayne** instead implemented a revolutionary management philosophy known as **"Going Around Them."**
+
+Early results have been extraordinary.
+
+Enemy mortality is down 100%.
+
+Travel time has increased slightly.
+
+Morale remains impossible to measure because nobody has distributed the survey.
+
+One executive described your performance as "a bold new paradigm."
+
+Another asked whether you were sure the stomp button was working.
+
+IT has confirmed that it was.
+
+**Reward:** One spotless disciplinary record, an imaginary plaque reading "Employee Retention Champion," and a 0.00% reduction in your actual workload.
+
+Congratulations on achieving excellence without receiving anything useful in return.
+
+---
+
 **Open items to finish these:**
-1. Write BADGE/TITLE/BODY/REWARD text for each.
+1. Write BADGE/TITLE/BODY/REWARD text for the remaining designed achievements.
 2. Set the Speedrun target time (time a clean run first).
 3. Have Claude build the detection + screens (can be built with placeholder text first).
