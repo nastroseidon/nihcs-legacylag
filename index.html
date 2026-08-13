@@ -16,7 +16,7 @@
   #stage{position:relative;aspect-ratio:16/9;background:#0f1a10;box-shadow:0 0 40px rgba(0,0,0,.6);
          width:min(100%,1280px,calc(100vh * 16 / 9));
          width:min(100%,1280px,calc(100dvh * 16 / 9));}
-  canvas{display:block;width:100%;height:100%;background:#7ec4e6;}
+  canvas{display:block;width:100%;height:100%;background:#7ec4e6;touch-action:none;}
   #hud{position:absolute;top:10px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:center;
        color:#fff;font-weight:700;font-size:clamp(13px,2.2vw,20px);text-shadow:0 2px 4px rgba(0,0,0,.7);pointer-events:none;}
   #levelTxt{font-size:clamp(12px,2vw,18px);opacity:.95;}
@@ -271,7 +271,7 @@
          bottom:calc(8px + env(safe-area-inset-bottom,0px));
          padding-left:calc(8px + env(safe-area-inset-left,0px));
          padding-right:calc(8px + env(safe-area-inset-right,0px));}
-  #touch .side{display:flex;gap:12px;}
+  #touch .side{display:flex;gap:14px;}
   .tbtn{width:var(--tbtn);height:var(--tbtn);border-radius:50%;
         background:rgba(255,255,255,.20);border:2px solid rgba(255,255,255,.42);color:#fff;
         font-size:clamp(22px,5vw,34px);display:flex;align-items:center;justify-content:center;
@@ -283,7 +283,7 @@
      move them clear. The stage is sized to what is left, so nothing is cut off
      at the top or bottom and no button lands on the game. */
   @media (pointer:coarse){
-    :root{--tbtn:clamp(44px,11vh,64px);--band:calc(clamp(44px,11vh,64px) + 22px);}
+    :root{--tbtn:clamp(54px,15vh,76px);--band:calc(clamp(54px,15vh,76px) + 22px);}
     #touch{display:flex;}
     #wrap{box-sizing:border-box;padding-bottom:var(--band);}
     #stage{width:min(100%,1280px,calc((100vh - var(--band)) * 16 / 9));
@@ -2089,11 +2089,40 @@ addEventListener('keyup',function(e){
   if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false;
   if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='Space')keys.jump=false;
 });
+function releaseAllKeys(){ for(const k in keys)keys[k]=false; }
 document.querySelectorAll('.tbtn').forEach(function(b){
-  const k=b.dataset.k, on=function(e){e.preventDefault();keys[k]=true;}, off=function(e){e.preventDefault();keys[k]=false;};
-  b.addEventListener('touchstart',on,{passive:false});b.addEventListener('touchend',off,{passive:false});
-  b.addEventListener('mousedown',on);b.addEventListener('mouseup',off);b.addEventListener('mouseleave',off);
+  const k=b.dataset.k;
+  if(window.PointerEvent){
+    // More than one pointer can sit on the same button; the key only lifts when
+    // the last of them does.
+    const held=new Set();
+    const down=function(e){
+      e.preventDefault();
+      held.add(e.pointerId);
+      try{ b.setPointerCapture(e.pointerId); }catch(err){}
+      keys[k]=true;
+    };
+    const up=function(e){
+      held.delete(e.pointerId);
+      try{ if(b.hasPointerCapture(e.pointerId))b.releasePointerCapture(e.pointerId); }catch(err){}
+      if(!held.size)keys[k]=false;
+    };
+    b.addEventListener('pointerdown',down);
+    b.addEventListener('pointerup',up);
+    b.addEventListener('pointercancel',up);
+    b.addEventListener('lostpointercapture',up);
+  } else {
+    const on=function(e){e.preventDefault();keys[k]=true;}, off=function(e){e.preventDefault();keys[k]=false;};
+    b.addEventListener('touchstart',on,{passive:false});
+    b.addEventListener('touchend',off,{passive:false});
+    b.addEventListener('touchcancel',off,{passive:false});
+    b.addEventListener('mousedown',on);b.addEventListener('mouseup',off);b.addEventListener('mouseleave',off);
+  }
 });
+// Tabbing away or backgrounding the page never delivers the release, so let go
+// of everything rather than leaving Dr. Wayne running into a pit.
+addEventListener('blur',releaseAllKeys);
+addEventListener('visibilitychange',function(){ if(document.hidden)releaseAllKeys(); });
 
 // ---------- effects ----------
 function spawnBounce(cx,cy){
@@ -2366,7 +2395,7 @@ window.__dmw={ jumpTo:function(i){ loadLevel(i); },
   kill:function(n){ for(var i=0;i<(n||1);i++){ player.invuln=0; hitPlayer(); } },
   get state(){ return state; }, get lives(){ return lives; }, get score(){ return score; },
   get player(){ return player; }, get enemies(){ return enemies; }, get coins(){ return coins; },
-  key:function(k,v){ keys[k]=v; },
+  key:function(k,v){ keys[k]=v; }, get keys(){ return keys; },
   // achievements: what the run has banked, and what it has already won
   get run(){ return run; }, get earned(){ return earned; }, get badges(){ return earnedList.map(function(r){ return r.badge; }); },
   get earnedRows(){ return earnedList; },
