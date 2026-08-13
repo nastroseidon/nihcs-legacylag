@@ -484,14 +484,15 @@ const LEVELS=[
    plats:[[600,380,150],[1200,520,150],[1550,360,150],[2000,500,150],[2350,340,160],[2800,500,150],[3150,360,160],[3600,480,160],[3950,340,160]],
    spikes:[[1350,GROUND],[2550,GROUND],[3450,GROUND]],
    coins:[[350,560],[650,330],[1250,470],[1600,310],[2050,450],[2400,290],[2850,450],[3200,310],[3700,430],[4000,290]],
-   // Sections 4 and 5 are the stretches after the third and fourth pits.
-   // Section 4's bot walks the whole section, pit to pit, the way the ones on
-   // sections 2 and 3 do -- a wide patrol stays fair because it is rarely at the
-   // landing end when you arrive. Section 5 holds three, spaced rather than
-   // overlapping, clear of the goal at 4100 and of the 98px spike hitbox at 3450.
+   // Sections 4 and 5 are the stretches after the third and fourth pits, and both
+   // are patrolled wide rather than in short beats. Three bots pacing 170px each
+   // covered section 5 so densely there was no safe ground to stand on and the
+   // medallions above it could not be reached. Now: one works the first half of
+   // the section, one the second, one the length of it. Each is somewhere else
+   // most of the time, which is what makes a gap to move through.
    enemies:[[1000,900,1440,GROUND],[1850,1650,2200,GROUND],
             [2850,2400,3100,GROUND],
-            [3600,3560,3735,GROUND],[3780,3740,3910,GROUND],[3960,3915,4085,GROUND]],
+            [3400,3300,3800,GROUND],[3950,3800,4300,GROUND],[3650,3300,4300,GROUND]],
    goalRect:[4100,GROUND-160,90,160] },
 
  { name:'End User Training', bg:'bg4', goal:'goal4', climb:false, worldW:4900, start:[80,GROUND-72],
@@ -1653,12 +1654,20 @@ function expandAchievement(){
   document.getElementById('achieveMoreWrap').style.display='none';
   document.getElementById('achieveBody').style.display='';
   document.getElementById('achieveReward').style.display=achieveHasReward?'':'none';
-  document.getElementById('achieveBox').scrollTop=0;
+  topOfAchievement();
 }
 // Re-open an achievement from an end screen, showing the exact variant the run
 // was given. It layers over the results panel and changes no game state, so
 // Continue simply puts it away again.
 let reviewing=false;
+// Scrolling a display:none box does nothing, so this runs after it is on screen,
+// and again once layout has settled -- otherwise a long read reopens where it
+// was left, which for the end-screen replay means the bottom.
+function topOfAchievement(){
+  const box=document.getElementById('achieveBox');
+  box.scrollTop=0;
+  requestAnimationFrame(function(){ box.scrollTop=0; });
+}
 function reviewAchievement(r){
   document.getElementById('achieveHdr').textContent='\u2605 ACHIEVEMENT EARNED \u2605';
   document.getElementById('achieveTitle').textContent=r.title;
@@ -1667,9 +1676,9 @@ function reviewAchievement(r){
   const rw=document.getElementById('achieveReward');
   if(r.reward){ rw.style.display=''; rw.textContent=r.reward; } else rw.style.display='none';
   document.getElementById('achieveMoreWrap').style.display='none';
-  document.getElementById('achieveBox').scrollTop=0;
   reviewing=true;
   achieve.classList.remove('hidden');
+  topOfAchievement();
 }
 function showAchievement(a,next,cue){
   document.getElementById('achieveHdr').textContent='\u2605 NEW ACHIEVEMENT UNLOCKED! \u2605';
@@ -1698,9 +1707,9 @@ function showAchievement(a,next,cue){
     document.getElementById('achieveBody').style.display='';
     rw.style.display=achieveHasReward?'':'none';
   }
-  document.getElementById('achieveBox').scrollTop=0;   // chained screens start at the top
   afterAchieve=next; stateBeforeAchieve=state; state='achieve';
   hideAllScreens(); achieve.classList.remove('hidden'); duckMusic(true);
+  topOfAchievement();   // chained screens each start at the top
 }
 document.getElementById('achieveMore').addEventListener('click',function(e){
   e.stopPropagation(); expandAchievement(); this.blur(); });
