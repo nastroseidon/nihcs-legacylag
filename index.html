@@ -5,9 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>The Adventures of Dr. Marion Wayne</title>
 <style>
+  :root{--tbtn:clamp(48px,9vw,68px);}
   html,body{margin:0;padding:0;background:#0f1a10;height:100%;overflow:hidden;font-family:Segoe UI,Arial,sans-serif;}
   #wrap{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
-  #stage{position:relative;width:100%;max-width:1280px;aspect-ratio:16/9;background:#0f1a10;box-shadow:0 0 40px rgba(0,0,0,.6);}
+  /* Fit the viewport on both axes. width:100% with aspect-ratio alone made the
+     stage taller than a phone held sideways, which cut off the top and bottom of
+     the game and pushed the touch controls past the edge of the screen. The
+     third term caps the width at whatever keeps 16:9 inside the viewport height;
+     dvh repeats it for mobile browsers whose chrome comes and goes. */
+  #stage{position:relative;aspect-ratio:16/9;background:#0f1a10;box-shadow:0 0 40px rgba(0,0,0,.6);
+         width:min(100%,1280px,calc(100vh * 16 / 9));
+         width:min(100%,1280px,calc(100dvh * 16 / 9));}
   canvas{display:block;width:100%;height:100%;background:#7ec4e6;}
   #hud{position:absolute;top:10px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:center;
        color:#fff;font-weight:700;font-size:clamp(13px,2.2vw,20px);text-shadow:0 2px 4px rgba(0,0,0,.7);pointer-events:none;}
@@ -30,6 +38,22 @@
   #soundBtn.muted .slash{display:block;}
   #soundBtn:hover .cone{fill:#ffd54a;}
   #soundBtn:hover .wave{stroke:#ffd54a;}
+  /* Full screen. Only offered where it actually works -- a touch device whose
+     browser has the Fullscreen API -- so it stays hidden on desktop and on
+     iPhone Safari, which has no element fullscreen at all. */
+  #fsBtn{position:absolute;right:14px;z-index:9;
+         top:calc(46px + clamp(30px,4.4vw,40px) + 8px);
+         width:clamp(30px,4.4vw,40px);height:clamp(30px,4.4vw,40px);padding:6px;
+         border:none;background:rgba(6,14,8,.42);border-radius:8px;cursor:pointer;
+         display:none;align-items:center;justify-content:center;
+         filter:drop-shadow(0 2px 4px rgba(0,0,0,.8));transition:background .12s ease;}
+  #fsBtn:hover{background:rgba(6,14,8,.7);}
+  #fsBtn:focus-visible{outline:2px solid #ffd54a;outline-offset:2px;}
+  #fsBtn svg{width:100%;height:100%;display:block;}
+  #fsBtn path{fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+  #fsBtn:hover path{stroke:#ffd54a;}
+  #fsBtn .out{display:block;} #fsBtn .in{display:none;}
+  #fsBtn.on .out{display:none;} #fsBtn.on .in{display:block;}
   /* Sound settings. Sits on top of whatever opened it -- the menu or the pause
      screen -- so neither has to be torn down and put back. */
   #audio{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;
@@ -49,7 +73,7 @@
      and the scrim is a gradient so the artwork still reads through the top. */
   #overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
            background:linear-gradient(rgba(10,25,12,.62),rgba(10,25,12,.88));color:#fff;text-align:center;
-           padding:clamp(14px,3vh,30px);cursor:pointer;gap:clamp(8px,1.8vh,20px);}
+           padding:clamp(14px,3vh,30px);cursor:pointer;gap:clamp(8px,1.8vh,20px);overflow-y:auto;overscroll-behavior:contain;}
   #overlay h1{font-size:clamp(20px,4vw,40px);margin:0;color:#ffd54a;text-shadow:0 3px 6px rgba(0,0,0,.8);line-height:1.2;}
   #overlay p{font-size:clamp(13px,2.6vw,20px);max-width:660px;line-height:1.5;margin:0;}
   #overlay .btn{background:#ffd54a;color:#2a1c05;font-weight:800;letter-spacing:3px;
@@ -202,14 +226,29 @@
   .lsShort{display:none;}
   .lsRow.compact .lsLong{display:none;}
   .lsRow.compact .lsShort{display:inline;}
-  #touch{position:absolute;bottom:14px;left:0;right:0;display:none;justify-content:space-between;padding:0 18px;pointer-events:none;}
-  #touch .side{display:flex;gap:14px;}
-  .tbtn{width:clamp(56px,12vw,80px);height:clamp(56px,12vw,80px);border-radius:50%;
-        background:rgba(255,255,255,.28);border:2px solid rgba(255,255,255,.55);color:#fff;
+  #touch{position:fixed;left:0;right:0;z-index:11;display:none;justify-content:space-between;
+         pointer-events:none;
+         bottom:calc(8px + env(safe-area-inset-bottom,0px));
+         padding-left:calc(8px + env(safe-area-inset-left,0px));
+         padding-right:calc(8px + env(safe-area-inset-right,0px));}
+  #touch .side{display:flex;gap:12px;}
+  .tbtn{width:var(--tbtn);height:var(--tbtn);border-radius:50%;
+        background:rgba(255,255,255,.20);border:2px solid rgba(255,255,255,.42);color:#fff;
         font-size:clamp(22px,5vw,34px);display:flex;align-items:center;justify-content:center;
         pointer-events:auto;user-select:none;touch-action:none;font-weight:800;}
   .tbtn:active{background:rgba(255,255,255,.5);}
-  @media (pointer:coarse){#touch{display:flex;}}
+  /* Touch layout. The controls get a band of their own below the picture rather
+     than sitting on top of it -- Dr. Wayne starts at the bottom left, exactly
+     where a thumb goes, and on a small phone there is not enough letterbox to
+     move them clear. The stage is sized to what is left, so nothing is cut off
+     at the top or bottom and no button lands on the game. */
+  @media (pointer:coarse){
+    :root{--tbtn:clamp(44px,11vh,64px);--band:calc(clamp(44px,11vh,64px) + 22px);}
+    #touch{display:flex;}
+    #wrap{box-sizing:border-box;padding-bottom:var(--band);}
+    #stage{width:min(100%,1280px,calc((100vh - var(--band)) * 16 / 9));
+           width:min(100%,1280px,calc((100dvh - var(--band)) * 16 / 9));}
+  }
 </style>
 </head>
 <body>
@@ -227,6 +266,12 @@
         <path class="wave" d="M15.1 9.3a3.9 3.9 0 0 1 0 5.4"/>
         <path class="wave" d="M17.5 6.9a7.4 7.4 0 0 1 0 10.2"/>
         <line class="slash" x1="4.2" y1="19.8" x2="19.8" y2="4.2"/>
+      </svg>
+    </button>
+    <button id="fsBtn" type="button" title="Full screen" aria-label="Full screen">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <g class="out"><path d="M9 3H3v6M15 3h6v6M9 21H3v-6M15 21h6v-6"/></g>
+        <g class="in"><path d="M3 9h6V3M21 9h-6V3M3 15h6v6M21 15h-6v6"/></g>
       </svg>
     </button>
     <div id="touch">
@@ -1689,6 +1734,45 @@ document.getElementById('pSound').addEventListener('click',function(e){ e.stopPr
 document.getElementById('audioBack').addEventListener('click',function(e){ e.stopPropagation(); closeAudioSettings(); this.blur(); });
 audioScreen.addEventListener('click',function(e){ e.stopPropagation(); });
 syncSoundBtn(); syncAudioUI();
+
+// ---- full screen ----
+// The browser will only grant it from a real gesture, so it cannot be done
+// automatically on rotate; this is the one tap that does it. Locking the
+// orientation afterwards is best-effort -- Android honours it, others ignore it.
+const fsBtn=document.getElementById('fsBtn');
+function fsElement(){ return document.fullscreenElement||document.webkitFullscreenElement||null; }
+function syncFsBtn(){
+  if(!fsBtn)return;
+  const on=!!fsElement();
+  fsBtn.classList.toggle('on',on);
+  fsBtn.setAttribute('aria-label',on?'Leave full screen':'Full screen');
+  fsBtn.setAttribute('title',on?'Leave full screen':'Full screen');
+}
+function toggleFullscreen(){
+  const el=document.documentElement;
+  try{
+    if(fsElement()){
+      const exit=document.exitFullscreen||document.webkitExitFullscreen;
+      if(exit)exit.call(document);
+      return;
+    }
+    const req=el.requestFullscreen||el.webkitRequestFullscreen;
+    if(!req)return;
+    const p=req.call(el);
+    if(p&&p.then)p.then(function(){
+      try{ if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(function(){}); }catch(e){}
+    },function(){});
+  }catch(e){}
+}
+if(fsBtn){
+  fsBtn.addEventListener('click',function(e){ e.stopPropagation(); toggleFullscreen(); this.blur(); });
+  addEventListener('fullscreenchange',syncFsBtn);
+  addEventListener('webkitfullscreenchange',syncFsBtn);
+  const supported=!!(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen);
+  let coarse=false; try{ coarse=matchMedia('(pointer:coarse)').matches; }catch(e){}
+  if(supported&&coarse)fsBtn.style.display='flex';
+  syncFsBtn();
+}
 
 function overlayAction(){
   if(state==='start'||state==='won'){ fadeTo(function(){ score=0; resetRun(true); loadLevel(0); }); }
