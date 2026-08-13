@@ -10,7 +10,10 @@
 const KEY = 'board';
 const MAX_ENTRIES = 200;   // how many runs the board remembers
 const MAX_NAME = 14;       // matches the name field in the game
-const MAX_SCORE = 1000;    // a full run tops out near 100; this only blocks nonsense
+// Medallions plus the achievement bonus. A maximum run — every medallion, the
+// bonus level, and every achievement that can co-exist — lands near 320. This
+// ceiling only blocks nonsense.
+const MAX_SCORE = 1000;
 const MAX_BADGES = 12;     // one per achievement
 
 // Only the places the game is actually served from.
