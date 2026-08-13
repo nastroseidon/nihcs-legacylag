@@ -54,6 +54,41 @@
   #fsBtn:hover path{stroke:#ffd54a;}
   #fsBtn .out{display:block;} #fsBtn .in{display:none;}
   #fsBtn.on .out{display:none;} #fsBtn.on .in{display:block;}
+  /* Character select. The only place a character's own name is ever shown --
+     every word of the game's writing stays Dr. Marion Wayne. */
+  #chars{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;
+         align-items:center;justify-content:center;gap:clamp(8px,1.6vh,16px);
+         background:rgba(6,14,8,.94);color:#fff;padding:clamp(12px,2.6vh,26px);
+         box-sizing:border-box;overflow-y:auto;}
+  #chars h2{color:#ffd54a;font-size:clamp(17px,3.6vw,30px);margin:0;
+            text-shadow:0 3px 6px rgba(0,0,0,.8);text-align:center;}
+  #charBody{display:flex;gap:clamp(10px,2.4vw,26px);align-items:stretch;justify-content:center;
+            width:min(100%,880px);flex-wrap:wrap;}
+  #charCurrent{flex:1 1 240px;max-width:340px;display:flex;flex-direction:column;align-items:center;
+               gap:8px;padding:14px;border:1px solid rgba(255,255,255,.22);border-radius:10px;
+               background:rgba(255,255,255,.05);}
+  #charCurrent .lbl,#charGridWrap .lbl{font-size:clamp(10px,1.7vw,13px);letter-spacing:2px;
+               color:#cfe0ff;opacity:.8;text-align:center;}
+  #charGridWrap{flex:1 1 300px;display:flex;flex-direction:column;gap:8px;min-width:0;}
+  #charGrid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+  .charCard{background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.28);
+            border-radius:10px;padding:9px 10px 11px;cursor:pointer;color:#fff;font:inherit;
+            display:flex;flex-direction:column;align-items:center;gap:6px;min-width:104px;}
+  .charCard:hover{border-color:#ffd54a;background:rgba(255,213,74,.14);}
+  .charCard:focus-visible{outline:2px solid #ffd54a;outline-offset:2px;}
+  .charCard.on{border-color:#ffd54a;background:rgba(255,213,74,.2);}
+  .charPortrait{width:clamp(62px,9vw,104px);aspect-ratio:2/3;display:flex;align-items:flex-end;
+                justify-content:center;overflow:hidden;}
+  .charPortrait img{width:100%;height:100%;object-fit:contain;image-rendering:auto;
+                    filter:drop-shadow(0 3px 6px rgba(0,0,0,.6));}
+  .charName{font-weight:800;color:#ffd54a;text-align:center;line-height:1.25;
+            font-size:clamp(11px,1.9vw,16px);}
+  #charDetail{display:flex;flex-direction:column;align-items:center;gap:10px;
+              width:min(100%,660px);}
+  #charDetail .charPortrait{width:clamp(84px,13vw,150px);}
+  #charBlurb{margin:0;font-size:clamp(12px,2.1vw,16px);line-height:1.5;text-align:center;
+             max-width:60ch;color:#e6edff;}
+  #charDetail .btnRow .pBtn{width:auto;margin:0;padding:12px 28px;}
   /* Sound settings. Sits on top of whatever opened it -- the menu or the pause
      screen -- so neither has to be torn down and put back. */
   #audio{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;
@@ -408,6 +443,30 @@
         <button class="pBtn" id="achieveBtn">Continue</button>
       </div>
     </div>
+    <div id="chars" class="hidden">
+      <h2 id="charHdr">Choose your character</h2>
+      <div id="charBody">
+        <div id="charCurrent" class="hidden">
+          <div class="lbl">CONTINUE AS</div>
+          <div class="charPortrait"><img id="charCurImg" alt=""></div>
+          <div class="charName" id="charCurName"></div>
+          <button class="pBtn" id="charContinue">Continue</button>
+        </div>
+        <div id="charGridWrap">
+          <div class="lbl" id="charGridLbl">CHOOSE A CHARACTER</div>
+          <div id="charGrid"></div>
+        </div>
+      </div>
+      <div id="charDetail" class="hidden">
+        <div class="charPortrait"><img id="charDetImg" alt=""></div>
+        <div class="charName" id="charDetName"></div>
+        <p id="charBlurb"></p>
+        <div class="btnRow">
+          <button class="pBtn" id="charGo">Let's Go!</button>
+          <button class="pBtn" id="charBack">Back</button>
+        </div>
+      </div>
+    </div>
     <div id="audio" class="hidden">
       <h2>Sound</h2>
       <p class="sub">SETTINGS ARE REMEMBERED ON THIS DEVICE</p>
@@ -459,6 +518,44 @@ const img={},ok={};
 // like Azure Static Web Apps. (The old SharePoint build embedded these as base64; not needed here.)
 for(const k in files){const im=new Image();ok[k]=false;
   im.onload=function(){ok[k]=true;}; im.onerror=function(){ok[k]=false;}; im.src=files[k]; img[k]=im;}
+
+// ===== Characters =====
+// A character is four sprites and a name. The name and blurb are shown on the
+// select screen and nowhere else -- every word of the game's writing stays
+// Dr. Marion Wayne, whoever is on screen.
+//
+// To add one: drop <prefix>_idle.png, <prefix>_walk1.png, <prefix>_walk2.png and
+// <prefix>_jump.png in the repo root (384x576, transparent, facing right), add
+// an entry here, then add the same four names to tools/build_fullhtml.sh and to
+// KEYS in tools/make_fullhtml.py so the offline build inlines them.
+//
+// sprite:'' means the original player_*.png set. With only one character the
+// select screen is skipped entirely and the game behaves as it always has.
+const CHARACTERS=[
+ { id:'wayne', name:'Dr. Marion Wayne', sprite:'',
+   blurb:'The man himself. Clipboard in hand, migration in progress, optimism intact.' },
+];
+const CHAR_POSES=['idle','walk1','walk2','jump'];
+let charId=(function(){ try{ return localStorage.getItem('dmw_char')||'wayne'; }catch(e){ return 'wayne'; } })();
+function character(id){
+  for(const c of CHARACTERS) if(c.id===(id||charId)) return c;
+  return CHARACTERS[0];
+}
+function setCharacter(id){
+  charId=character(id).id;
+  try{ localStorage.setItem('dmw_char',charId); }catch(e){}
+}
+// Which loaded image to draw. Falls back to Dr. Wayne if a character's art is
+// missing, so a half-added character can never leave the hero invisible.
+function poseKey(pose){
+  const p=character().sprite;
+  const k=p?p+'_'+pose:pose;
+  return ok[k]?k:pose;
+}
+function poseSrc(c,pose){
+  const k=c.sprite?c.sprite+'_'+pose:pose;
+  return files[k]||files[pose];
+}
 
 // ---------- level definitions (1-6 + bonus) ----------
 const LEVELS=[
@@ -1484,6 +1581,7 @@ function renderScores(){
 }
 
 function hideAllScreens(){ duckMusic(false); audioOpen=false; audioScreen.classList.add('hidden');
+  charsOpen=false; charsScreen.classList.add('hidden');
   overlay.classList.add('hidden'); pauseMenu.classList.add('hidden'); victory.classList.add('hidden'); gameoverScreen.classList.add('hidden'); scores.classList.add('hidden'); achieve.classList.add('hidden'); }
 function leaveGoLive(){ if(goliveActive||golivePreloaded||pendingBegin)stop3DGoLive(); }
 // The bonus button was removed from the start screen: the Labyrinth is reachable
@@ -1816,8 +1914,80 @@ if(fsBtn){
   syncFsBtn();
 }
 
+// ---- character select ----
+// Two ways in. From START it asks outright; from the level select, once the game
+// has been beaten, it offers to carry on as whoever you last played. With a
+// single character in CHARACTERS it steps aside and starts the level.
+const charsScreen=document.getElementById('chars');
+let charsOpen=false, afterChars=null, charPicked=null;
+function buildCharGrid(exclude){
+  const grid=document.getElementById('charGrid');
+  grid.textContent='';
+  for(const c of CHARACTERS){
+    if(exclude&&c.id===exclude)continue;
+    const b=document.createElement('button');
+    b.type='button'; b.className='charCard'; b.title=c.name;
+    const port=document.createElement('div'); port.className='charPortrait';
+    const im=document.createElement('img'); im.alt=c.name; im.src=poseSrc(c,'idle');
+    port.appendChild(im);
+    const nm=document.createElement('div'); nm.className='charName'; nm.textContent=c.name;
+    b.appendChild(port); b.appendChild(nm);
+    b.addEventListener('click',function(e){ e.stopPropagation(); showCharDetail(c); this.blur(); });
+    grid.appendChild(b);
+  }
+}
+function showCharDetail(c){
+  charPicked=c;
+  document.getElementById('charDetImg').src=poseSrc(c,'idle');
+  document.getElementById('charDetImg').alt=c.name;
+  document.getElementById('charDetName').textContent=c.name;
+  document.getElementById('charBlurb').textContent=c.blurb||'';
+  document.getElementById('charBody').classList.add('hidden');
+  document.getElementById('charDetail').classList.remove('hidden');
+}
+function backToCharList(){
+  charPicked=null;
+  document.getElementById('charDetail').classList.add('hidden');
+  document.getElementById('charBody').classList.remove('hidden');
+}
+function closeChars(){ charsOpen=false; charsScreen.classList.add('hidden'); }
+function chooseCharacter(next,mode){
+  if(CHARACTERS.length<2){ if(next)next(); return; }   // nothing to choose between
+  afterChars=next;
+  const carryOn=mode==='continue';
+  const cur=character();
+  document.getElementById('charHdr').textContent=carryOn?'Who is playing?':'Choose your character';
+  document.getElementById('charGridLbl').textContent=carryOn?'OR PICK ANOTHER':'CHOOSE A CHARACTER';
+  const curBox=document.getElementById('charCurrent');
+  curBox.classList.toggle('hidden',!carryOn);
+  if(carryOn){
+    document.getElementById('charCurImg').src=poseSrc(cur,'idle');
+    document.getElementById('charCurImg').alt=cur.name;
+    document.getElementById('charCurName').textContent=cur.name;
+  }
+  buildCharGrid(carryOn?cur.id:null);
+  backToCharList();
+  charsOpen=true;
+  charsScreen.classList.remove('hidden');
+}
+function startWithCharacter(id){
+  setCharacter(id);
+  const go=afterChars; afterChars=null;
+  closeChars();
+  if(go)fadeTo(go);
+}
+document.getElementById('charGo').addEventListener('click',function(e){ e.stopPropagation();
+  this.blur(); startWithCharacter(charPicked?charPicked.id:charId); });
+document.getElementById('charBack').addEventListener('click',function(e){ e.stopPropagation();
+  this.blur(); backToCharList(); });
+document.getElementById('charContinue').addEventListener('click',function(e){ e.stopPropagation();
+  this.blur(); startWithCharacter(charId); });
+charsScreen.addEventListener('click',function(e){ e.stopPropagation(); });
+
 function overlayAction(){
-  if(state==='start'||state==='won'){ fadeTo(function(){ score=0; resetRun(true); loadLevel(0); }); }
+  if(state==='start'||state==='won'){
+    chooseCharacter(function(){ score=0; resetRun(true); loadLevel(0); });
+  }
   else if(state==='leveldone'){ fadeTo(function(){ loadLevel(currentLevel+1); }); }
   else if(state==='lost'){ fadeTo(function(){ score=levelStartScore; loadLevel(currentLevel); }); }
 }
@@ -1892,7 +2062,8 @@ document.getElementById('pMain').addEventListener('click',function(e){ e.stopPro
 // ===== TESTING: level-select handlers (delete this block for production) =====
 document.querySelectorAll('.lsBtn').forEach(function(b){
   // starting at Level 1 here is a real run from the start; anywhere else is not
-  b.addEventListener('click',function(e){ e.stopPropagation(); const n=parseInt(b.dataset.lvl,10); fadeTo(function(){ score=0; resetRun(n===0); loadLevel(n); }); });
+  b.addEventListener('click',function(e){ e.stopPropagation(); const n=parseInt(b.dataset.lvl,10);
+    chooseCharacter(function(){ score=0; resetRun(n===0); loadLevel(n); },'continue'); });
 });
 // ===== END TESTING handlers =====
 
@@ -1901,6 +2072,7 @@ addEventListener('keydown',function(e){
   if(e.target&&e.target.tagName==='INPUT')return;   // don't capture keys while typing (e.g. name entry)
   // sound settings are open on top: ESC closes them, everything else is theirs
   if(audioOpen){ if(e.code==='Escape'||e.code==='Enter'){ closeAudioSettings(); e.preventDefault(); } return; }
+  if(charsOpen){ if(e.code==='Escape'){ closeChars(); afterChars=null; e.preventDefault(); } return; }
   if(['ArrowLeft','ArrowRight','ArrowUp','Space','KeyA','KeyD','KeyW'].includes(e.code))e.preventDefault();
   if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;
   if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;
@@ -2167,6 +2339,7 @@ function draw(){
   if(!blink){ let key='idle';
     if(!player.onGround)key='jump';
     else if(Math.abs(player.vx)>0.1)key=(Math.floor(tick/8)%2===0)?'walk1':'walk2';
+    key=poseKey(key);
     const flip=player.face<0;
     if(!drawSprite(img[key],ok[key],player.x-14,player.y-6,player.w+28,player.h+10,flip)){
       ctx.fillStyle='#c98a4b';ctx.fillRect(player.x,player.y,player.w,player.h);

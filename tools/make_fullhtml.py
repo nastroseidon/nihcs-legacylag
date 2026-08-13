@@ -296,6 +296,8 @@ if not ASSETS.is_dir():
     sys.exit('ERROR: build/assets missing. Run tools/build_fullhtml.sh first.')
 
 KEYS = {
+    # A character's four sprites are inlined under <prefix>_<pose>, matching the
+    # keys index.html builds from CHARACTERS. Add e.g. 'nurse_idle': 'nurse_idle'.
     'idle': 'player_idle', 'walk1': 'player_walk1', 'walk2': 'player_walk2',
     'jump': 'player_jump', 'en1': 'enemy_walk1', 'en2': 'enemy_walk2',
     'coin': 'coin', 'ground': 'tile_ground', 'plat': 'tile_platform',
