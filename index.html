@@ -672,8 +672,9 @@ const SPEEDRUN_TARGET_MS=4*60*1000;   // under 4 minutes
 const ACHIEVEMENTS=[
  { id:'pogo', name:'Pogo', short:'Pogo Champion', badge:'\uD83E\uDD98', scope:'level',
    pts:5, desc:'Cleared a level without landing',
-   // Clear a level having hopped the whole way.
-   when:function(f){ return f.atGoal && f.hopped; },
+   // Clear a level having hopped the whole way. Levels 1-6 only: the Labyrinth
+   // is built to be unhoppable, so it is excluded rather than left dangling.
+   when:function(f){ return f.atGoal && f.hopped && f.level<=5; },
    variants:[
   { title:'1978 Pogo Stick Champion of Lower Sheboygan, Wisconsin',
     body:'Congratulations!\n\nAfter 48 years, three lawsuits, one congressional hearing that accomplished absolutely nothing, and an independent investigation led by a retired mall security guard, the results of the 1978 Lower Sheboygan Pogo Stick Championship have finally been corrected.\n\nThe committee determined that Kelly "The Kangaroo" Kapowski secured her victory through an aggressive campaign of distributing free burgers and shakes from The Max to the judging panel. While technically delicious, this was later ruled to be "extremely unsportsmanlike."\n\nHer title has been revoked. It now belongs to you.\n\nTake a moment to appreciate this historic achievement. Thousands trained. Dozens competed. One person finally received the trophy... almost half a century late.\n\nOr...\n\nYou completed an entire level by hopping the whole way instead of walking like a reasonably efficient healthcare professional. Dr. Marion Wayne would like to remind you that knees are not a renewable resource.',
@@ -892,13 +893,14 @@ let variantsUsed={};                // id -> variant indices already shown this 
 // One row per achievement won this run, in the order they were earned, holding
 // the flavour title that was actually shown. Drives the end-of-run panels.
 let earnedList=[];
+let announced={};          // ids that have already had their popup this game
 let run={ fromStart:false, startedAt:0, deaths:0,
           stomps:0, stompable:0, coins:0, coinsTotal:0 };
 let lvlCoins=0, lvlStomps=0;        // this level's tally, folded into the run at the goal
 // The full-run achievements only count when the player actually began at Level 1:
 // otherwise a jump to Level 6 from the level select would qualify for all of them.
 function resetRun(fromStart){
-  earned={}; variantsUsed={}; earnedList=[];
+  earned={}; variantsUsed={}; earnedList=[]; announced={};
   run={ fromStart:!!fromStart, startedAt:Date.now(), deaths:0,
         stomps:0, stompable:0, coins:0, coinsTotal:0 };
   lives=3;
@@ -918,13 +920,23 @@ function achievementFacts(extra){
 function achievementKey(a,level){ return a.scope==='level' ? a.id+'@'+level : a.id; }
 // Returns the achievements these facts have just earned, in array order, and
 // marks them so they can't be won again this run.
+// One row per achievement, carrying how many times it was won. Pogo and
+// Minimalist are per level, so clearing four levels on tiptoe is four wins and
+// four times the points; the row shows the tally.
+function noteEarned(a){
+  for(const r of earnedList) if(r.id===a.id){ r.count++; return r; }
+  const row={id:a.id,badge:a.badge,name:a.short||a.name,desc:a.desc||'',
+             pts:a.pts||0,count:1,title:'',body:'',reward:''};
+  earnedList.push(row);
+  return row;
+}
 function award(f){
   const hits=[];
   for(const a of ACHIEVEMENTS){
     const k=achievementKey(a,f.level);
     if(earned[k])continue;
     if(!a.when(f))continue;
-    earned[k]=true; hits.push(a);
+    earned[k]=true; noteEarned(a); hits.push(a);
   }
   return hits;
 }
@@ -1653,7 +1665,7 @@ function goMain(){
 }
 // What the run banks: medallions collected, plus the bonus every achievement is
 // worth. Everything that shows or banks a run total uses this figure.
-function achievementBonus(){ let n=0; for(const r of earnedList)n+=r.pts||0; return n; }
+function achievementBonus(){ let n=0; for(const r of earnedList)n+=(r.pts||0)*(r.count||1); return n; }
 function finalScore(){ return score+achievementBonus(); }
 // Fill the left column of an end panel: one line per achievement — emoji, name,
 // what triggered it, what it was worth. Built as nodes rather than markup so it
@@ -1677,13 +1689,15 @@ function renderAchievements(screen){
     const ico=document.createElement('span'); ico.className='ico'; ico.textContent=r.badge;
     const txt=document.createElement('span'); txt.className='txt';
     const nm=document.createElement('button');
-    nm.type='button'; nm.className='achLink'; nm.textContent=r.name;
+    nm.type='button'; nm.className='achLink';
+    nm.textContent=r.name+((r.count||1)>1?' \u00d7'+r.count:'');
     nm.title='Read what you got';
     nm.addEventListener('click',function(e){ e.stopPropagation(); reviewAchievement(r); this.blur(); });
     const sep=document.createElement('span'); sep.className='sep'; sep.textContent=' — ';
     const fl=document.createElement('span'); fl.className='flav'; fl.textContent=r.desc||r.title;
     txt.appendChild(nm); txt.appendChild(sep); txt.appendChild(fl);
-    const pts=document.createElement('span'); pts.className='pts'; pts.textContent='+'+(r.pts||0);
+    const pts=document.createElement('span'); pts.className='pts';
+    pts.textContent='+'+((r.pts||0)*(r.count||1));
     li.appendChild(ico); li.appendChild(txt); li.appendChild(pts);
     list.appendChild(li);
   }
@@ -1813,10 +1827,10 @@ function showAchievement(a,next,cue){
   // A repeat draws a fresh variant, so opening it really is a new joke.
   const v=pickVariant(a);
   if(cue)sfx(cue);   // only the opening screen of a level's chain is scored
-  // first win of each keeps its place and its title; repeats don't add a row
-  if(!earnedList.some(function(r){ return r.id===a.id; }))
-    earnedList.push({id:a.id,badge:a.badge,name:a.short||a.name,title:v.title,
-                     body:v.body,reward:v.reward||'',desc:a.desc||'',pts:a.pts||0});
+  announced[a.id]=true;
+  // the row was created when the achievement was won; give it the text shown
+  for(const r of earnedList) if(r.id===a.id&&!r.title){
+    r.title=v.title; r.body=v.body; r.reward=v.reward||''; }
   document.getElementById('achieveTitle').textContent=v.title;
   document.getElementById('achieveBody').textContent=v.body;
   const rw=document.getElementById('achieveReward');
@@ -1852,9 +1866,7 @@ document.getElementById('achieveMore').addEventListener('click',function(e){
 // count -- they were already banked and scored the first time -- they just stop
 // interrupting. A new game clears earnedList, so each one gets its moment again.
 function showAchievements(list,next,firstCue){
-  const fresh=(list||[]).filter(function(a){
-    return !earnedList.some(function(r){ return r.id===a.id; });
-  });
+  const fresh=(list||[]).filter(function(a){ return !announced[a.id]; });
   if(!fresh.length){ if(next)next(); return; }
   const rest=fresh.slice(1);
   showAchievement(fresh[0], rest.length ? function(){ showAchievements(rest,next); } : next, firstCue);
