@@ -434,10 +434,14 @@ const LEVELS=[
    plats:[[600,380,150],[1200,520,150],[1550,360,150],[2000,500,150],[2350,340,160],[2800,500,150],[3150,360,160],[3600,480,160],[3950,340,160]],
    spikes:[[1350,GROUND],[2550,GROUND],[3450,GROUND]],
    coins:[[350,560],[650,330],[1250,470],[1600,310],[2050,450],[2400,290],[2850,450],[3200,310],[3700,430],[4000,290]],
-   // Two bots removed for Pacifist, both on the stretch after the third pit:
-   // one patrolled 2400-2540, the only landing zone for that jump, and one
-   // patrolled 2620-3060, penned between the spike at 2550 and the pit at 3100.
-   enemies:[[1000,900,1440,GROUND],[1850,1650,2200,GROUND],[3600,3520,4150,GROUND]],
+   // Sections 4 and 5 are the stretches after the third and fourth pits. Every
+   // patrol here keeps clear of three things, or a no-stomp run has nowhere to
+   // put its feet: the first ~100px of a section, which is where a pit jump
+   // lands; the spike hitboxes at 2550 and 3450, which run 98px wide; and the
+   // goal at 4100. Section 5 holds three, spaced rather than overlapping.
+   enemies:[[1000,900,1440,GROUND],[1850,1650,2200,GROUND],
+            [2850,2720,3060,GROUND],
+            [3600,3560,3735,GROUND],[3780,3740,3910,GROUND],[3960,3915,4085,GROUND]],
    goalRect:[4100,GROUND-160,90,160] },
 
  { name:'End User Training', bg:'bg4', goal:'goal4', climb:false, worldW:4900, start:[80,GROUND-72],
