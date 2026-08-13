@@ -10,9 +10,9 @@
 const KEY = 'board';
 const MAX_ENTRIES = 200;   // how many runs the board remembers
 const MAX_NAME = 14;       // matches the name field in the game
-// Medallions plus the achievement bonus. A maximum run — every medallion, the
-// bonus level, and every achievement that can co-exist — lands near 320. This
-// ceiling only blocks nonsense.
+// Medallions plus the achievement bonus. A perfect run is 353: 183 collected
+// (138 medallions and 45 bots across all seven levels) plus the 170 points of
+// achievements that can co-exist. This ceiling only blocks nonsense.
 const MAX_SCORE = 1000;
 const MAX_BADGES = 12;     // one per achievement
 
