@@ -2116,37 +2116,39 @@ addEventListener('keyup',function(e){
   if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='Space')keys.jump=false;
 });
 function releaseAllKeys(){ for(const k in keys)keys[k]=false; }
+const PAD=Array.prototype.map.call(document.querySelectorAll('.tbtn'),function(b){ return b.dataset.k; });
+// Touch controls, derived rather than accumulated. Every touch event recomputes
+// which pads are held from event.touches -- the browser's authoritative list of
+// live contacts -- instead of toggling a key per event. A lost, cancelled or
+// out-of-order event therefore cannot leave a key stuck down, several fingers
+// work independently, and sliding from one pad to the next does what it looks
+// like it should. This is why the old per-button listeners felt sticky.
+function padUnder(t){
+  const el=document.elementFromPoint(t.clientX,t.clientY);
+  return el&&el.closest?el.closest('.tbtn'):null;
+}
+function syncPads(e){
+  const held={};
+  let onPad=false;
+  for(let i=0;i<e.touches.length;i++){
+    const b=padUnder(e.touches[i]);
+    if(b){ held[b.dataset.k]=true; onPad=true; }
+  }
+  for(const k of PAD)keys[k]=!!held[k];
+  // Only swallow the gesture when a pad is actually involved, or menu taps
+  // would lose the click the browser synthesises from them.
+  if(onPad&&e.cancelable)e.preventDefault();
+}
+for(const ev of ['touchstart','touchmove','touchend','touchcancel'])
+  document.addEventListener(ev,syncPads,{passive:false});
+// Mouse, for a desktop browser pretending to be a phone.
 document.querySelectorAll('.tbtn').forEach(function(b){
   const k=b.dataset.k;
-  if(window.PointerEvent){
-    // More than one pointer can sit on the same button; the key only lifts when
-    // the last of them does.
-    const held=new Set();
-    const down=function(e){
-      e.preventDefault();
-      held.add(e.pointerId);
-      try{ b.setPointerCapture(e.pointerId); }catch(err){}
-      keys[k]=true;
-    };
-    const up=function(e){
-      held.delete(e.pointerId);
-      try{ if(b.hasPointerCapture(e.pointerId))b.releasePointerCapture(e.pointerId); }catch(err){}
-      if(!held.size)keys[k]=false;
-    };
-    b.addEventListener('pointerdown',down);
-    b.addEventListener('pointerup',up);
-    b.addEventListener('pointercancel',up);
-    b.addEventListener('lostpointercapture',up);
-  } else {
-    const on=function(e){e.preventDefault();keys[k]=true;}, off=function(e){e.preventDefault();keys[k]=false;};
-    b.addEventListener('touchstart',on,{passive:false});
-    b.addEventListener('touchend',off,{passive:false});
-    b.addEventListener('touchcancel',off,{passive:false});
-    b.addEventListener('mousedown',on);b.addEventListener('mouseup',off);b.addEventListener('mouseleave',off);
-  }
+  b.addEventListener('mousedown',function(e){ e.preventDefault(); keys[k]=true; });
+  b.addEventListener('mouseup',function(){ keys[k]=false; });
+  b.addEventListener('mouseleave',function(){ keys[k]=false; });
 });
-// Tabbing away or backgrounding the page never delivers the release, so let go
-// of everything rather than leaving Dr. Wayne running into a pit.
+// Backgrounding never delivers the release, so let go of everything.
 addEventListener('blur',releaseAllKeys);
 addEventListener('visibilitychange',function(){ if(document.hidden)releaseAllKeys(); });
 
