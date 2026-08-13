@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<style>
+  body{margin:0;background:#0b0f0c;}
+  a{color:#ffd54a;} a:hover{color:#ffe27a;}
+  .rl::-webkit-scrollbar{width:6px;}
+  .rl::-webkit-scrollbar-thumb{background:rgba(255,213,74,.35);border-radius:3px;}
+</style>
+</helmet>
+<section id="2a" style="font-family:Segoe UI,Arial,sans-serif;color:#fff;padding:40px 40px 0;display:flex;flex-direction:column;gap:14px;">
+  <div style="display:flex;flex-direction:column;gap:4px;max-width:940px;">
+    <div style="display:flex;gap:10px;align-items:center;"><span style="font:800 11px/1 Consolas,monospace;letter-spacing:2px;color:#0b0f0c;background:#ffd54a;padding:5px 8px;border-radius:4px;">2a</span><span style="font:700 11px/1 Consolas,monospace;letter-spacing:2px;color:#ffd54a;">MOCKUP — START SCREEN</span></div>
+    <div style="font-size:26px;font-weight:800;">One primary action, one row of secondaries</div>
+    <div style="font-size:14px;line-height:1.5;color:#b9c3b6;text-wrap:pretty;">Today the menu is a ragged vertical stack: START and Main Menu in a row, then Bonus, High Scores and Sound each on their own line in three different colours. Nothing reads as the main action. In the proposal START is the only gold thing on screen, High Scores and Sound sit together in one quiet row, and the controls line becomes small key caps so the copy above it can breathe. The Bonus button is dropped from the first-play screen — the Labyrinth cannot be reached until Go Live is cleared, so it appears only as a chip in the level row that unlocks with it.</div>
+  </div>
+
+  <div style="display:flex;gap:22px;flex-wrap:wrap;">
+    <sc-for list="{{ starts }}" as="v" hint-placeholder-count="2">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font:700 11px/1 Consolas,monospace;letter-spacing:2px;color:#8fa08c;">{{ v.label }}</div>
+        <div style="position:relative;aspect-ratio:16/9;background:#0f1a10 url('bg1_kickoff.png') center/100% 100% no-repeat;box-shadow:0 0 40px rgba(0,0,0,.6);overflow:hidden;width:{{ v.w }};">
+          <div style="position:absolute;top:0;left:0;width:960px;height:540px;transform-origin:top left;box-sizing:border-box;background:{{ v.scrim }};display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;transform:scale({{ v.scale }});">
+
+            <div style="font-size:38px;font-weight:800;color:#ffd54a;text-shadow:0 3px 6px rgba(0,0,0,.8);line-height:1.2;margin:0 0 14px;">The Adventures of Dr. Marion Wayne<br><span style="font-size:.72em;">and his Journey to the Electronic Health Record</span></div>
+            <div style="font-size:17px;max-width:620px;line-height:1.55;margin:0 0 22px;">Collect the golden medallions — grab every one in a level for a bonus life! Stomp the Legacy Lag bots from above to spring high, but never touch them from the side. Avoid the spikes and the pits!</div>
+
+            <sc-if value="{{ v.old }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;align-items:center;">
+                <div style="font-size:15px;opacity:.85;margin:0 0 4px;">Move: A / D or Arrows &nbsp;·&nbsp; Jump: SPACE / W / Up &nbsp;·&nbsp; Mute: M &nbsp;·&nbsp; Pause: ESC</div>
+                <div style="margin-top:11px;background:#ffd54a;color:#2a1c05;font-weight:800;padding:10px 26px;border-radius:10px;font-size:17px;box-shadow:0 4px 0 #b8952a;">START</div>
+                <div style="margin-top:11px;background:#b98cff;color:#1a0e33;font-weight:800;padding:10px 26px;border-radius:10px;font-size:17px;box-shadow:0 4px 0 #7a52c0;">BONUS: The Legacy Labyrinth</div>
+                <div style="margin-top:11px;background:#7ad0ff;color:#06263a;font-weight:800;padding:10px 26px;border-radius:10px;font-size:17px;box-shadow:0 4px 0 #3f9fd0;">High Scores</div>
+                <div style="margin-top:11px;background:#b9c6e8;color:#131c33;font-weight:800;padding:10px 26px;border-radius:10px;font-size:17px;box-shadow:0 4px 0 #7d8bb0;">Sound</div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ v.neu }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:20px;">
+                <div style="display:flex;gap:14px;align-items:center;font-size:12px;color:#dce8d8;">
+                  <sc-for list="{{ keys }}" as="k" hint-placeholder-count="4">
+                    <span style="display:flex;gap:6px;align-items:center;">
+                      <span style="background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.3);border-radius:5px;padding:4px 9px;font:700 11px/1 Consolas,monospace;color:#fff;white-space:nowrap;">{{ k.cap }}</span>
+                      <span style="opacity:.7;">{{ k.what }}</span>
+                    </span>
+                  </sc-for>
+                </div>
+                <div style="background:#ffd54a;color:#2a1c05;font-weight:800;padding:16px 62px;border-radius:12px;font-size:26px;letter-spacing:3px;box-shadow:0 6px 0 #b8952a;">START</div>
+                <div style="display:flex;gap:10px;">
+                  <sc-for list="{{ v.secondary }}" as="b" hint-placeholder-count="3">
+                    <div style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.34);color:#fff;font-weight:700;padding:11px 22px;border-radius:8px;font-size:14px;white-space:nowrap;">{{ b }}</div>
+                  </sc-for>
+                </div>
+                <sc-if value="{{ v.ls }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:9px;align-items:center;width:900px;">
+                    <div style="font:700 12px/1 Segoe UI,Arial,sans-serif;letter-spacing:2px;color:{{ v.lsLabelColor }};opacity:.8;">{{ v.lsLabel }}</div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax({{ v.lsMin }},1fr));gap:7px;width:100%;">
+                      <sc-for list="{{ v.levels }}" as="l" hint-placeholder-count="7">
+                        <div style="min-width:0;white-space:nowrap;text-align:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:7px;padding:9px 5px;font-weight:700;font-size:13px;">{{ l }}</div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <div style="margin-top:22px;color:#e8ddc0;font-style:italic;font-size:15px;text-shadow:0 2px 4px rgba(0,0,0,.8);">A VA Northern Indiana Production</div>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section id="1a" style="font-family:Segoe UI,Arial,sans-serif;color:#fff;padding:40px;display:flex;flex-direction:column;gap:14px;">
+  <div style="display:flex;flex-direction:column;gap:4px;max-width:940px;">
+    <div style="display:flex;gap:10px;align-items:center;"><span style="font:800 11px/1 Consolas,monospace;letter-spacing:2px;color:#0b0f0c;background:#ffd54a;padding:5px 8px;border-radius:4px;">1a</span><span style="font:700 11px/1 Consolas,monospace;letter-spacing:2px;color:#ffd54a;">MOCKUP — END OF RUN</span></div>
+    <div style="font-size:26px;font-weight:800;">Achievements move inside the panel</div>
+    <div style="font-size:14px;line-height:1.5;color:#b9c3b6;text-wrap:pretty;">The floating <code style="color:#ffd54a;">.results</code> box is gone. The bottom panel becomes three columns — earned achievements on the left, medallion total in the middle, actions on the right — so nothing ever sits over the artwork or runs past the stage edge. Background images are untouched. Each achievement is worth bonus medallions, shown on its row and folded into the total. In <code style="color:#ffd54a;">FullHTML.html</code> the score block drops out entirely — that build has no leaderboard.</div>
+  </div>
+
+  <sc-for list="{{ screens }}" as="s" hint-placeholder-count="5">
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:18px;">
+      <div style="font:700 11px/1 Consolas,monospace;letter-spacing:2px;color:#8fa08c;">{{ s.label }}</div>
+      <div style="position:relative;width:960px;aspect-ratio:16/9;background:#0a190c center/100% 100% no-repeat;box-shadow:0 0 40px rgba(0,0,0,.6);display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;background-image:{{ s.bg }};">
+
+        <sc-if value="{{ s.prompt }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;background:rgba(6,10,20,.82);display:flex;align-items:center;justify-content:center;z-index:2;">
+            <div style="width:min(88%,460px);background:#0d1424;border:3px solid #ffd54a;border-radius:6px;box-shadow:0 0 0 2px #06263a,0 10px 40px rgba(0,0,0,.7);padding:22px 24px;text-align:center;display:flex;flex-direction:column;gap:12px;">
+              <div style="color:#8fff7a;font:800 12px/1 Segoe UI,Arial,sans-serif;letter-spacing:2px;">{{ s.rankNote }}</div>
+              <div style="color:#dfe7ff;font-size:15px;line-height:1.45;">{{ s.promptLine }}</div>
+              <div style="display:flex;gap:8px;justify-content:center;">
+                <input placeholder="Enter your name" style="padding:10px 12px;border-radius:8px;border:2px solid #ffd54a;background:#fff;color:#2a1c05;font-size:15px;width:190px;box-sizing:border-box;">
+                <button style="background:#ffd54a;color:#2a1c05;font-weight:800;border:none;padding:10px 18px;border-radius:8px;font-size:15px;cursor:pointer;box-shadow:0 4px 0 #b8952a;">Save Score</button>
+              </div>
+              <button style="background:none;border:none;color:#9aa8bd;font-size:13px;text-decoration:underline;cursor:pointer;padding:2px;">Skip and go to the main menu</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="width:100%;box-sizing:border-box;padding:14px 18px;background:{{ s.panelBg }};border-top:1px solid rgba(255,213,74,.22);display:grid;grid-template-columns:380px 186px 246px;gap:18px;align-items:stretch;justify-content:center;">
+
+          <div style="min-width:0;display:flex;flex-direction:column;gap:7px;">
+            <div style="color:#ffd54a;font:800 11px/1 Segoe UI,Arial,sans-serif;letter-spacing:2px;">{{ s.achHdr }}</div>
+            <sc-if value="{{ s.hasAch }}" hint-placeholder-val="{{ true }}">
+              <ul class="rl" style="list-style:none;margin:0;padding:0 4px 0 0;min-height:106px;max-height:106px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;">
+                <sc-for list="{{ s.ach }}" as="a" hint-placeholder-count="3">
+                  <li style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:9px;align-items:baseline;text-align:left;line-height:1.35;font-size:13px;">
+                    <span style="font-size:16px;line-height:1.1;">{{ a.badge }}</span>
+                    <span style="min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><b style="color:#ffd54a;font-weight:800;">{{ a.name }}</b><span style="color:#8493bd;"> — </span><span style="color:#cfe0ff;">{{ a.desc }}</span></span>
+                    <span style="color:#8fff7a;font-weight:800;font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ a.pts }}</span>
+                  </li>
+                </sc-for>
+              </ul>
+            </sc-if>
+            <sc-if value="{{ s.noAch }}" hint-placeholder-val="{{ false }}">
+              <div style="color:#9aa8bd;font-style:italic;font-size:13px;line-height:1.4;min-height:106px;display:flex;align-items:center;">None this run. Clear a level without touching the ground to earn one.</div>
+            </sc-if>
+          </div>
+
+          <div style="border-left:1px solid rgba(255,255,255,.14);border-right:1px solid rgba(255,255,255,.14);padding:0 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;">
+            <div style="color:#cfe0ff;font:800 10px/1 Segoe UI,Arial,sans-serif;letter-spacing:2px;opacity:.75;white-space:nowrap;">TOTAL MEDALLIONS</div>
+            <div style="color:{{ s.accent }};font-size:44px;font-weight:800;line-height:1.15;text-shadow:0 2px 4px #000;font-variant-numeric:tabular-nums;">{{ s.total }}</div>
+            <div style="color:#cfe0ff;font-size:11px;opacity:.75;white-space:nowrap;font-variant-numeric:tabular-nums;">{{ s.breakdown }}</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;justify-content:center;align-items:stretch;">
+            <sc-if value="{{ s.showRank }}" hint-placeholder-val="{{ false }}">
+              <div style="color:#8fff7a;font:800 10px/1 Segoe UI,Arial,sans-serif;letter-spacing:2px;">{{ s.rankNote }}</div>
+            </sc-if>
+            <sc-if value="{{ s.showEntry }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;gap:8px;align-items:center;min-width:0;">
+                <input placeholder="Enter your name" style="padding:9px 10px;border-radius:8px;border:2px solid #ffd54a;background:#fff;color:#2a1c05;font-size:14px;flex:1 1 auto;min-width:0;box-sizing:border-box;">
+                <button style="background:#ffd54a;color:#2a1c05;font-weight:800;border:none;padding:9px 14px;border-radius:8px;font-size:14px;cursor:pointer;box-shadow:0 3px 0 #b8952a;white-space:nowrap;flex:0 0 auto;">Save Score</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ s.showMiss }}" hint-placeholder-val="{{ false }}">
+              <div style="color:#9aa8bd;font-style:italic;font-size:12px;line-height:1.35;max-width:230px;">{{ s.missNote }}</div>
+            </sc-if>
+            <div style="display:flex;gap:8px;">
+              <sc-for list="{{ s.buttons }}" as="b" hint-placeholder-count="2">
+                <button style="background:#ffd54a;color:#2a1c05;font-weight:800;border:none;padding:11px 18px;border-radius:8px;font-size:15px;cursor:pointer;box-shadow:0 4px 0 #b8952a;white-space:nowrap;">{{ b }}</button>
+              </sc-for>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </sc-for>
+
+  <div style="margin-top:26px;max-width:940px;display:flex;flex-direction:column;gap:10px;">
+    <div style="font:700 11px/1 Consolas,monospace;letter-spacing:2px;color:#ffd54a;">PROPOSED BONUS VALUES</div>
+    <div style="font-size:13px;line-height:1.5;color:#b9c3b6;">Per-level achievements are small and repeatable. Full-run achievements are worth several levels of collecting. The anti-achievement is worth nothing, on purpose.</div>
+    <ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 26px;">
+      <sc-for list="{{ table }}" as="t" hint-placeholder-count="11">
+        <li style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:baseline;font-size:13px;padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,.09);">
+          <span style="font-size:15px;">{{ t.badge }}</span>
+          <span><b style="color:#ffd54a;">{{ t.name }}</b><span style="color:#8493bd;"> — </span><span style="color:#cfe0ff;">{{ t.scope }}</span></span>
+          <span style="color:#8fff7a;font-weight:800;font-variant-numeric:tabular-nums;">{{ t.pts }}</span>
+        </li>
+      </sc-for>
+    </ul>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const A = {
+      pogo:  { badge: '🦘', name: 'Pogo Champion',  desc: 'Cleared a level without landing',   pts: 5,  scope: 'per level' },
+      perf:  { badge: '💯', name: 'Perfectionist',  desc: 'Every medallion in one level',      pts: 5,  scope: 'once per run' },
+      mini:  { badge: '🪶', name: 'Minimalist',     desc: 'Cleared a level with zero medallions', pts: 5, scope: 'per level' },
+      speed: { badge: '⏱️', name: 'Speed Run',       desc: 'Levels 1–6 well under par',          pts: 20, scope: 'full run'  },
+      lab:   { badge: '🌀', name: 'Labyrinth',      desc: 'Cleared the bonus Labyrinth',        pts: 15, scope: 'one-off'   },
+      pac:   { badge: '🕊️', name: 'Pacifist',       desc: 'Levels 1–6 stomping zero enemies',   pts: 20, scope: 'full run'  },
+      stomp: { badge: '👢', name: 'Stomp Specialist', desc: 'Every enemy, levels 1–6',          pts: 20, scope: 'full run'  },
+      nodie: { badge: '🏆', name: 'No-Death Run',   desc: 'Levels 1–6 without dying',           pts: 25, scope: 'full run'  },
+      comp:  { badge: '💾', name: 'Completionist',  desc: 'Every medallion, all six levels',    pts: 30, scope: 'full run'  },
+      jan:   { badge: '🧹', name: 'Janitor',        desc: 'Every enemy and medallion, 1–6',     pts: 50, scope: 'full run'  },
+      uat:   { badge: '🧪', name: 'Extensive UAT',  desc: 'Died seven times in a session',      pts: 10, scope: 'anti-achievement' }
+    };
+    const fmt = (a) => ({ ...a, pts: '+' + a.pts });
+    const mk = (o) => {
+      const bonus = o.ach.reduce((n, a) => n + a.pts, 0);
+      return {
+        ...o,
+        ach: o.ach.map(fmt),
+        hasAch: o.ach.length > 0,
+        noAch: o.ach.length === 0,
+        total: o.base + bonus,
+        breakdown: o.base + ' collected · +' + bonus + ' earned',
+        showRank: o.rank > 0,
+        showEntry: o.rank > 0 && o.entry !== false,
+        showMiss: !o.rank,
+        rankNote: 'TOP 10 SCORE — RANK #' + o.rank,
+        promptLine: (o.base + bonus) + ' medallions makes the board. Enter a name to post it.',
+        missNote: 'Not a top 10 score. ' + o.needed + ' needed to make the board.',
+        achHdr: o.ach.length ? 'ACHIEVEMENTS EARNED — ' + o.ach.length : 'ACHIEVEMENTS EARNED'
+      };
+    };
+    const VIC = { bg: "url('victory.png')", panelBg: 'rgba(10,25,12,.82)', accent: '#ffd54a',
+                  buttons: ['Bonus Level', 'Main Menu'] };
+    const GO  = { bg: "url('gameover.png')", panelBg: 'rgba(20,8,8,.88)', accent: '#ff9a7a',
+                  buttons: ['Try Again', 'Main Menu'] };
+    return {
+      starts: (() => {
+        const SCRIM = 'linear-gradient(rgba(10,25,12,.62),rgba(10,25,12,.86))';
+        const LONG = ['1 · Kick-off', '2 · Planning', '3 · Super User', '4 · End User', '5 · Migration', '6 · Go Live', 'Bonus · Labyrinth'];
+        return [
+          { label: 'TODAY — four colours, no hierarchy', old: true, neu: false, w: '620px', scale: 620 / 960, scrim: 'rgba(10,25,12,.85)' },
+          { label: 'PROPOSED — first play, one gold action', old: false, neu: true, w: '620px', scale: 620 / 960, scrim: SCRIM,
+            secondary: ['High Scores', 'Sound'] },
+          { label: 'PROPOSED — level select unlocked, full stage: seven full names, one row', old: false, neu: true, ls: true,
+            w: '960px', scale: 1, scrim: SCRIM, secondary: ['High Scores', 'Sound'], levels: LONG, lsMin: '118px',
+            lsLabel: 'CHOOSE A LEVEL', lsLabelColor: '#dce8d8' },
+          { label: 'PROPOSED — Shift+P testing mode, full stage', old: false, neu: true, ls: true,
+            w: '960px', scale: 1, scrim: SCRIM, secondary: ['High Scores', 'Sound'], levels: LONG, lsMin: '118px',
+            lsLabel: 'TESTING — JUMP TO LEVEL', lsLabelColor: '#ff9a7a' }
+        ];
+      })(),
+      keys: [
+        { cap: 'A D ← →', what: 'move' },
+        { cap: 'SPACE', what: 'jump' },
+        { cap: 'M', what: 'mute' },
+        { cap: 'ESC', what: 'pause' }
+      ],
+      table: Object.values(A).map(fmt),
+      screens: [
+        mk({ ...VIC, label: 'WORST CASE — the four longest rows, at the widest values',
+             base: 168, rank: 1, entry: false, needed: 63, ach: [A.mini, A.pogo, A.uat, A.jan] }),
+        mk({ ...VIC, label: 'VICTORY — top 10; rank shown, name asked only on the way out',
+             base: 128, rank: 3, entry: false, needed: 63, ach: [A.pogo, A.perf, A.comp, A.nodie] }),
+        mk({ ...VIC, label: 'VICTORY — "Main Menu" prompts for the name',
+             base: 128, rank: 3, entry: false, needed: 63, prompt: true, ach: [A.pogo, A.perf, A.comp, A.nodie] }),
+        mk({ ...VIC, label: 'VICTORY — outside the top 10',
+             base: 44, rank: 0, needed: 63, ach: [A.perf, A.mini] }),
+        mk({ ...GO,  label: 'GAME OVER — top 10; entry inline, the run is over either way',
+             base: 76, rank: 7, needed: 63, ach: [A.perf, A.uat] }),
+        mk({ ...GO,  label: 'GAME OVER — outside the top 10, none earned',
+             base: 12, rank: 0, needed: 63, ach: [] })
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

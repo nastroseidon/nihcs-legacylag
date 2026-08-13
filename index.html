@@ -45,13 +45,29 @@
                  text-align:right;font-variant-numeric:tabular-nums;}
   .mixRow input{grid-column:1/3;width:100%;accent-color:#ffd54a;height:22px;cursor:pointer;}
   .mixRow.off label,.mixRow.off output{opacity:.45;}
+  /* Start screen: START is the only gold thing here. Everything else is quiet,
+     and the scrim is a gradient so the artwork still reads through the top. */
   #overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
-           background:rgba(10,25,12,.85);color:#fff;text-align:center;padding:20px;cursor:pointer;}
-  #overlay h1{font-size:clamp(20px,4vw,40px);margin:.2em 0;color:#ffd54a;text-shadow:0 3px 6px rgba(0,0,0,.8);line-height:1.2;}
-  #overlay p{font-size:clamp(13px,2.6vw,20px);max-width:660px;line-height:1.5;margin:.4em 0;}
-  #overlay .btn{margin-top:18px;background:#ffd54a;color:#2a1c05;font-weight:800;
-                padding:12px 30px;border-radius:10px;font-size:clamp(16px,3vw,24px);box-shadow:0 4px 0 #b8952a;}
-  #credit{margin-top:16px;text-align:center;color:#e8ddc0;font-style:italic;
+           background:linear-gradient(rgba(10,25,12,.62),rgba(10,25,12,.88));color:#fff;text-align:center;
+           padding:clamp(14px,3vh,30px);cursor:pointer;gap:clamp(8px,1.8vh,20px);}
+  #overlay h1{font-size:clamp(20px,4vw,40px);margin:0;color:#ffd54a;text-shadow:0 3px 6px rgba(0,0,0,.8);line-height:1.2;}
+  #overlay p{font-size:clamp(13px,2.6vw,20px);max-width:660px;line-height:1.5;margin:0;}
+  #overlay .btn{background:#ffd54a;color:#2a1c05;font-weight:800;letter-spacing:3px;
+                padding:clamp(10px,1.8vh,16px) clamp(30px,6vw,62px);border-radius:12px;
+                font-size:clamp(17px,3.2vw,26px);box-shadow:0 6px 0 #b8952a;}
+  /* Secondary destinations: one row, one treatment, borrowed from level select. */
+  #overlay .btn.ghost{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.34);
+                color:#fff;font-weight:700;letter-spacing:0;box-shadow:none;
+                padding:clamp(8px,1.4vh,11px) clamp(14px,2.6vw,22px);font-size:clamp(11px,1.9vw,14px);}
+  #overlay .btn.ghost:hover{background:rgba(255,213,74,.85);color:#2a1c05;}
+  .keyCaps{display:flex;flex-wrap:wrap;gap:clamp(8px,1.6vw,14px);justify-content:center;align-items:center;
+           font-size:clamp(9px,1.5vw,12px);color:#dce8d8;}
+  .keyCaps span{display:flex;gap:6px;align-items:center;}
+  .keyCaps span em{font-style:normal;opacity:.7;}
+  .keyCaps kbd{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.3);border-radius:5px;
+           padding:4px 9px;font:700 clamp(9px,1.4vw,11px)/1 'Consolas','Courier New',monospace;
+           color:#fff;white-space:nowrap;}
+  #credit{margin-top:clamp(4px,1vh,10px);text-align:center;color:#e8ddc0;font-style:italic;
           font-size:clamp(12px,2.2vw,20px);text-shadow:0 2px 4px rgba(0,0,0,.8);opacity:0;
           animation:creditFade 2.5s ease-in .6s forwards;}
   @keyframes creditFade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
@@ -68,33 +84,69 @@
            background:#0a190c url('victory.png') center/100% 100% no-repeat;}
   #gameover{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
             background:#1a0e0e url('gameover.png') center/100% 100% no-repeat;}
-  #gameoverPanel{width:100%;background:rgba(20,8,8,.86);padding:14px;text-align:center;box-sizing:border-box;}
-  #gameoverScore{color:#ff9a7a;font-size:clamp(18px,3.4vw,30px);font-weight:800;margin-bottom:10px;text-shadow:0 2px 4px #000;}
-  /* What the run earned, listed beside the art. Sized to stay legible in a
-     screenshot, and scrolls rather than growing if a run collects the lot. */
-  .results{position:absolute;right:2.5%;top:17%;width:min(54%,600px);max-height:60%;
-           background:rgba(5,9,18,.87);border:2px solid #ffd54a;border-radius:8px;
-           box-shadow:0 8px 30px rgba(0,0,0,.6);
-           display:flex;flex-direction:column;padding:11px 14px;box-sizing:border-box;}
-  .resHdr{color:#ffd54a;font-weight:800;letter-spacing:2px;text-align:center;
-          font-size:clamp(9px,1.6vw,15px);margin-bottom:8px;
-          border-bottom:1px dashed rgba(255,213,74,.42);padding-bottom:7px;}
-  .resList{list-style:none;margin:0;padding:0;overflow-y:auto;flex:0 1 auto;min-height:0;
-           display:flex;flex-direction:column;gap:7px;}
-  .resList li{display:flex;gap:9px;align-items:flex-start;text-align:left;
-              line-height:1.35;font-size:clamp(8px,1.4vw,14px);color:#fff;}
-  .resList .ico{flex:0 0 auto;font-size:1.3em;line-height:1.15;}
+  /* End of run: one panel across the bottom in three columns — what the run
+     earned on the left, the medallion total in the middle, what to do next on
+     the right. Nothing floats over the artwork and nothing can leave the stage.
+     The columns wrap on a narrow stage rather than overflowing it. */
+  #victoryPanel,#gameoverPanel{width:100%;box-sizing:border-box;padding:14px clamp(10px,2vw,20px);
+           border-top:1px solid rgba(255,213,74,.22);display:flex;flex-wrap:wrap;
+           gap:clamp(10px,2vw,18px);justify-content:center;align-items:stretch;text-align:center;}
+  #victoryPanel{background:rgba(10,25,12,.82);}
+  #gameoverPanel{background:rgba(20,8,8,.88);}
+  .endAch{flex:1 1 300px;max-width:420px;min-width:0;display:flex;flex-direction:column;gap:7px;}
+  .endScore{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+           padding:0 clamp(12px,2.4vw,24px);
+           border-left:1px solid rgba(255,255,255,.14);border-right:1px solid rgba(255,255,255,.14);}
+  .endActions{flex:0 0 auto;min-width:min(100%,246px);display:flex;flex-direction:column;gap:8px;
+           justify-content:center;align-items:stretch;}
+  .resHdr{color:#ffd54a;font-weight:800;letter-spacing:2px;text-align:left;font-size:clamp(9px,1.5vw,13px);}
+  .resList{list-style:none;margin:0;padding:0 4px 0 0;height:clamp(70px,11vh,106px);overflow-y:auto;
+           display:flex;flex-direction:column;gap:5px;}
+  /* One line per achievement: icon, name, what triggered it, what it is worth.
+     Clipped rather than wrapped, so the panel is the same height every time. */
+  .resList li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:9px;align-items:baseline;
+              text-align:left;line-height:1.35;font-size:clamp(8px,1.35vw,13px);color:#fff;}
+  .resList .ico{font-size:1.25em;line-height:1.1;}
+  .resList .txt{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .resList b{color:#ffd54a;font-weight:800;}
   .resList .sep{color:#8493bd;}
   .resList .flav{color:#cfe0ff;}
-  .resNone{display:block;color:#cfe0ff;font-style:italic;text-align:center;
-           font-size:clamp(9px,1.5vw,14px);padding:6px 0;}
-  #victoryPanel{width:100%;background:rgba(10,25,12,.78);padding:14px;text-align:center;box-sizing:border-box;}
-  #victoryScore{color:#ffd54a;font-size:clamp(18px,3.4vw,30px);font-weight:800;margin-bottom:8px;text-shadow:0 2px 4px #000;}
-  #nameEntry{margin-bottom:8px;}
-  #nameInput{padding:10px 12px;border-radius:8px;border:2px solid #ffd54a;font-size:clamp(14px,2.4vw,18px);width:min(55%,220px);}
-  #nameEntry .pBtn{width:auto;display:inline-block;margin:0 0 0 8px;padding:10px 18px;}
-  #saveMsg{color:#8fff7a;font-weight:700;margin-top:6px;min-height:1em;}
+  .resList .pts{color:#8fff7a;font-weight:800;font-size:.92em;white-space:nowrap;
+                font-variant-numeric:tabular-nums;}
+  .resList .resNone{display:flex;align-items:center;color:#9aa8bd;font-style:italic;text-align:left;
+           height:clamp(70px,11vh,106px);font-size:clamp(9px,1.4vw,13px);line-height:1.4;}
+  .endLabel{color:#cfe0ff;font-weight:800;letter-spacing:2px;opacity:.75;white-space:nowrap;
+            font-size:clamp(8px,1.1vw,10px);}
+  #victoryScore,#gameoverScore{font-size:clamp(24px,4.6vw,44px);font-weight:800;line-height:1.15;
+            text-shadow:0 2px 4px #000;font-variant-numeric:tabular-nums;}
+  #victoryScore{color:#ffd54a;}
+  #gameoverScore{color:#ff9a7a;}
+  .endBreak{color:#cfe0ff;opacity:.75;white-space:nowrap;font-variant-numeric:tabular-nums;
+            font-size:clamp(8px,1.15vw,11px);}
+  .endRank{color:#8fff7a;font-weight:800;letter-spacing:2px;font-size:clamp(8px,1.1vw,10px);}
+  .endMiss{color:#9aa8bd;font-style:italic;line-height:1.35;max-width:230px;font-size:clamp(9px,1.3vw,12px);}
+  #nameEntry{display:flex;gap:8px;align-items:center;min-width:0;}
+  #nameInput{flex:1 1 auto;min-width:0;padding:9px 10px;border-radius:8px;border:2px solid #ffd54a;
+             font-size:clamp(12px,2vw,14px);}
+  #nameEntry .pBtn{flex:0 0 auto;width:auto;margin:0;padding:9px 14px;
+             font-size:clamp(12px,2vw,14px);white-space:nowrap;}
+  #saveMsg{color:#8fff7a;font-weight:700;min-height:1em;font-size:clamp(9px,1.4vw,12px);}
+  /* Victory only: the bonus level can still add medallions, so the name is
+     asked for on the way out rather than the moment Go Live is cleared. */
+  #savePrompt{position:absolute;inset:0;z-index:9;display:flex;align-items:center;justify-content:center;
+             background:rgba(6,10,20,.82);}
+  #savePromptBox{width:min(88%,460px);background:#0d1424;border:3px solid #ffd54a;border-radius:6px;
+             box-shadow:0 0 0 2px #06263a,0 10px 40px rgba(0,0,0,.7);padding:22px 24px;text-align:center;
+             display:flex;flex-direction:column;gap:12px;}
+  #savePromptRank{color:#8fff7a;font-weight:800;letter-spacing:2px;font-size:clamp(10px,1.8vw,13px);}
+  #savePromptText{color:#dfe7ff;line-height:1.45;font-size:clamp(12px,2.2vw,15px);}
+  #savePromptRow{display:flex;gap:8px;justify-content:center;}
+  #promptName{padding:10px 12px;border-radius:8px;border:2px solid #ffd54a;width:min(60%,190px);
+             font-size:clamp(13px,2.2vw,15px);}
+  #savePromptRow .pBtn{width:auto;margin:0;padding:10px 18px;font-size:clamp(13px,2.2vw,15px);}
+  #promptMsg{color:#8fff7a;font-weight:700;min-height:1em;font-size:clamp(10px,1.7vw,13px);}
+  #promptSkip{background:none;border:none;color:#9aa8bd;text-decoration:underline;cursor:pointer;
+             padding:2px;font-size:clamp(11px,1.9vw,13px);}
   .vRow{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
   .vRow .pBtn{width:auto;margin:4px;}
   #scores{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -135,9 +187,9 @@
   .btnRow{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;align-items:center;}
   /* Level select: one row that always fits the stage. Labels shorten to
      "Lvl 1 … Bonus" when the stage gets narrow. */
-  #levelSelect{margin-top:18px;padding:10px 12px;border:1px dashed rgba(255,255,255,.4);
-               border-radius:10px;width:min(98%,980px);box-sizing:border-box;}
-  .lsLabel{font-size:clamp(11px,2vw,15px);letter-spacing:1px;opacity:.75;margin-bottom:8px;}
+  #levelSelect{width:min(98%,980px);box-sizing:border-box;}
+  .lsLabel{font-size:clamp(10px,1.7vw,12px);letter-spacing:2px;font-weight:700;opacity:.8;margin-bottom:8px;}
+  .lsLabel.testing{color:#ff9a7a;}
   .lsRow{display:flex;flex-wrap:nowrap;gap:6px;justify-content:center;width:100%;}
   .lsBtn{flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden;
          background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);
@@ -185,15 +237,23 @@
       <p id="ovText">Collect the golden medallions &mdash; grab every one in a level for a bonus life!
          Stomp the Legacy Lag bots from above to spring high, but never touch them from the side.
          Avoid the spikes and the pits!</p>
-      <p style="opacity:.85">Move: A / D or Arrows&nbsp;&nbsp;&middot;&nbsp;&nbsp;Jump: SPACE / W / Up&nbsp;&nbsp;&middot;&nbsp;&nbsp;Mute: M&nbsp;&nbsp;&middot;&nbsp;&nbsp;Pause: ESC</p>
+      <div class="keyCaps">
+        <span><kbd>A D &larr; &rarr;</kbd><em>move</em></span>
+        <span><kbd>SPACE</kbd><em>jump</em></span>
+        <span><kbd>M</kbd><em>mute</em></span>
+        <span><kbd>ESC</kbd><em>pause</em></span>
+      </div>
       <div class="btnRow">
         <div class="btn" id="ovBtn">START</div>
         <div class="btn hidden" id="ovMain">Main Menu</div>
       </div>
-      <div class="btn hidden" id="bonusBtn" style="background:#b98cff;box-shadow:0 4px 0 #7a52c0;color:#1a0e33;">BONUS: The Legacy Labyrinth</div>
-      <div class="btn" id="scoresBtn" style="background:#7ad0ff;box-shadow:0 4px 0 #3f9fd0;color:#06263a;">High Scores</div>
-      <div class="btn" id="soundSettingsBtn" style="background:#b9c6e8;box-shadow:0 4px 0 #7d8bb0;color:#131c33;">Sound</div>
-      <!-- Level select: shown once Go Live has been beaten, or via Shift+P. -->
+      <div class="btnRow">
+        <div class="btn ghost" id="scoresBtn">High Scores</div>
+        <div class="btn ghost" id="soundSettingsBtn">Sound</div>
+      </div>
+      <!-- Level select: shown once Go Live has been beaten, or via Shift+P.
+           The bonus Labyrinth is reachable only from here, because it cannot be
+           played until Go Live has been cleared. -->
       <div id="levelSelect" class="hidden">
         <div class="lsLabel">Choose a level</div>
         <div class="lsRow">
@@ -216,33 +276,61 @@
       <button class="pBtn" id="pMain">Return to Main Screen</button>
     </div>
     <div id="victory" class="hidden">
-      <div class="results">
-        <div class="resHdr"></div>
-        <ul class="resList"></ul>
-      </div>
       <div id="victoryPanel">
-        <div id="victoryScore">Total Medallions: 0</div>
-        <div id="nameEntry">
-          <input id="nameInput" maxlength="14" placeholder="Enter your name" autocomplete="off">
-          <button class="pBtn" id="saveScore">Save Score</button>
-          <div id="saveMsg"></div>
+        <div class="endAch">
+          <div class="resHdr"></div>
+          <ul class="resList"></ul>
         </div>
-        <div class="vRow">
-          <button class="pBtn" id="vBonus">Continue to Bonus Level</button>
-          <button class="pBtn" id="vMain">Return to Main Screen</button>
+        <div class="endScore">
+          <div class="endLabel">TOTAL MEDALLIONS</div>
+          <div id="victoryScore">0</div>
+          <div class="endBreak" id="victoryBreak"></div>
+        </div>
+        <div class="endActions">
+          <div class="endRank hidden" id="vRank"></div>
+          <div class="endMiss hidden" id="vMiss"></div>
+          <div class="vRow">
+            <button class="pBtn" id="vBonus">Bonus Level</button>
+            <button class="pBtn" id="vMain">Main Menu</button>
+          </div>
+        </div>
+      </div>
+      <div id="savePrompt" class="hidden">
+        <div id="savePromptBox">
+          <div id="savePromptRank"></div>
+          <div id="savePromptText"></div>
+          <div id="savePromptRow">
+            <input id="promptName" maxlength="14" placeholder="Enter your name" autocomplete="off">
+            <button class="pBtn" id="promptSave">Save Score</button>
+          </div>
+          <div id="promptMsg"></div>
+          <button id="promptSkip">Skip and go to the main menu</button>
         </div>
       </div>
     </div>
     <div id="gameover" class="hidden">
-      <div class="results">
-        <div class="resHdr"></div>
-        <ul class="resList"></ul>
-      </div>
       <div id="gameoverPanel">
-        <div id="gameoverScore">Total Medallions: 0</div>
-        <div class="vRow">
-          <button class="pBtn" id="goRetry">Try Again</button>
-          <button class="pBtn" id="goMain">Main Menu</button>
+        <div class="endAch">
+          <div class="resHdr"></div>
+          <ul class="resList"></ul>
+        </div>
+        <div class="endScore">
+          <div class="endLabel">TOTAL MEDALLIONS</div>
+          <div id="gameoverScore">0</div>
+          <div class="endBreak" id="gameoverBreak"></div>
+        </div>
+        <div class="endActions">
+          <div class="endRank hidden" id="goRank"></div>
+          <div class="endMiss hidden" id="goMiss"></div>
+          <div id="nameEntry" class="hidden">
+            <input id="nameInput" maxlength="14" placeholder="Enter your name" autocomplete="off">
+            <button class="pBtn" id="saveScore">Save Score</button>
+          </div>
+          <div id="saveMsg"></div>
+          <div class="vRow">
+            <button class="pBtn" id="goRetry">Try Again</button>
+            <button class="pBtn" id="goMain">Main Menu</button>
+          </div>
         </div>
       </div>
     </div>
@@ -414,7 +502,8 @@ const shortName=['Kick-off','Planning','Super User','End User','Migration','Go L
 const SPEEDRUN_TARGET_MS=4*60*1000;   // under 4 minutes
 
 const ACHIEVEMENTS=[
- { id:'pogo', name:'Pogo', badge:'\uD83E\uDD98', scope:'level',
+ { id:'pogo', name:'Pogo', short:'Pogo Champion', badge:'\uD83E\uDD98', scope:'level',
+   pts:5, desc:'Cleared a level without landing',
    // Clear a level having hopped the whole way.
    when:function(f){ return f.atGoal && f.hopped; },
    variants:[
@@ -454,7 +543,8 @@ const ACHIEVEMENTS=[
   { title:'1993 Why, Arizona Invitational for Exceptional Vertical Decision-Making',
     body:'Congratulations!\n\nFor decades, historians believed the results of the 1993 Invitational were beyond dispute. That assumption changed when a former scorekeeper admitted he had accidentally been using the judging rubric from a regional pie-baking competition.\n\nThe revised calculations painted a very different picture.\n\nOfficials concluded that George Costanza had received bonus points for "excellent crust consistency," a category that, while important elsewhere, had no measurable impact on competitive jumping.\n\nFollowing an emergency session of the International Committee for Extremely Questionable Sports, his championship has officially been nullified. It now belongs to you.\n\nThe committee regrets the inconvenience. George regrets answering his phone.\n\nOr...\n\nYou completed an entire level while hopping nonstop, forcing Dr. Marion Wayne to question whether you understand the purpose of legs. He\u2019d like to assure everyone that walking remains fully supported by modern medicine.',
     reward:'A championship jacket that exists only in spirit, one beautifully engraved imaginary trophy, and the unquestionable distinction of becoming the 1993 Invitational Champion of Why, Arizona. It\u2019s a title nobody can take away... mostly because nobody else wants it.' } ] },
- { id:'perfectionist', name:'Perfectionist "No Coin Left Behind"', badge:'\uD83D\uDCAF', scope:'level',
+ { id:'perfectionist', name:'Perfectionist "No Coin Left Behind"', short:'Perfectionist', badge:'\uD83D\uDCAF', scope:'run',
+   pts:5, desc:'Every medallion in one level',
    // Every medallion in one level.
    when:function(f){ return f.atGoal && f.levelCoinsTotal>0 && f.levelCoins===f.levelCoinsTotal; },
    variants:[
@@ -471,6 +561,7 @@ const ACHIEVEMENTS=[
     body:'Congratulations!\n\nEvery medallion in this level has been collected.\nThe checklist is complete.\nEvery box is checked.\n\nThis has produced an unfamiliar sensation within the organization known as closure.\n\nSeveral employees initially mistook it for a system outage.\n\nDr. Marion Wayne has submitted the completed list for approval.\n\nIt was returned because the approver wanted to know why there were no comments.\n\nThe explanation "because everything is done" has been deemed insufficiently detailed.\n\nPlease provide comments confirming that no comments are required.',
     reward:'One imaginary clipboard full of checkmarks, a flawless level completion record, and proof that even perfection can generate a follow-up email.' } ] },
  { id:'minimalist', name:'Minimalist', badge:'\uD83E\uDEB6', scope:'level',
+   pts:5, desc:'Cleared a level with zero medallions',
    // Clear a level having collected none.
    when:function(f){ return f.atGoal && f.levelCoinsTotal>0 && f.levelCoins===0; },
    variants:[
@@ -487,6 +578,7 @@ const ACHIEVEMENTS=[
     body:'Congratulations!\n\nYou finished the level while collecting absolutely nothing.\nYou arrived.\nYou traversed the required environment.\nYou reached the objective.\nYou did not volunteer for anything extra.\n\nThis is perhaps the purest expression of scope discipline ever recorded.\n\nA supervisor asked why you ignored every medallion.\nDr. Marion Wayne replied:\n"Was it in the performance standard?"\nThe supervisor checked.\nIt was not.\nThe conversation ended immediately.\n\nSomewhere, a federal employee felt a disturbance in the Force and smiled.',
     reward:'One imaginary certificate for Meeting Minimum Requirements With Exceptional Precision and exactly zero additional duties assumed.' } ] },
  { id:'janitor', name:'Janitor', badge:'\uD83E\uDDF9', scope:'run',
+   pts:50, desc:'Every enemy and medallion, 1–6',
    // Every enemy AND every medallion. Grants the two below as well.
    when:function(f){ return f.fullRun && f.coinsTotal>0 && f.coins===f.coinsTotal
                                    && f.stompable>0 && f.stomps===f.stompable; },
@@ -503,7 +595,8 @@ const ACHIEVEMENTS=[
   { title:'WHITE-GLOVE APOCALYPSE',
     body:'Congratulations!\n\nEvery medallion is gone.\nEvery enemy is gone.\n\nThe inspection team entered the level wearing white gloves and expressions of professional suspicion.\nThey were ready to find something.\nAnything.\nThey found nothing.\nOne inspector checked the same corner four times.\n\nAnother quietly asked whether the level had been replaced with a cleaner level.\nIT confirmed it had not.\n\nDr. Marion Wayne has achieved a condition Environmental Services refers to only in legends:\n"No deficiencies noted."\n\nThe lead inspector stared at the blank checklist for several seconds, signed it, and requested reassignment.\n\nQuality Management immediately scheduled a follow-up inspection because a perfect inspection is considered inherently suspicious.',
     reward:'One imaginary white glove with absolutely nothing on it, a zero-deficiency report, and the certainty that somebody will inspect you again purely because you passed too well.' } ] },
- { id:'completionist', name:'Completionist "100% Data Recovery"', badge:'\uD83D\uDCBE', scope:'run',
+ { id:'completionist', name:'Completionist "100% Data Recovery"', short:'Completionist', badge:'\uD83D\uDCBE', scope:'run',
+   pts:30, desc:'Every medallion, all six levels',
    // Every medallion across Levels 1-6.
    when:function(f){ return f.fullRun && f.coinsTotal>0 && f.coins===f.coinsTotal; },
    variants:[
@@ -519,7 +612,8 @@ const ACHIEVEMENTS=[
   { title:'YOU FOUND THE MISSING ATTACHMENT',
     body:'Congratulations!\n\nYou collected every medallion across all six levels.\n\nMore importantly, you have demonstrated a rare and dangerous ability:\nYou can actually find things.\n\nThe organization has been searching for someone like you.\nNot intentionally.\n\nBut now that you\'ve revealed yourself, there is no going back.\n\nWithin minutes of your accomplishment, the following requests were submitted:\n\n"Can you find the spreadsheet from the old shared drive?"\n\n"Do you remember where we saved the final-final version?"\n"There was an email sometime around 2017..."\n"I think somebody named Dave had it."\nAnd, most ominously:\n"It should be easy for you."\nYou did this to yourself.\n\nBy locating every medallion, you have become organizationally classified as Good At Finding Stuff.\n\nThis classification outranks job descriptions, workload limits, and basic human boundaries.\n\nDr. Marion Wayne attempted to explain that collecting medallions inside a platform game does not qualify him to reconstruct a decade of abandoned file-management practices.\nHis objection was documented.\n\nThen someone forwarded him a broken SharePoint link and wrote:\n"Thoughts?"\nThere will be no escape.',
     reward:'One imaginary paperclip attachment icon, permanent membership in the unofficial Lost File Recovery Team, and a lifetime subscription to emails beginning with "Quick question..." There is never a quick question.' } ] },
- { id:'stomper', name:'Stomp Specialist "Aggressive Prioritization"', badge:'\uD83D\uDC62', scope:'run',
+ { id:'stomper', name:'Stomp Specialist "Aggressive Prioritization"', short:'Stomp Specialist', badge:'\uD83D\uDC62', scope:'run',
+   pts:20, desc:'Every enemy, levels 1–6',
    // Stomp every enemy across Levels 1-6.
    when:function(f){ return f.fullRun && f.stompable>0 && f.stomps===f.stompable; },
    variants:[
@@ -536,6 +630,7 @@ const ACHIEVEMENTS=[
     body:'Congratulations!\n\nYou achieved a 100% stakeholder engagement rate.\n\nUnfortunately, Legal would like to discuss your definition of engagement.\nYou stomped every enemy across Levels 1\u20136.\nNobody was overlooked.\nNobody was skipped.\n\nNobody successfully hid behind scenery and waited for you to leave.\nYou made contact with everyone.\n\nThe Stakeholder Engagement Office initially celebrated when the dashboard reached 100%.\nThere were balloons.\nSomeone ordered cupcakes.\nThen they reviewed the methodology.\nThe balloons were removed.\n\nThe cupcakes remained because they were nonrefundable.\n\nAccording to the engagement plan, Dr. Marion Wayne was expected to identify affected parties, establish communication channels, solicit feedback, and document outcomes.\n\nYou completed one of those four steps with extraordinary consistency.\n\nThe documented outcome for every hostile stakeholder is simply:\n"Resolved."\n\nA compliance reviewer asked for additional detail.\nThe revised entry reads:\n"Resolved vertically."\nThis did not help.\n\nMore troublingly, your stakeholder map shows that several enemies required deliberate backtracking to reach.\n\nIn other words, some stakeholders made every reasonable effort not to engage with you.\nYou engaged them anyway.\n\nCommunications has asked that you never represent the organization at a town hall.\n\nDr. Marion Wayne considers this an unexpected secondary reward.',
     reward:'One imaginary stakeholder matrix consisting entirely of green checkmarks, a 100% contact rate that nobody is permitted to cite publicly, and a leftover cupcake from the celebration that ended the moment Legal opened the methodology tab.' } ] },
  { id:'pacifist', name:'Pacifist', badge:'\uD83D\uDD4A\uFE0F', scope:'run',
+   pts:20, desc:'Levels 1–6 stomping zero enemies',
    // Clear Levels 1-6 having stomped nothing. Scanning still counts as mercy.
    when:function(f){ return f.fullRun && f.stomps===0; },
    variants:[
@@ -552,6 +647,7 @@ const ACHIEVEMENTS=[
     body:'Congratulations!\n\nManagement has reviewed your quarterly performance metrics.\nThere is a problem.\n\nAccording to the data, you completed Levels 1\u20136 while terminating zero employees.\nZero.\nNone.\n\nEvery hostile creature encountered during this reporting period remains gainfully employed.\nSomewhere.\nProbably.\n\nThis has caused significant confusion among senior leadership, who were previously operating under the assumption that "stomp everything that moves" was both an effective strategy and an unofficial organizational value.\nAn emergency meeting was scheduled.\nThe meeting produced three subcommittees.\n\nThe subcommittees produced eleven recommendations.\n\nNine of those recommendations involved additional meetings.\nThe remaining two recommended stomping.\nYou rejected all of them.\n\nDr. Marion Wayne instead implemented a revolutionary management philosophy known as "Going Around Them."\nEarly results have been extraordinary.\nEnemy mortality is down 100%.\nTravel time has increased slightly.\n\nMorale remains impossible to measure because nobody has distributed the survey.\n\nOne executive described your performance as "a bold new paradigm."\n\nAnother asked whether you were sure the stomp button was working.\nIT has confirmed that it was.',
     reward:'One spotless disciplinary record, an imaginary plaque reading "Employee Retention Champion," and a 0.00% reduction in your actual workload. Congratulations on achieving excellence without receiving anything useful in return.' } ] },
  { id:'nodeath', name:'No-Death Run', badge:'\uD83D\uDC80', scope:'run',
+   pts:25, desc:'Levels 1–6 without dying',
    // Clear Levels 1-6 without dying once.
    when:function(f){ return f.fullRun && f.deaths===0; },
    variants:[
@@ -567,7 +663,8 @@ const ACHIEVEMENTS=[
   { title:'INCIDENT REPORT NOT REQUIRED',
     body:'Congratulations!\n\nFor the first time in recorded organizational history, nobody needs to fill out Form 27-B:\n\n"Unexpected Employee Death During Routine Mascot Operations."\nYou completed Levels 1\u20136 without dying.\n\nThis may not sound impressive until you understand what normally happens after an incident.\nFirst, the supervisor must be notified.\nThen Safety.\nThen Risk Management.\nThen Human Resources.\n\nThen someone asks whether the employee was wearing the appropriate footwear.\n\nThen twelve people attend a meeting that could have been an email.\nThen the email gets sent anyway.\nBy staying alive, you prevented all of this.\n\nProductivity across the organization increased by an estimated 3.7%.\nNobody knows what to do with the extra time.\n\nOne manager has already scheduled a meeting to discuss it.\n\nSafety reviewed your run and confirmed that Dr. Marion Wayne successfully avoided all fatal hazards despite receiving absolutely no additional protective equipment, hazard pay, or meaningful institutional support.\nThis has been classified as:\n\n"A personal achievement and therefore not budget-relevant."\nFinance is very pleased with this determination.\n\nDr. Marion Wayne has requested that the unused incident-report packet be shredded.\nRecords Management denied the request.\nIt must be retained for seven years.\nJust in case.',
     reward:'One untouched stack of mandatory forms, zero post-incident meetings, and the rare privilege of costing the organization absolutely nothing in preventable death-related administrative labor.' } ] },
- { id:'speedrun', name:'Speedrun "Ahead of Schedule (For Once)"', badge:'\u23F1\uFE0F', scope:'run',
+ { id:'speedrun', name:'Speedrun "Ahead of Schedule (For Once)"', short:'Speedrun', badge:'\u23F1\uFE0F', scope:'run',
+   pts:20, desc:'Levels 1–6 well under par',
    // Clear Levels 1-6 inside the target time.
    when:function(f){ return f.fullRun && f.timeMs<SPEEDRUN_TARGET_MS; },
    variants:[
@@ -584,6 +681,7 @@ const ACHIEVEMENTS=[
     body:'Congratulations!\n\nYou finished Levels 1\u20136 under the target time.\nYou are done early.\nThis briefly felt good.\nThen someone noticed.\n\nA supervisor has reviewed the remaining calendar and identified several "quick things" you can help with now that you have extra time.\nThere are nine quick things.\nTwo have attachments.\nOne begins with the phrase:\n"Since you\'re already in there..."\n\nDr. Marion Wayne has learned an important professional lesson:\n\nNever let anyone know exactly how fast you can finish something.\n\nHe will remember this during all future estimates.',
     reward:'One imaginary gold stopwatch, undeniable proof of your speed, and precisely zero additional free time.' } ] },
  { id:'overtime', name:'Overtime Hero', badge:'\uD83C\uDF00', scope:'once',
+   pts:15, desc:'Cleared the bonus Labyrinth',
    // Clear the bonus Legacy Labyrinth.
    when:function(f){ return f.atGoal && f.level===6; },
    variants:[
@@ -599,7 +697,8 @@ const ACHIEVEMENTS=[
   { title:'THE HALLWAY THAT SHOULD NOT EXIST',
     body:'Congratulations!\n\nYou survived the Legacy Labyrinth.\n\nDuring your journey, you encountered corridors that connected to nothing, turns that appeared to violate planning principles, and at least one route that felt like it had been added in 2009 as a temporary workaround.\nIt is still there.\n\nFacilities insists the hallway is not on the official floor plan.\nIT insists it belongs to Facilities.\nFacilities insists it is probably an IT hallway.\n\nDr. Marion Wayne walked through it anyway and somehow reached the exit.\n\nA work order has been submitted to determine why the Labyrinth exists.\nStatus: Pending Assignment.',
     reward:'One imaginary ball of string, an unofficial map nobody will maintain, and the distinction of successfully navigating infrastructure that all responsible departments deny owning.' } ] },
- { id:'uat', name:'Extensive User Acceptance Testing', badge:'\uD83E\uDDEA', scope:'run',
+ { id:'uat', name:'Extensive User Acceptance Testing', short:'Extensive UAT', badge:'\uD83E\uDDEA', scope:'run',
+   pts:10, desc:'Died seven times in a session',
    // Anti-achievement: die seven times. Fires the moment it happens.
    when:function(f){ return f.deaths>=7; },
    variants:[
@@ -1288,9 +1387,18 @@ function fetchRemoteScores(){
 fetchRemoteScores();
 loadLocalScores();
 
+const TOP_N=10;
+// Where a total would land on the merged board, and what the bottom of the top
+// ten currently costs. A run outside it is never asked for a name.
+function endRankInfo(total){
+  let above=0;
+  for(const s of highScores){ if(s.score>total)above++; }
+  return { rank:above+1, inTop:above<TOP_N,
+           needed:highScores.length<TOP_N?1:highScores[TOP_N-1].score+1 };
+}
 function saveScore(name){
   name=(name||'').trim().slice(0,14)||'Anonymous';
-  const entry={ name:name, score:score, badges:earnedBadges.slice(),
+  const entry={ name:name, score:finalScore(), badges:earnedBadges.slice(),
     date:new Date().toISOString().slice(0,10) };
   // Always keep a local copy, so a run is never lost to a network hiccup.
   localScores.push(entry);
@@ -1330,8 +1438,11 @@ function exportScores(){
 function hideAllScreens(){ duckMusic(false); audioOpen=false; audioScreen.classList.add('hidden');
   overlay.classList.add('hidden'); pauseMenu.classList.add('hidden'); victory.classList.add('hidden'); gameoverScreen.classList.add('hidden'); scores.classList.add('hidden'); achieve.classList.add('hidden'); }
 function leaveGoLive(){ if(goliveActive||golivePreloaded||pendingBegin)stop3DGoLive(); }
+// The bonus button was removed from the start screen: the Labyrinth is reachable
+// only from level select, which unlocks with it. Kept as a guarded no-op so the
+// existing call sites stay valid.
 function updateBonusBtn(){
-  const bb=document.getElementById('bonusBtn');
+  const bb=document.getElementById('bonusBtn'); if(!bb)return;
   if(unlockedBonus && (state==='start'||state==='won')) bb.classList.remove('hidden'); else bb.classList.add('hidden');
 }
 // Level select appears once Go Live has been beaten (or with the Shift+P tester
@@ -1364,12 +1475,16 @@ function goMain(){
   document.getElementById('ovMain').classList.add('hidden');   // already here
   hideAllScreens(); overlay.classList.remove('hidden'); updateHud(); updateBonusBtn(); updateLevelSelect();
 }
-// Fill a results panel with what the run earned: emoji, the achievement's name,
-// and the flavour title that came up when it was won. Built as nodes rather than
-// markup so it needs no escaping, and so it survives into the offline build,
-// where the high-score module that owns escapeHtml is stripped out.
+// What the run banks: medallions collected, plus the bonus every achievement is
+// worth. The panel, the leaderboard and the save prompt all use this figure.
+function achievementBonus(){ let n=0; for(const r of earnedList)n+=r.pts||0; return n; }
+function finalScore(){ return score+achievementBonus(); }
+// Fill the left column of an end panel: one line per achievement — emoji, name,
+// what triggered it, what it was worth. Built as nodes rather than markup so it
+// needs no escaping, and so it survives into the offline build, where the
+// high-score module that owns escapeHtml is stripped out.
 function renderAchievements(screen){
-  const panel=screen.querySelector('.results'); if(!panel)return;
+  const panel=screen.querySelector('.endAch'); if(!panel)return;
   const hdr=panel.querySelector('.resHdr'), list=panel.querySelector('.resList');
   hdr.textContent=earnedList.length
     ? 'ACHIEVEMENTS EARNED — '+earnedList.length
@@ -1378,19 +1493,39 @@ function renderAchievements(screen){
   if(!earnedList.length){
     const li=document.createElement('li');
     li.className='resNone';
-    li.textContent='None this run. Try clearing a level without touching the ground.';
+    li.textContent='None this run. Clear a level without touching the ground to earn one.';
     list.appendChild(li); return;
   }
   for(const r of earnedList){
     const li=document.createElement('li');
     const ico=document.createElement('span'); ico.className='ico'; ico.textContent=r.badge;
-    const txt=document.createElement('span');
+    const txt=document.createElement('span'); txt.className='txt';
     const nm=document.createElement('b'); nm.textContent=r.name;
     const sep=document.createElement('span'); sep.className='sep'; sep.textContent=' — ';
-    const fl=document.createElement('span'); fl.className='flav'; fl.textContent=r.title;
+    const fl=document.createElement('span'); fl.className='flav'; fl.textContent=r.desc||r.title;
     txt.appendChild(nm); txt.appendChild(sep); txt.appendChild(fl);
-    li.appendChild(ico); li.appendChild(txt);
+    const pts=document.createElement('span'); pts.className='pts'; pts.textContent='+'+(r.pts||0);
+    li.appendChild(ico); li.appendChild(txt); li.appendChild(pts);
     list.appendChild(li);
+  }
+}
+// Submission is offered only to a run that makes the top ten. endRankInfo lives
+// in the high-score module, so the offline build — which has no leaderboard —
+// finds nothing here and shows neither a rank nor a name field.
+function showEndRank(total,rankId,missId,entryId){
+  const info=typeof endRankInfo==='function'?endRankInfo(total):null;
+  const inTop=!!(info&&info.inTop);
+  const rank=document.getElementById(rankId), miss=document.getElementById(missId);
+  if(rank){ rank.classList.toggle('hidden',!inTop);
+    if(inTop)rank.textContent='TOP 10 SCORE — RANK #'+info.rank; }
+  if(miss){ miss.classList.toggle('hidden',inTop||!info);
+    if(info&&!inTop)miss.textContent='Not a top 10 score. '+info.needed+' needed to make the board.'; }
+  const entry=entryId?document.getElementById(entryId):null;
+  if(entry){
+    entry.classList.toggle('hidden',!inTop);
+    const ni=document.getElementById('nameInput'); if(ni)ni.value='';
+    const msg=document.getElementById('saveMsg'); if(msg)msg.textContent='';
+    const sb=document.getElementById('saveScore'); if(sb){ sb.disabled=false; sb.style.opacity=''; }
   }
 }
 // Reached by clearing Go Live, and again by clearing the bonus Labyrinth, which
@@ -1400,20 +1535,28 @@ function showVictory(kind){
   state='victory'; unlockedBonus=true; stopMusic(); sfx('victory');
   levelSelectUnlocked=true;
   try{ localStorage.setItem('dmw_beatGoLive','1'); }catch(e){}
-  document.getElementById('victoryScore').textContent=
-    (bonusDone?'Labyrinth Conquered! Total Medallions: ':'Victory! Total Medallions: ')+score;
-  document.getElementById('nameInput').value='';
-  document.getElementById('saveMsg').textContent='';
-  const sb=document.getElementById('saveScore'); sb.disabled=false; sb.style.opacity='';
-  document.getElementById('vBonus').classList.toggle('hidden',bonusDone);
   renderAchievements(victory);
+  const total=finalScore();
+  document.getElementById('victoryScore').textContent=total;
+  document.getElementById('victoryBreak').textContent=
+    score+' collected · +'+achievementBonus()+' earned';
+  document.getElementById('vBonus').classList.toggle('hidden',bonusDone);
+  // The rank is shown here, but the name is not asked for until the player
+  // leaves: the bonus level continues this run and can still add to the total.
+  showEndRank(total,'vRank','vMiss',null);
+  document.getElementById('savePrompt').classList.add('hidden');
   hideAllScreens(); victory.classList.remove('hidden');
 }
 // Reached only by running out of lives. Retry the level on one last life, or quit out.
 function showGameOver(){
   state='gameover'; stopMusic(); sfx('gameover');
-  document.getElementById('gameoverScore').textContent='Total Medallions: '+score;
   renderAchievements(gameoverScreen);
+  const total=finalScore();
+  document.getElementById('gameoverScore').textContent=total;
+  document.getElementById('gameoverBreak').textContent=
+    score+' collected · +'+achievementBonus()+' earned';
+  // The run is over either way, so the name is asked for here and now.
+  showEndRank(total,'goRank','goMiss','nameEntry');
   hideAllScreens(); gameoverScreen.classList.remove('hidden');
 }
 function showScores(){ state='scores'; renderScores(); hideAllScreens(); scores.classList.remove('hidden'); }
@@ -1469,7 +1612,8 @@ function showAchievement(a,next,cue){
   if(earnedBadges.indexOf(a.badge)<0)earnedBadges.push(a.badge);
   // first win of each keeps its place and its title; repeats don't add a row
   if(!earnedList.some(function(r){ return r.id===a.id; }))
-    earnedList.push({id:a.id,badge:a.badge,name:a.name,title:v.title});
+    earnedList.push({id:a.id,badge:a.badge,name:a.short||a.name,title:v.title,
+                     desc:a.desc||'',pts:a.pts||0});
   document.getElementById('achieveTitle').textContent=v.title;
   document.getElementById('achieveBody').textContent=v.body;
   const rw=document.getElementById('achieveReward');
@@ -1557,7 +1701,6 @@ function overlayAction(){
 }
 overlay.addEventListener('click',overlayAction);
 document.getElementById('ovMain').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(goMain); });
-document.getElementById('bonusBtn').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(function(){ score=0; resetRun(false); loadLevel(6); }); });
 document.getElementById('scoresBtn').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(showScores); });
 document.getElementById('scoresBack').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(goMain); });
 document.getElementById('scoresExport').addEventListener('click',function(e){ e.stopPropagation(); exportScores(); });
@@ -1565,6 +1708,7 @@ document.getElementById('saveScore').addEventListener('click',function(e){ e.sto
   if(this.disabled)return;                       // one entry per run, not one per click
   this.disabled=true; this.style.opacity=.5;
   const msg=document.getElementById('saveMsg');
+  savedTotal=finalScore();
   msg.textContent=LEADERBOARD_URL?'Saving…':'Score saved to this device.';
   saveScore(document.getElementById('nameInput').value).then(function(shared){
     if(!LEADERBOARD_URL)return;
@@ -1572,9 +1716,47 @@ document.getElementById('saveScore').addEventListener('click',function(e){ e.sto
                           :'Saved on this device — leaderboard unreachable.';
   });
 });
+// Victory asks for the name on the way out. None of this exists in the offline
+// build: the whole block is cut with the rest of the leaderboard.
+let savedTotal=-1;
+function openSavePrompt(){
+  const total=finalScore();
+  if(total===savedTotal)return false;             // this run has already banked
+  const info=endRankInfo(total);
+  if(!info.inTop)return false;
+  document.getElementById('savePromptRank').textContent='TOP 10 SCORE — RANK #'+info.rank;
+  document.getElementById('savePromptText').textContent=
+    total+' medallions makes the board. Enter a name to post it.';
+  document.getElementById('promptName').value='';
+  document.getElementById('promptMsg').textContent='';
+  const pb=document.getElementById('promptSave'); pb.disabled=false; pb.style.opacity='';
+  document.getElementById('savePrompt').classList.remove('hidden');
+  return true;
+}
+function closeSavePrompt(){
+  document.getElementById('savePrompt').classList.add('hidden'); fadeTo(goMain);
+}
+document.getElementById('promptSave').addEventListener('click',function(e){ e.stopPropagation();
+  if(this.disabled)return;
+  this.disabled=true; this.style.opacity=.5;
+  const msg=document.getElementById('promptMsg');
+  savedTotal=finalScore();
+  msg.textContent=LEADERBOARD_URL?'Saving…':'Score saved to this device.';
+  saveScore(document.getElementById('promptName').value).then(function(shared){
+    if(LEADERBOARD_URL)msg.textContent=shared?'Score saved to the leaderboard.'
+                                             :'Saved on this device — leaderboard unreachable.';
+    setTimeout(closeSavePrompt,700);
+  });
+});
+document.getElementById('promptSkip').addEventListener('click',function(e){ e.stopPropagation(); closeSavePrompt(); });
 // the bonus level continues the run, so the medallion total carries in
 document.getElementById('vBonus').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(function(){ loadLevel(6); }); });
-document.getElementById('vMain').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(goMain); });
+// A top-ten run is asked for its name here, once the bonus level can no longer
+// change the total. The offline build has no prompt and simply leaves.
+document.getElementById('vMain').addEventListener('click',function(e){ e.stopPropagation();
+  if(typeof openSavePrompt==='function'&&openSavePrompt())return;
+  fadeTo(goMain);
+});
 // Game over: one more life to retry this level, or bail to the menu.
 document.getElementById('goRetry').addEventListener('click',function(e){ e.stopPropagation();
   const lvl=currentLevel; fadeTo(function(){ score=levelStartScore; pendingLives=1; loadLevel(lvl); }); });
