@@ -136,7 +136,12 @@
               text-align:left;line-height:1.35;font-size:clamp(8px,1.35vw,13px);color:#fff;}
   .resList .ico{font-size:1.25em;line-height:1.1;}
   .resList .txt{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .resList b{color:#ffd54a;font-weight:800;}
+  .resList b,.resList .achLink{color:#ffd54a;font-weight:800;}
+  /* The name is a button: click it to re-read the text this run was given. */
+  .achLink{font:inherit;font-weight:800;background:none;border:0;padding:0;cursor:pointer;
+           text-align:left;text-decoration:underline dotted rgba(255,213,74,.55);text-underline-offset:3px;}
+  .achLink:hover{color:#fff;text-decoration-color:#fff;}
+  .achLink:focus-visible{outline:2px solid #ffd54a;outline-offset:2px;border-radius:2px;}
   .resList .sep{color:#8493bd;}
   .resList .flav{color:#cfe0ff;}
   .resList .pts{color:#8fff7a;font-weight:800;font-size:.92em;white-space:nowrap;
@@ -1542,7 +1547,10 @@ function renderAchievements(screen){
     const li=document.createElement('li');
     const ico=document.createElement('span'); ico.className='ico'; ico.textContent=r.badge;
     const txt=document.createElement('span'); txt.className='txt';
-    const nm=document.createElement('b'); nm.textContent=r.name;
+    const nm=document.createElement('button');
+    nm.type='button'; nm.className='achLink'; nm.textContent=r.name;
+    nm.title='Read what you got';
+    nm.addEventListener('click',function(e){ e.stopPropagation(); reviewAchievement(r); this.blur(); });
     const sep=document.createElement('span'); sep.className='sep'; sep.textContent=' — ';
     const fl=document.createElement('span'); fl.className='flav'; fl.textContent=r.desc||r.title;
     txt.appendChild(nm); txt.appendChild(sep); txt.appendChild(fl);
@@ -1647,14 +1655,31 @@ function expandAchievement(){
   document.getElementById('achieveReward').style.display=achieveHasReward?'':'none';
   document.getElementById('achieveBox').scrollTop=0;
 }
+// Re-open an achievement from an end screen, showing the exact variant the run
+// was given. It layers over the results panel and changes no game state, so
+// Continue simply puts it away again.
+let reviewing=false;
+function reviewAchievement(r){
+  document.getElementById('achieveHdr').textContent='\u2605 ACHIEVEMENT EARNED \u2605';
+  document.getElementById('achieveTitle').textContent=r.title;
+  const bd=document.getElementById('achieveBody');
+  bd.textContent=r.body||''; bd.style.display='';
+  const rw=document.getElementById('achieveReward');
+  if(r.reward){ rw.style.display=''; rw.textContent=r.reward; } else rw.style.display='none';
+  document.getElementById('achieveMoreWrap').style.display='none';
+  document.getElementById('achieveBox').scrollTop=0;
+  reviewing=true;
+  achieve.classList.remove('hidden');
+}
 function showAchievement(a,next,cue){
+  document.getElementById('achieveHdr').textContent='\u2605 NEW ACHIEVEMENT UNLOCKED! \u2605';
   // A repeat draws a fresh variant, so opening it really is a new joke.
   const v=pickVariant(a);
   if(cue)sfx(cue);   // only the opening screen of a level's chain is scored
   // first win of each keeps its place and its title; repeats don't add a row
   if(!earnedList.some(function(r){ return r.id===a.id; }))
     earnedList.push({id:a.id,badge:a.badge,name:a.short||a.name,title:v.title,
-                     desc:a.desc||'',pts:a.pts||0});
+                     body:v.body,reward:v.reward||'',desc:a.desc||'',pts:a.pts||0});
   document.getElementById('achieveTitle').textContent=v.title;
   document.getElementById('achieveBody').textContent=v.body;
   const rw=document.getElementById('achieveReward');
@@ -1685,12 +1710,20 @@ document.getElementById('achieveMore').addEventListener('click',function(e){
 // The fanfare plays once and only once: on the opening screen of the chain a
 // cleared level produces. Screens after it are silent, and so is the one that
 // fires mid-level, which would otherwise interrupt play with a brass section.
+// An achievement announces itself once per game and then keeps quiet. Pogo and
+// Minimalist can be earned on every level; the second and later wins still
+// count -- they were already banked and scored the first time -- they just stop
+// interrupting. A new game clears earnedList, so each one gets its moment again.
 function showAchievements(list,next,firstCue){
-  if(!list||!list.length){ if(next)next(); return; }
-  const rest=list.slice(1);
-  showAchievement(list[0], rest.length ? function(){ showAchievements(rest,next); } : next, firstCue);
+  const fresh=(list||[]).filter(function(a){
+    return !earnedList.some(function(r){ return r.id===a.id; });
+  });
+  if(!fresh.length){ if(next)next(); return; }
+  const rest=fresh.slice(1);
+  showAchievement(fresh[0], rest.length ? function(){ showAchievements(rest,next); } : next, firstCue);
 }
 document.getElementById('achieveBtn').addEventListener('click',function(e){ e.stopPropagation();
+  if(reviewing){ reviewing=false; achieve.classList.add('hidden'); return; }
   const nx=afterAchieve; afterAchieve=null;
   if(stateBeforeAchieve){ state=stateBeforeAchieve; stateBeforeAchieve=null; }
   if(nx)fadeTo(nx); });
