@@ -100,10 +100,14 @@
   .endActions{flex:0 0 auto;min-width:min(100%,246px);display:flex;flex-direction:column;gap:8px;
            justify-content:center;align-items:stretch;}
   .resHdr{color:#ffd54a;font-weight:800;letter-spacing:2px;text-align:left;font-size:clamp(9px,1.5vw,13px);}
-  .resList{list-style:none;margin:0;padding:0 4px 0 0;height:clamp(70px,11vh,106px);overflow-y:auto;
+  /* min-height, not height: the list keeps the panel a constant size when a run
+     earns little or nothing, and grows past it when there is more to show. The
+     panel is anchored to the bottom of the stage, so it expands upward into the
+     artwork rather than pushing the buttons off. A run can earn nine. */
+  .resList{list-style:none;margin:0;padding:0 4px 0 0;min-height:clamp(70px,11vh,106px);
            display:flex;flex-direction:column;gap:5px;}
   /* One line per achievement: icon, name, what triggered it, what it is worth.
-     Clipped rather than wrapped, so the panel is the same height every time. */
+     Clipped rather than wrapped, so every row is a single line. */
   .resList li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:9px;align-items:baseline;
               text-align:left;line-height:1.35;font-size:clamp(8px,1.35vw,13px);color:#fff;}
   .resList .ico{font-size:1.25em;line-height:1.1;}
@@ -114,7 +118,7 @@
   .resList .pts{color:#8fff7a;font-weight:800;font-size:.92em;white-space:nowrap;
                 font-variant-numeric:tabular-nums;}
   .resList .resNone{display:flex;align-items:center;color:#9aa8bd;font-style:italic;text-align:left;
-           height:clamp(70px,11vh,106px);font-size:clamp(9px,1.4vw,13px);line-height:1.4;}
+           min-height:clamp(70px,11vh,106px);font-size:clamp(9px,1.4vw,13px);line-height:1.4;}
   .endLabel{color:#cfe0ff;font-weight:800;letter-spacing:2px;opacity:.75;white-space:nowrap;
             font-size:clamp(8px,1.1vw,10px);}
   #victoryScore,#gameoverScore{font-size:clamp(24px,4.6vw,44px);font-weight:800;line-height:1.15;
@@ -339,7 +343,6 @@
       <ol id="scoreList"></ol>
       <div class="vRow">
         <button class="pBtn" id="scoresBack">Back</button>
-        <button class="pBtn" id="scoresExport" style="background:#7ad0ff;box-shadow:0 4px 0 #3f9fd0;color:#06263a;">Export scores.json</button>
       </div>
     </div>
     <div id="achieve" class="hidden">
@@ -1337,8 +1340,6 @@ function stepFade(dt){
 // Scores live in two places and are shown merged:
 //   scores.json  \u2014 optional, committed to the repo. The permanent, shared board.
 //   localStorage \u2014 whatever this browser has played since.
-// "Export scores.json" downloads the merged board so it can be committed,
-// which promotes local runs onto the shared one.
 // Paste the Cloudflare Worker URL from leaderboard/README.md here to turn on
 // the shared board. Left empty, everything below still works from scores.json
 // plus localStorage.
@@ -1426,13 +1427,6 @@ function renderScores(){
     return '<li><span>'+(i+1)+'. '+escapeHtml(s.name)+'</span><span>'+s.score+'</span><span>'+
       ((s.badges||[]).join(' ')||'\u2014')+'</span></li>';
   }).join('');
-}
-function exportScores(){
-  const blob=new Blob([JSON.stringify(highScores,null,1)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob); a.download='scores.json';
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(function(){ URL.revokeObjectURL(a.href); },1000);
 }
 
 function hideAllScreens(){ duckMusic(false); audioOpen=false; audioScreen.classList.add('hidden');
@@ -1703,7 +1697,6 @@ overlay.addEventListener('click',overlayAction);
 document.getElementById('ovMain').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(goMain); });
 document.getElementById('scoresBtn').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(showScores); });
 document.getElementById('scoresBack').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(goMain); });
-document.getElementById('scoresExport').addEventListener('click',function(e){ e.stopPropagation(); exportScores(); });
 document.getElementById('saveScore').addEventListener('click',function(e){ e.stopPropagation();
   if(this.disabled)return;                       // one entry per run, not one per click
   this.disabled=true; this.style.opacity=.5;
