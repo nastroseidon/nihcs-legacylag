@@ -22,12 +22,12 @@ export const LEVEL6 = {
   // spikes at ground level: [x]  (width 98 hitbox, drawn ~118)
   spikes: [[1250], [3050], [4100], [4600]],
   // medallions: [x, y]
-  coins: [[300, 560], [560, 560], [760, 560], [900, 440], [1180, 360], [1390, 300],
-          [1880, 340], [2090, 280], [2390, 450], [2650, 450], [2840, 450],
-          // 3080 sits above the spike at 3050: at its old y=540 the only way to
-          // touch it was standing in the spikes, since the jump that clears them
-          // passes overhead. Raised to the arc's apex.
-          [3080, 420], [3330, 370], [3930, 430], [4230, 350], [4420, 310], [4470, 310],
+  coins: [[300, 560], [560, 560], [760, 300], [1080, 560], [1180, 360], [1390, 300],
+          [1880, 340], [2090, 280], [2350, 300], [2610, 300], [2800, 300],
+          // Heights checked against the jump arc: 3080 is reachable only from a
+          // leftward jump off the stacked block at 3200. A ground jump over the
+          // spike passes underneath it, which is what keeps Minimalist possible.
+          [3080, 300], [3330, 370], [3930, 430], [4230, 350], [4420, 310], [4470, 310],
           // the last one stays clear of the goal's hitbox so it can be jumped
           // over — otherwise the flag cannot be reached without collecting it
           [4580, 430], [4880, 350], [4960, 560]],
