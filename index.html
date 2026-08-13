@@ -70,6 +70,25 @@
             background:#1a0e0e url('gameover.png') center/100% 100% no-repeat;}
   #gameoverPanel{width:100%;background:rgba(20,8,8,.86);padding:14px;text-align:center;box-sizing:border-box;}
   #gameoverScore{color:#ff9a7a;font-size:clamp(18px,3.4vw,30px);font-weight:800;margin-bottom:10px;text-shadow:0 2px 4px #000;}
+  /* What the run earned, listed beside the art. Sized to stay legible in a
+     screenshot, and scrolls rather than growing if a run collects the lot. */
+  .results{position:absolute;right:2.5%;top:17%;width:min(54%,600px);max-height:60%;
+           background:rgba(5,9,18,.87);border:2px solid #ffd54a;border-radius:8px;
+           box-shadow:0 8px 30px rgba(0,0,0,.6);
+           display:flex;flex-direction:column;padding:11px 14px;box-sizing:border-box;}
+  .resHdr{color:#ffd54a;font-weight:800;letter-spacing:2px;text-align:center;
+          font-size:clamp(9px,1.6vw,15px);margin-bottom:8px;
+          border-bottom:1px dashed rgba(255,213,74,.42);padding-bottom:7px;}
+  .resList{list-style:none;margin:0;padding:0;overflow-y:auto;flex:0 1 auto;min-height:0;
+           display:flex;flex-direction:column;gap:7px;}
+  .resList li{display:flex;gap:9px;align-items:flex-start;text-align:left;
+              line-height:1.35;font-size:clamp(8px,1.4vw,14px);color:#fff;}
+  .resList .ico{flex:0 0 auto;font-size:1.3em;line-height:1.15;}
+  .resList b{color:#ffd54a;font-weight:800;}
+  .resList .sep{color:#8493bd;}
+  .resList .flav{color:#cfe0ff;}
+  .resNone{display:block;color:#cfe0ff;font-style:italic;text-align:center;
+           font-size:clamp(9px,1.5vw,14px);padding:6px 0;}
   #victoryPanel{width:100%;background:rgba(10,25,12,.78);padding:14px;text-align:center;box-sizing:border-box;}
   #victoryScore{color:#ffd54a;font-size:clamp(18px,3.4vw,30px);font-weight:800;margin-bottom:8px;text-shadow:0 2px 4px #000;}
   #nameEntry{margin-bottom:8px;}
@@ -197,6 +216,10 @@
       <button class="pBtn" id="pMain">Return to Main Screen</button>
     </div>
     <div id="victory" class="hidden">
+      <div class="results">
+        <div class="resHdr"></div>
+        <ul class="resList"></ul>
+      </div>
       <div id="victoryPanel">
         <div id="victoryScore">Total Medallions: 0</div>
         <div id="nameEntry">
@@ -211,6 +234,10 @@
       </div>
     </div>
     <div id="gameover" class="hidden">
+      <div class="results">
+        <div class="resHdr"></div>
+        <ul class="resList"></ul>
+      </div>
       <div id="gameoverPanel">
         <div id="gameoverScore">Total Medallions: 0</div>
         <div class="vRow">
@@ -387,7 +414,7 @@ const shortName=['Kick-off','Planning','Super User','End User','Migration','Go L
 const SPEEDRUN_TARGET_MS=4*60*1000;   // under 4 minutes
 
 const ACHIEVEMENTS=[
- { id:'pogo', badge:'\uD83E\uDD98', scope:'level',
+ { id:'pogo', name:'Pogo', badge:'\uD83E\uDD98', scope:'level',
    // Clear a level having hopped the whole way.
    when:function(f){ return f.atGoal && f.hopped; },
    variants:[
@@ -427,7 +454,7 @@ const ACHIEVEMENTS=[
   { title:'1993 Why, Arizona Invitational for Exceptional Vertical Decision-Making',
     body:'Congratulations!\n\nFor decades, historians believed the results of the 1993 Invitational were beyond dispute. That assumption changed when a former scorekeeper admitted he had accidentally been using the judging rubric from a regional pie-baking competition.\n\nThe revised calculations painted a very different picture.\n\nOfficials concluded that George Costanza had received bonus points for "excellent crust consistency," a category that, while important elsewhere, had no measurable impact on competitive jumping.\n\nFollowing an emergency session of the International Committee for Extremely Questionable Sports, his championship has officially been nullified. It now belongs to you.\n\nThe committee regrets the inconvenience. George regrets answering his phone.\n\nOr...\n\nYou completed an entire level while hopping nonstop, forcing Dr. Marion Wayne to question whether you understand the purpose of legs. He\u2019d like to assure everyone that walking remains fully supported by modern medicine.',
     reward:'A championship jacket that exists only in spirit, one beautifully engraved imaginary trophy, and the unquestionable distinction of becoming the 1993 Invitational Champion of Why, Arizona. It\u2019s a title nobody can take away... mostly because nobody else wants it.' } ] },
- { id:'perfectionist', badge:'\uD83D\uDCAF', scope:'level',
+ { id:'perfectionist', name:'Perfectionist "No Coin Left Behind"', badge:'\uD83D\uDCAF', scope:'level',
    // Every medallion in one level.
    when:function(f){ return f.atGoal && f.levelCoinsTotal>0 && f.levelCoins===f.levelCoinsTotal; },
    variants:[
@@ -443,7 +470,7 @@ const ACHIEVEMENTS=[
   { title:'THE CHECKLIST HAS NO EMPTY BOXES',
     body:'Congratulations!\n\nEvery medallion in this level has been collected.\nThe checklist is complete.\nEvery box is checked.\n\nThis has produced an unfamiliar sensation within the organization known as closure.\n\nSeveral employees initially mistook it for a system outage.\n\nDr. Marion Wayne has submitted the completed list for approval.\n\nIt was returned because the approver wanted to know why there were no comments.\n\nThe explanation "because everything is done" has been deemed insufficiently detailed.\n\nPlease provide comments confirming that no comments are required.',
     reward:'One imaginary clipboard full of checkmarks, a flawless level completion record, and proof that even perfection can generate a follow-up email.' } ] },
- { id:'minimalist', badge:'\uD83E\uDEB6', scope:'level',
+ { id:'minimalist', name:'Minimalist', badge:'\uD83E\uDEB6', scope:'level',
    // Clear a level having collected none.
    when:function(f){ return f.atGoal && f.levelCoinsTotal>0 && f.levelCoins===0; },
    variants:[
@@ -459,7 +486,7 @@ const ACHIEVEMENTS=[
   { title:'MINIMUM VIABLE PARTICIPATION',
     body:'Congratulations!\n\nYou finished the level while collecting absolutely nothing.\nYou arrived.\nYou traversed the required environment.\nYou reached the objective.\nYou did not volunteer for anything extra.\n\nThis is perhaps the purest expression of scope discipline ever recorded.\n\nA supervisor asked why you ignored every medallion.\nDr. Marion Wayne replied:\n"Was it in the performance standard?"\nThe supervisor checked.\nIt was not.\nThe conversation ended immediately.\n\nSomewhere, a federal employee felt a disturbance in the Force and smiled.',
     reward:'One imaginary certificate for Meeting Minimum Requirements With Exceptional Precision and exactly zero additional duties assumed.' } ] },
- { id:'janitor', badge:'\uD83E\uDDF9', scope:'run',
+ { id:'janitor', name:'Janitor', badge:'\uD83E\uDDF9', scope:'run',
    // Every enemy AND every medallion. Grants the two below as well.
    when:function(f){ return f.fullRun && f.coinsTotal>0 && f.coins===f.coinsTotal
                                    && f.stompable>0 && f.stomps===f.stompable; },
@@ -476,7 +503,7 @@ const ACHIEVEMENTS=[
   { title:'WHITE-GLOVE APOCALYPSE',
     body:'Congratulations!\n\nEvery medallion is gone.\nEvery enemy is gone.\n\nThe inspection team entered the level wearing white gloves and expressions of professional suspicion.\nThey were ready to find something.\nAnything.\nThey found nothing.\nOne inspector checked the same corner four times.\n\nAnother quietly asked whether the level had been replaced with a cleaner level.\nIT confirmed it had not.\n\nDr. Marion Wayne has achieved a condition Environmental Services refers to only in legends:\n"No deficiencies noted."\n\nThe lead inspector stared at the blank checklist for several seconds, signed it, and requested reassignment.\n\nQuality Management immediately scheduled a follow-up inspection because a perfect inspection is considered inherently suspicious.',
     reward:'One imaginary white glove with absolutely nothing on it, a zero-deficiency report, and the certainty that somebody will inspect you again purely because you passed too well.' } ] },
- { id:'completionist', badge:'\uD83D\uDCBE', scope:'run',
+ { id:'completionist', name:'Completionist "100% Data Recovery"', badge:'\uD83D\uDCBE', scope:'run',
    // Every medallion across Levels 1-6.
    when:function(f){ return f.fullRun && f.coinsTotal>0 && f.coins===f.coinsTotal; },
    variants:[
@@ -492,7 +519,7 @@ const ACHIEVEMENTS=[
   { title:'YOU FOUND THE MISSING ATTACHMENT',
     body:'Congratulations!\n\nYou collected every medallion across all six levels.\n\nMore importantly, you have demonstrated a rare and dangerous ability:\nYou can actually find things.\n\nThe organization has been searching for someone like you.\nNot intentionally.\n\nBut now that you\'ve revealed yourself, there is no going back.\n\nWithin minutes of your accomplishment, the following requests were submitted:\n\n"Can you find the spreadsheet from the old shared drive?"\n\n"Do you remember where we saved the final-final version?"\n"There was an email sometime around 2017..."\n"I think somebody named Dave had it."\nAnd, most ominously:\n"It should be easy for you."\nYou did this to yourself.\n\nBy locating every medallion, you have become organizationally classified as Good At Finding Stuff.\n\nThis classification outranks job descriptions, workload limits, and basic human boundaries.\n\nDr. Marion Wayne attempted to explain that collecting medallions inside a platform game does not qualify him to reconstruct a decade of abandoned file-management practices.\nHis objection was documented.\n\nThen someone forwarded him a broken SharePoint link and wrote:\n"Thoughts?"\nThere will be no escape.',
     reward:'One imaginary paperclip attachment icon, permanent membership in the unofficial Lost File Recovery Team, and a lifetime subscription to emails beginning with "Quick question..." There is never a quick question.' } ] },
- { id:'stomper', badge:'\uD83D\uDC62', scope:'run',
+ { id:'stomper', name:'Stomp Specialist "Aggressive Prioritization"', badge:'\uD83D\uDC62', scope:'run',
    // Stomp every enemy across Levels 1-6.
    when:function(f){ return f.fullRun && f.stompable>0 && f.stomps===f.stompable; },
    variants:[
@@ -508,7 +535,7 @@ const ACHIEVEMENTS=[
   { title:'FULL-CONTACT STAKEHOLDER ENGAGEMENT',
     body:'Congratulations!\n\nYou achieved a 100% stakeholder engagement rate.\n\nUnfortunately, Legal would like to discuss your definition of engagement.\nYou stomped every enemy across Levels 1\u20136.\nNobody was overlooked.\nNobody was skipped.\n\nNobody successfully hid behind scenery and waited for you to leave.\nYou made contact with everyone.\n\nThe Stakeholder Engagement Office initially celebrated when the dashboard reached 100%.\nThere were balloons.\nSomeone ordered cupcakes.\nThen they reviewed the methodology.\nThe balloons were removed.\n\nThe cupcakes remained because they were nonrefundable.\n\nAccording to the engagement plan, Dr. Marion Wayne was expected to identify affected parties, establish communication channels, solicit feedback, and document outcomes.\n\nYou completed one of those four steps with extraordinary consistency.\n\nThe documented outcome for every hostile stakeholder is simply:\n"Resolved."\n\nA compliance reviewer asked for additional detail.\nThe revised entry reads:\n"Resolved vertically."\nThis did not help.\n\nMore troublingly, your stakeholder map shows that several enemies required deliberate backtracking to reach.\n\nIn other words, some stakeholders made every reasonable effort not to engage with you.\nYou engaged them anyway.\n\nCommunications has asked that you never represent the organization at a town hall.\n\nDr. Marion Wayne considers this an unexpected secondary reward.',
     reward:'One imaginary stakeholder matrix consisting entirely of green checkmarks, a 100% contact rate that nobody is permitted to cite publicly, and a leftover cupcake from the celebration that ended the moment Legal opened the methodology tab.' } ] },
- { id:'pacifist', badge:'\uD83D\uDD4A\uFE0F', scope:'run',
+ { id:'pacifist', name:'Pacifist', badge:'\uD83D\uDD4A\uFE0F', scope:'run',
    // Clear Levels 1-6 having stomped nothing. Scanning still counts as mercy.
    when:function(f){ return f.fullRun && f.stomps===0; },
    variants:[
@@ -524,7 +551,7 @@ const ACHIEVEMENTS=[
   { title:'ZERO TERMINATIONS THIS QUARTER',
     body:'Congratulations!\n\nManagement has reviewed your quarterly performance metrics.\nThere is a problem.\n\nAccording to the data, you completed Levels 1\u20136 while terminating zero employees.\nZero.\nNone.\n\nEvery hostile creature encountered during this reporting period remains gainfully employed.\nSomewhere.\nProbably.\n\nThis has caused significant confusion among senior leadership, who were previously operating under the assumption that "stomp everything that moves" was both an effective strategy and an unofficial organizational value.\nAn emergency meeting was scheduled.\nThe meeting produced three subcommittees.\n\nThe subcommittees produced eleven recommendations.\n\nNine of those recommendations involved additional meetings.\nThe remaining two recommended stomping.\nYou rejected all of them.\n\nDr. Marion Wayne instead implemented a revolutionary management philosophy known as "Going Around Them."\nEarly results have been extraordinary.\nEnemy mortality is down 100%.\nTravel time has increased slightly.\n\nMorale remains impossible to measure because nobody has distributed the survey.\n\nOne executive described your performance as "a bold new paradigm."\n\nAnother asked whether you were sure the stomp button was working.\nIT has confirmed that it was.',
     reward:'One spotless disciplinary record, an imaginary plaque reading "Employee Retention Champion," and a 0.00% reduction in your actual workload. Congratulations on achieving excellence without receiving anything useful in return.' } ] },
- { id:'nodeath', badge:'\uD83D\uDC80', scope:'run',
+ { id:'nodeath', name:'No-Death Run', badge:'\uD83D\uDC80', scope:'run',
    // Clear Levels 1-6 without dying once.
    when:function(f){ return f.fullRun && f.deaths===0; },
    variants:[
@@ -540,7 +567,7 @@ const ACHIEVEMENTS=[
   { title:'INCIDENT REPORT NOT REQUIRED',
     body:'Congratulations!\n\nFor the first time in recorded organizational history, nobody needs to fill out Form 27-B:\n\n"Unexpected Employee Death During Routine Mascot Operations."\nYou completed Levels 1\u20136 without dying.\n\nThis may not sound impressive until you understand what normally happens after an incident.\nFirst, the supervisor must be notified.\nThen Safety.\nThen Risk Management.\nThen Human Resources.\n\nThen someone asks whether the employee was wearing the appropriate footwear.\n\nThen twelve people attend a meeting that could have been an email.\nThen the email gets sent anyway.\nBy staying alive, you prevented all of this.\n\nProductivity across the organization increased by an estimated 3.7%.\nNobody knows what to do with the extra time.\n\nOne manager has already scheduled a meeting to discuss it.\n\nSafety reviewed your run and confirmed that Dr. Marion Wayne successfully avoided all fatal hazards despite receiving absolutely no additional protective equipment, hazard pay, or meaningful institutional support.\nThis has been classified as:\n\n"A personal achievement and therefore not budget-relevant."\nFinance is very pleased with this determination.\n\nDr. Marion Wayne has requested that the unused incident-report packet be shredded.\nRecords Management denied the request.\nIt must be retained for seven years.\nJust in case.',
     reward:'One untouched stack of mandatory forms, zero post-incident meetings, and the rare privilege of costing the organization absolutely nothing in preventable death-related administrative labor.' } ] },
- { id:'speedrun', badge:'\u23F1\uFE0F', scope:'run',
+ { id:'speedrun', name:'Speedrun "Ahead of Schedule (For Once)"', badge:'\u23F1\uFE0F', scope:'run',
    // Clear Levels 1-6 inside the target time.
    when:function(f){ return f.fullRun && f.timeMs<SPEEDRUN_TARGET_MS; },
    variants:[
@@ -556,7 +583,7 @@ const ACHIEVEMENTS=[
   { title:'EARLY COMPLETION IS ITS OWN PUNISHMENT',
     body:'Congratulations!\n\nYou finished Levels 1\u20136 under the target time.\nYou are done early.\nThis briefly felt good.\nThen someone noticed.\n\nA supervisor has reviewed the remaining calendar and identified several "quick things" you can help with now that you have extra time.\nThere are nine quick things.\nTwo have attachments.\nOne begins with the phrase:\n"Since you\'re already in there..."\n\nDr. Marion Wayne has learned an important professional lesson:\n\nNever let anyone know exactly how fast you can finish something.\n\nHe will remember this during all future estimates.',
     reward:'One imaginary gold stopwatch, undeniable proof of your speed, and precisely zero additional free time.' } ] },
- { id:'overtime', badge:'\uD83C\uDF00', scope:'once',
+ { id:'overtime', name:'Overtime Hero', badge:'\uD83C\uDF00', scope:'once',
    // Clear the bonus Legacy Labyrinth.
    when:function(f){ return f.atGoal && f.level===6; },
    variants:[
@@ -572,7 +599,7 @@ const ACHIEVEMENTS=[
   { title:'THE HALLWAY THAT SHOULD NOT EXIST',
     body:'Congratulations!\n\nYou survived the Legacy Labyrinth.\n\nDuring your journey, you encountered corridors that connected to nothing, turns that appeared to violate planning principles, and at least one route that felt like it had been added in 2009 as a temporary workaround.\nIt is still there.\n\nFacilities insists the hallway is not on the official floor plan.\nIT insists it belongs to Facilities.\nFacilities insists it is probably an IT hallway.\n\nDr. Marion Wayne walked through it anyway and somehow reached the exit.\n\nA work order has been submitted to determine why the Labyrinth exists.\nStatus: Pending Assignment.',
     reward:'One imaginary ball of string, an unofficial map nobody will maintain, and the distinction of successfully navigating infrastructure that all responsible departments deny owning.' } ] },
- { id:'uat', badge:'\uD83E\uDDEA', scope:'run',
+ { id:'uat', name:'Extensive User Acceptance Testing', badge:'\uD83E\uDDEA', scope:'run',
    // Anti-achievement: die seven times. Fires the moment it happens.
    when:function(f){ return f.deaths>=7; },
    variants:[
@@ -596,13 +623,16 @@ const ACHIEVEMENTS=[
 let earned={};                      // key -> true, so nothing is awarded twice
 let variantsUsed={};                // id -> variant indices already shown this run
 let earnedBadges=[];                // badges this run (feeds High Scores)
+// One row per achievement won this run, in the order they were earned, holding
+// the flavour title that was actually shown. Drives the end-of-run panels.
+let earnedList=[];
 let run={ fromStart:false, startedAt:0, deaths:0,
           stomps:0, stompable:0, coins:0, coinsTotal:0 };
 let lvlCoins=0, lvlStomps=0;        // this level's tally, folded into the run at the goal
 // The full-run achievements only count when the player actually began at Level 1:
 // otherwise a jump to Level 6 from the level select would qualify for all of them.
 function resetRun(fromStart){
-  earned={}; variantsUsed={}; earnedBadges=[];
+  earned={}; variantsUsed={}; earnedBadges=[]; earnedList=[];
   run={ fromStart:!!fromStart, startedAt:Date.now(), deaths:0,
         stomps:0, stompable:0, coins:0, coinsTotal:0 };
   lives=3;
@@ -1334,22 +1364,56 @@ function goMain(){
   document.getElementById('ovMain').classList.add('hidden');   // already here
   hideAllScreens(); overlay.classList.remove('hidden'); updateHud(); updateBonusBtn(); updateLevelSelect();
 }
-// Reached only by finishing the run. Save a score, head to the bonus level, or bail out.
-function showVictory(){
+// Fill a results panel with what the run earned: emoji, the achievement's name,
+// and the flavour title that came up when it was won. Built as nodes rather than
+// markup so it needs no escaping, and so it survives into the offline build,
+// where the high-score module that owns escapeHtml is stripped out.
+function renderAchievements(screen){
+  const panel=screen.querySelector('.results'); if(!panel)return;
+  const hdr=panel.querySelector('.resHdr'), list=panel.querySelector('.resList');
+  hdr.textContent=earnedList.length
+    ? 'ACHIEVEMENTS EARNED — '+earnedList.length
+    : 'ACHIEVEMENTS EARNED';
+  list.textContent='';
+  if(!earnedList.length){
+    const li=document.createElement('li');
+    li.className='resNone';
+    li.textContent='None this run. Try clearing a level without touching the ground.';
+    list.appendChild(li); return;
+  }
+  for(const r of earnedList){
+    const li=document.createElement('li');
+    const ico=document.createElement('span'); ico.className='ico'; ico.textContent=r.badge;
+    const txt=document.createElement('span');
+    const nm=document.createElement('b'); nm.textContent=r.name;
+    const sep=document.createElement('span'); sep.className='sep'; sep.textContent=' — ';
+    const fl=document.createElement('span'); fl.className='flav'; fl.textContent=r.title;
+    txt.appendChild(nm); txt.appendChild(sep); txt.appendChild(fl);
+    li.appendChild(ico); li.appendChild(txt);
+    list.appendChild(li);
+  }
+}
+// Reached by clearing Go Live, and again by clearing the bonus Labyrinth, which
+// continues the same run rather than starting a new one.
+function showVictory(kind){
+  const bonusDone=kind==='labyrinth';
   state='victory'; unlockedBonus=true; stopMusic(); sfx('victory');
   levelSelectUnlocked=true;
   try{ localStorage.setItem('dmw_beatGoLive','1'); }catch(e){}
-  document.getElementById('victoryScore').textContent='Victory! Total Medallions: '+score;
+  document.getElementById('victoryScore').textContent=
+    (bonusDone?'Labyrinth Conquered! Total Medallions: ':'Victory! Total Medallions: ')+score;
   document.getElementById('nameInput').value='';
   document.getElementById('saveMsg').textContent='';
   const sb=document.getElementById('saveScore'); sb.disabled=false; sb.style.opacity='';
-  document.getElementById('vBonus').classList.remove('hidden');
+  document.getElementById('vBonus').classList.toggle('hidden',bonusDone);
+  renderAchievements(victory);
   hideAllScreens(); victory.classList.remove('hidden');
 }
 // Reached only by running out of lives. Retry the level on one last life, or quit out.
 function showGameOver(){
   state='gameover'; stopMusic(); sfx('gameover');
   document.getElementById('gameoverScore').textContent='Total Medallions: '+score;
+  renderAchievements(gameoverScreen);
   hideAllScreens(); gameoverScreen.classList.remove('hidden');
 }
 function showScores(){ state='scores'; renderScores(); hideAllScreens(); scores.classList.remove('hidden'); }
@@ -1403,6 +1467,9 @@ function showAchievement(a,next,cue){
   const v=pickVariant(a);
   if(cue)sfx(cue);   // only the opening screen of a level's chain is scored
   if(earnedBadges.indexOf(a.badge)<0)earnedBadges.push(a.badge);
+  // first win of each keeps its place and its title; repeats don't add a row
+  if(!earnedList.some(function(r){ return r.id===a.id; }))
+    earnedList.push({id:a.id,badge:a.badge,name:a.name,title:v.title});
   document.getElementById('achieveTitle').textContent=v.title;
   document.getElementById('achieveBody').textContent=v.body;
   const rw=document.getElementById('achieveReward');
@@ -1505,7 +1572,8 @@ document.getElementById('saveScore').addEventListener('click',function(e){ e.sto
                           :'Saved on this device — leaderboard unreachable.';
   });
 });
-document.getElementById('vBonus').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(function(){ score=0; loadLevel(6); }); });
+// the bonus level continues the run, so the medallion total carries in
+document.getElementById('vBonus').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(function(){ loadLevel(6); }); });
 document.getElementById('vMain').addEventListener('click',function(e){ e.stopPropagation(); fadeTo(goMain); });
 // Game over: one more life to retry this level, or bail to the menu.
 document.getElementById('goRetry').addEventListener('click',function(e){ e.stopPropagation();
@@ -1667,10 +1735,10 @@ function update(){
       unlockedBonus=true;
       if(won.length){ state='achieve'; fadeTo(function(){ showAchievements(won,showVictory,'coronation'); }); }
       else { state='victory'; fadeTo(showVictory); }
-    } else { const sc=score;
-      const showWin=function(){ state='won'; stopMusic(); showOverlay('LABYRINTH CONQUERED!','You escaped The Legacy Labyrinth with '+sc+' medallions. Legendary run!','START'); };
+    } else {
+      const showWin=function(){ showVictory('labyrinth'); };
       if(won.length){ state='achieve'; fadeTo(function(){ showAchievements(won,showWin,'coronation'); }); }
-      else { state='won'; fadeTo(showWin); } }
+      else { state='victory'; fadeTo(showWin); } }
   }
 
   camX=Math.max(0,Math.min(player.x+player.w/2-W/2,worldW-W));
@@ -1825,6 +1893,7 @@ window.__dmw={ jumpTo:function(i){ loadLevel(i); },
   key:function(k,v){ keys[k]=v; },
   // achievements: what the run has banked, and what it has already won
   get run(){ return run; }, get earned(){ return earned; }, get badges(){ return earnedBadges; },
+  get earnedRows(){ return earnedList; },
   runMs:function(){ return Date.now()-run.startedAt; },
   get sound(){ return {bed:musicBed,wanted:wantBed,running:!!musicTimer,muted:muted,vol:vol}; },
   resetRun:function(fromStart){ resetRun(fromStart!==false); } };
