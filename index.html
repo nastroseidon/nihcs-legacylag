@@ -434,13 +434,13 @@ const LEVELS=[
    plats:[[600,380,150],[1200,520,150],[1550,360,150],[2000,500,150],[2350,340,160],[2800,500,150],[3150,360,160],[3600,480,160],[3950,340,160]],
    spikes:[[1350,GROUND],[2550,GROUND],[3450,GROUND]],
    coins:[[350,560],[650,330],[1250,470],[1600,310],[2050,450],[2400,290],[2850,450],[3200,310],[3700,430],[4000,290]],
-   // Sections 4 and 5 are the stretches after the third and fourth pits. Every
-   // patrol here keeps clear of three things, or a no-stomp run has nowhere to
-   // put its feet: the first ~100px of a section, which is where a pit jump
-   // lands; the spike hitboxes at 2550 and 3450, which run 98px wide; and the
-   // goal at 4100. Section 5 holds three, spaced rather than overlapping.
+   // Sections 4 and 5 are the stretches after the third and fourth pits.
+   // Section 4's bot walks the whole section, pit to pit, the way the ones on
+   // sections 2 and 3 do -- a wide patrol stays fair because it is rarely at the
+   // landing end when you arrive. Section 5 holds three, spaced rather than
+   // overlapping, clear of the goal at 4100 and of the 98px spike hitbox at 3450.
    enemies:[[1000,900,1440,GROUND],[1850,1650,2200,GROUND],
-            [2850,2720,3060,GROUND],
+            [2850,2400,3100,GROUND],
             [3600,3560,3735,GROUND],[3780,3740,3910,GROUND],[3960,3915,4085,GROUND]],
    goalRect:[4100,GROUND-160,90,160] },
 
@@ -493,7 +493,7 @@ const shortName=['Kick-off','Planning','Super User','End User','Migration','Go L
 // wording lives in achievements-doc.md; this array is the game's copy of it.
 //
 //   id       stable name, and the bookkeeping key
-//   badge    emoji shown in the High Scores "Achievements" column; keep it short
+//   badge    emoji shown beside the achievement on the end panel; keep it short
 //   scope    how often it can be won in one run:
 //              'level' once per level      'run' once per run      'once' one-off
 //   when(f)  predicate over the facts object built by achievementFacts()
@@ -728,7 +728,6 @@ const ACHIEVEMENTS=[
 // the game; resetRun() starts a fresh one.
 let earned={};                      // key -> true, so nothing is awarded twice
 let variantsUsed={};                // id -> variant indices already shown this run
-let earnedBadges=[];                // badges this run (feeds High Scores)
 // One row per achievement won this run, in the order they were earned, holding
 // the flavour title that was actually shown. Drives the end-of-run panels.
 let earnedList=[];
@@ -738,7 +737,7 @@ let lvlCoins=0, lvlStomps=0;        // this level's tally, folded into the run a
 // The full-run achievements only count when the player actually began at Level 1:
 // otherwise a jump to Level 6 from the level select would qualify for all of them.
 function resetRun(fromStart){
-  earned={}; variantsUsed={}; earnedBadges=[]; earnedList=[];
+  earned={}; variantsUsed={}; earnedList=[];
   run={ fromStart:!!fromStart, startedAt:Date.now(), deaths:0,
         stomps:0, stompable:0, coins:0, coinsTotal:0 };
   lives=3;
@@ -1403,7 +1402,7 @@ function endRankInfo(total){
 }
 function saveScore(name){
   name=(name||'').trim().slice(0,14)||'Anonymous';
-  const entry={ name:name, score:finalScore(), badges:earnedBadges.slice(),
+  const entry={ name:name, score:finalScore(), badges:earnedList.map(function(r){ return r.badge; }),
     date:new Date().toISOString().slice(0,10) };
   // Always keep a local copy, so a run is never lost to a network hiccup.
   localScores.push(entry);
@@ -1474,7 +1473,7 @@ function goMain(){
   hideAllScreens(); overlay.classList.remove('hidden'); updateHud(); updateBonusBtn(); updateLevelSelect();
 }
 // What the run banks: medallions collected, plus the bonus every achievement is
-// worth. The panel, the leaderboard and the save prompt all use this figure.
+// worth. Everything that shows or banks a run total uses this figure.
 function achievementBonus(){ let n=0; for(const r of earnedList)n+=r.pts||0; return n; }
 function finalScore(){ return score+achievementBonus(); }
 // Fill the left column of an end panel: one line per achievement — emoji, name,
@@ -1607,7 +1606,6 @@ function showAchievement(a,next,cue){
   // A repeat draws a fresh variant, so opening it really is a new joke.
   const v=pickVariant(a);
   if(cue)sfx(cue);   // only the opening screen of a level's chain is scored
-  if(earnedBadges.indexOf(a.badge)<0)earnedBadges.push(a.badge);
   // first win of each keeps its place and its title; repeats don't add a row
   if(!earnedList.some(function(r){ return r.id===a.id; }))
     earnedList.push({id:a.id,badge:a.badge,name:a.short||a.name,title:v.title,
@@ -2071,7 +2069,7 @@ window.__dmw={ jumpTo:function(i){ loadLevel(i); },
   get player(){ return player; }, get enemies(){ return enemies; }, get coins(){ return coins; },
   key:function(k,v){ keys[k]=v; },
   // achievements: what the run has banked, and what it has already won
-  get run(){ return run; }, get earned(){ return earned; }, get badges(){ return earnedBadges; },
+  get run(){ return run; }, get earned(){ return earned; }, get badges(){ return earnedList.map(function(r){ return r.badge; }); },
   get earnedRows(){ return earnedList; },
   runMs:function(){ return Date.now()-run.startedAt; },
   get sound(){ return {bed:musicBed,wanted:wantBed,running:!!musicTimer,muted:muted,vol:vol}; },
