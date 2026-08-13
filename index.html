@@ -13,17 +13,24 @@
      the game and pushed the touch controls past the edge of the screen. The
      third term caps the width at whatever keeps 16:9 inside the viewport height;
      dvh repeats it for mobile browsers whose chrome comes and goes. */
-  #stage{position:relative;aspect-ratio:16/9;background:#0f1a10;box-shadow:0 0 40px rgba(0,0,0,.6);
+  /* --vw and --vh are one per cent of the STAGE, not the window, and every
+     screen inside sizes off them. On a phone the stage is a small letterboxed
+     box inside a much larger viewport; sizing the menus off the window made
+     them enormous. JS keeps these in step; the fallbacks below only matter for
+     the first frame. */
+  #stage{--vw:1vw;--vh:1vh;
+         position:relative;aspect-ratio:16/9;background:#0f1a10;box-shadow:0 0 40px rgba(0,0,0,.6);
+         -webkit-touch-callout:none;
          width:min(100%,1280px,calc(100vh * 16 / 9));
          width:min(100%,1280px,calc(100dvh * 16 / 9));}
   canvas{display:block;width:100%;height:100%;background:#7ec4e6;touch-action:none;}
   #hud{position:absolute;top:10px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:center;
-       color:#fff;font-weight:700;font-size:clamp(13px,2.2vw,20px);text-shadow:0 2px 4px rgba(0,0,0,.7);pointer-events:none;}
-  #levelTxt{font-size:clamp(12px,2vw,18px);opacity:.95;}
+       color:#fff;font-weight:700;font-size:clamp(13px,calc(2.2 * var(--vw)),20px);text-shadow:0 2px 4px rgba(0,0,0,.7);pointer-events:none;}
+  #levelTxt{font-size:clamp(12px,calc(2 * var(--vw)),18px);opacity:.95;}
   /* Sound toggle. Sits above every screen (fader aside) so it is reachable from
      the menu, mid-level, and over the achievement and victory screens alike. */
   #soundBtn{position:absolute;top:46px;right:14px;z-index:9;
-            width:clamp(30px,4.4vw,40px);height:clamp(30px,4.4vw,40px);padding:5px;
+            width:clamp(30px,calc(4.4 * var(--vw)),40px);height:clamp(30px,calc(4.4 * var(--vw)),40px);padding:5px;
             border:none;background:rgba(6,14,8,.42);border-radius:8px;cursor:pointer;
             display:flex;align-items:center;justify-content:center;
             filter:drop-shadow(0 2px 4px rgba(0,0,0,.8));transition:background .12s ease;}
@@ -42,8 +49,8 @@
      browser has the Fullscreen API -- so it stays hidden on desktop and on
      iPhone Safari, which has no element fullscreen at all. */
   #fsBtn{position:absolute;right:14px;z-index:9;
-         top:calc(46px + clamp(30px,4.4vw,40px) + 8px);
-         width:clamp(30px,4.4vw,40px);height:clamp(30px,4.4vw,40px);padding:6px;
+         top:calc(46px + clamp(30px,calc(4.4 * var(--vw)),40px) + 8px);
+         width:clamp(30px,calc(4.4 * var(--vw)),40px);height:clamp(30px,calc(4.4 * var(--vw)),40px);padding:6px;
          border:none;background:rgba(6,14,8,.42);border-radius:8px;cursor:pointer;
          display:none;align-items:center;justify-content:center;
          filter:drop-shadow(0 2px 4px rgba(0,0,0,.8));transition:background .12s ease;}
@@ -57,17 +64,17 @@
   /* Character select. The only place a character's own name is ever shown --
      every word of the game's writing stays Dr. Marion Wayne. */
   #chars{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;
-         align-items:center;justify-content:center;gap:clamp(8px,1.6vh,16px);
-         background:rgba(6,14,8,.94);color:#fff;padding:clamp(12px,2.6vh,26px);
+         align-items:center;justify-content:center;gap:clamp(8px,calc(1.6 * var(--vh)),16px);
+         background:rgba(6,14,8,.94);color:#fff;padding:clamp(12px,calc(2.6 * var(--vh)),26px);
          box-sizing:border-box;overflow-y:auto;}
-  #chars h2{color:#ffd54a;font-size:clamp(17px,3.6vw,30px);margin:0;
+  #chars h2{color:#ffd54a;font-size:clamp(17px,calc(3.6 * var(--vw)),30px);margin:0;
             text-shadow:0 3px 6px rgba(0,0,0,.8);text-align:center;}
-  #charBody{display:flex;gap:clamp(10px,2.4vw,26px);align-items:stretch;justify-content:center;
+  #charBody{display:flex;gap:clamp(10px,calc(2.4 * var(--vw)),26px);align-items:stretch;justify-content:center;
             width:min(100%,880px);flex-wrap:wrap;}
   #charCurrent{flex:1 1 240px;max-width:340px;display:flex;flex-direction:column;align-items:center;
                gap:8px;padding:14px;border:1px solid rgba(255,255,255,.22);border-radius:10px;
                background:rgba(255,255,255,.05);}
-  #charCurrent .lbl,#charGridWrap .lbl{font-size:clamp(10px,1.7vw,13px);letter-spacing:2px;
+  #charCurrent .lbl,#charGridWrap .lbl{font-size:clamp(10px,calc(1.7 * var(--vw)),13px);letter-spacing:2px;
                color:#cfe0ff;opacity:.8;text-align:center;}
   #charGridWrap{flex:1 1 300px;display:flex;flex-direction:column;gap:8px;min-width:0;}
   #charGrid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
@@ -77,16 +84,16 @@
   .charCard:hover{border-color:#ffd54a;background:rgba(255,213,74,.14);}
   .charCard:focus-visible{outline:2px solid #ffd54a;outline-offset:2px;}
   .charCard.on{border-color:#ffd54a;background:rgba(255,213,74,.2);}
-  .charPortrait{width:clamp(62px,9vw,104px);aspect-ratio:2/3;display:flex;align-items:flex-end;
+  .charPortrait{width:clamp(62px,calc(9 * var(--vw)),104px);aspect-ratio:2/3;display:flex;align-items:flex-end;
                 justify-content:center;overflow:hidden;}
   .charPortrait img{width:100%;height:100%;object-fit:contain;image-rendering:auto;
                     filter:drop-shadow(0 3px 6px rgba(0,0,0,.6));}
   .charName{font-weight:800;color:#ffd54a;text-align:center;line-height:1.25;
-            font-size:clamp(11px,1.9vw,16px);}
+            font-size:clamp(11px,calc(1.9 * var(--vw)),16px);}
   #charDetail{display:flex;flex-direction:column;align-items:center;gap:10px;
               width:min(100%,660px);}
-  #charDetail .charPortrait{width:clamp(84px,13vw,150px);}
-  #charBlurb{margin:0;font-size:clamp(12px,2.1vw,16px);line-height:1.5;text-align:center;
+  #charDetail .charPortrait{width:clamp(84px,calc(13 * var(--vw)),150px);}
+  #charBlurb{margin:0;font-size:clamp(12px,calc(2.1 * var(--vw)),16px);line-height:1.5;text-align:center;
              max-width:60ch;color:#e6edff;}
   #charDetail .btnRow .pBtn{width:auto;margin:0;padding:12px 28px;}
   /* Sound settings. Sits on top of whatever opened it -- the menu or the pause
@@ -94,13 +101,13 @@
   #audio{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;
          align-items:center;justify-content:center;background:rgba(6,14,8,.94);
          color:#fff;padding:20px;box-sizing:border-box;}
-  #audio h2{color:#ffd54a;font-size:clamp(20px,4.4vw,34px);margin:0 0 6px;
+  #audio h2{color:#ffd54a;font-size:clamp(20px,calc(4.4 * var(--vw)),34px);margin:0 0 6px;
             text-shadow:0 3px 6px rgba(0,0,0,.8);}
-  #audio .sub{font-size:clamp(11px,2vw,14px);opacity:.7;margin:0 0 20px;letter-spacing:1px;}
+  #audio .sub{font-size:clamp(11px,calc(2 * var(--vw)),14px);opacity:.7;margin:0 0 20px;letter-spacing:1px;}
   #mix{width:min(94%,440px);display:flex;flex-direction:column;gap:16px;margin-bottom:22px;}
   .mixRow{display:grid;grid-template-columns:1fr 4ch;gap:4px 12px;align-items:center;}
-  .mixRow label{font-size:clamp(12px,2.2vw,16px);font-weight:700;letter-spacing:1px;}
-  .mixRow output{font-size:clamp(12px,2.2vw,16px);color:#ffd54a;font-weight:800;
+  .mixRow label{font-size:clamp(12px,calc(2.2 * var(--vw)),16px);font-weight:700;letter-spacing:1px;}
+  .mixRow output{font-size:clamp(12px,calc(2.2 * var(--vw)),16px);color:#ffd54a;font-weight:800;
                  text-align:right;font-variant-numeric:tabular-nums;}
   .mixRow input{grid-column:1/3;width:100%;accent-color:#ffd54a;height:22px;cursor:pointer;}
   .mixRow.off label,.mixRow.off output{opacity:.45;}
@@ -108,34 +115,35 @@
      and the scrim is a gradient so the artwork still reads through the top. */
   #overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
            background:linear-gradient(rgba(10,25,12,.62),rgba(10,25,12,.88));color:#fff;text-align:center;
-           padding:clamp(14px,3vh,30px);cursor:pointer;gap:clamp(8px,1.8vh,20px);overflow-y:auto;overscroll-behavior:contain;}
-  #overlay h1{font-size:clamp(20px,4vw,40px);margin:0;color:#ffd54a;text-shadow:0 3px 6px rgba(0,0,0,.8);line-height:1.2;}
-  #overlay p{font-size:clamp(13px,2.6vw,20px);max-width:660px;line-height:1.5;margin:0;}
+           padding:clamp(10px,calc(2.6 * var(--vh)),30px);cursor:pointer;gap:clamp(5px,calc(1.5 * var(--vh)),20px);}
+  #overlay h1{font-size:clamp(20px,calc(4 * var(--vw)),40px);margin:0;color:#ffd54a;text-shadow:0 3px 6px rgba(0,0,0,.8);line-height:1.2;}
+  #overlay p{font-size:clamp(13px,calc(2.6 * var(--vw)),20px);max-width:660px;line-height:1.5;margin:0;}
   #overlay .btn{background:#ffd54a;color:#2a1c05;font-weight:800;letter-spacing:3px;
-                padding:clamp(10px,1.8vh,16px) clamp(30px,6vw,62px);border-radius:12px;
-                font-size:clamp(17px,3.2vw,26px);box-shadow:0 6px 0 #b8952a;}
+                padding:clamp(10px,calc(1.8 * var(--vh)),16px) clamp(30px,calc(6 * var(--vw)),62px);border-radius:12px;
+                font-size:clamp(17px,calc(3.2 * var(--vw)),26px);box-shadow:0 6px 0 #b8952a;}
   /* Secondary destinations: one row, one treatment, borrowed from level select. */
   #overlay .btn.ghost{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.34);
                 color:#fff;font-weight:700;letter-spacing:0;box-shadow:none;
-                padding:clamp(8px,1.4vh,11px) clamp(14px,2.6vw,22px);font-size:clamp(11px,1.9vw,14px);}
+                padding:clamp(8px,calc(1.4 * var(--vh)),11px) clamp(14px,calc(2.6 * var(--vw)),22px);font-size:clamp(11px,calc(1.9 * var(--vw)),14px);}
   #overlay .btn.ghost:hover{background:rgba(255,213,74,.85);color:#2a1c05;}
-  .keyCaps{display:flex;flex-wrap:wrap;gap:clamp(8px,1.6vw,14px);justify-content:center;align-items:center;
-           font-size:clamp(9px,1.5vw,12px);color:#dce8d8;}
+  .keyCaps{display:flex;flex-wrap:wrap;gap:clamp(8px,calc(1.6 * var(--vw)),14px);justify-content:center;align-items:center;
+           font-size:clamp(9px,calc(1.5 * var(--vw)),12px);color:#dce8d8;}
   .keyCaps span{display:flex;gap:6px;align-items:center;}
   .keyCaps span em{font-style:normal;opacity:.7;}
   .keyCaps kbd{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.3);border-radius:5px;
-           padding:4px 9px;font:700 clamp(9px,1.4vw,11px)/1 'Consolas','Courier New',monospace;
+           padding:4px 9px;font:700 clamp(9px,calc(1.4 * var(--vw)),11px)/1 'Consolas','Courier New',monospace;
            color:#fff;white-space:nowrap;}
-  #credit{margin-top:clamp(4px,1vh,10px);text-align:center;color:#e8ddc0;font-style:italic;
-          font-size:clamp(12px,2.2vw,20px);text-shadow:0 2px 4px rgba(0,0,0,.8);opacity:0;
+  #credit{margin-top:clamp(4px,calc(1 * var(--vh)),10px);text-align:center;color:#e8ddc0;font-style:italic;
+          font-size:clamp(12px,calc(2.2 * var(--vw)),20px);text-shadow:0 2px 4px rgba(0,0,0,.8);opacity:0;
           animation:creditFade 2.5s ease-in .6s forwards;}
   @keyframes creditFade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
   .hidden{display:none!important;}
   #pauseMenu{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
              background:rgba(10,25,12,.9);z-index:5;}
-  #pauseMenu h2{color:#ffd54a;font-size:clamp(24px,5vw,44px);margin:0 0 18px;text-shadow:0 3px 6px rgba(0,0,0,.8);}
-  .pBtn{width:min(80%,320px);margin:7px 0;background:#ffd54a;color:#2a1c05;font-weight:800;border:none;
-        padding:14px 20px;border-radius:10px;font-size:clamp(15px,2.8vw,22px);cursor:pointer;box-shadow:0 4px 0 #b8952a;}
+  #pauseMenu h2{color:#ffd54a;font-size:clamp(24px,calc(5 * var(--vw)),44px);margin:0 0 18px;text-shadow:0 3px 6px rgba(0,0,0,.8);}
+  .pBtn{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;
+        -webkit-tap-highlight-color:transparent;width:min(80%,320px);margin:7px 0;background:#ffd54a;color:#2a1c05;font-weight:800;border:none;
+        padding:14px 20px;border-radius:10px;font-size:clamp(15px,calc(2.8 * var(--vw)),22px);cursor:pointer;box-shadow:0 4px 0 #b8952a;}
   .pBtn:hover{background:#ffe27a;}
   /* Win and loss are separate elements on purpose: victory.png can never be
      shown on a losing run. Both images are stretched to fill the game window. */
@@ -147,28 +155,28 @@
      earned on the left, the medallion total in the middle, what to do next on
      the right. Nothing floats over the artwork and nothing can leave the stage.
      The columns wrap on a narrow stage rather than overflowing it. */
-  #victoryPanel,#gameoverPanel{width:100%;box-sizing:border-box;padding:14px clamp(10px,2vw,20px);
+  #victoryPanel,#gameoverPanel{width:100%;box-sizing:border-box;padding:14px clamp(10px,calc(2 * var(--vw)),20px);
            border-top:1px solid rgba(255,213,74,.22);display:flex;flex-wrap:wrap;
-           gap:clamp(10px,2vw,18px);justify-content:center;align-items:stretch;text-align:center;}
+           gap:clamp(10px,calc(2 * var(--vw)),18px);justify-content:center;align-items:stretch;text-align:center;}
   #victoryPanel{background:rgba(10,25,12,.82);}
   #gameoverPanel{background:rgba(20,8,8,.88);}
   .endAch{flex:1 1 300px;max-width:420px;min-width:0;display:flex;flex-direction:column;gap:7px;}
   .endScore{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
-           padding:0 clamp(12px,2.4vw,24px);
+           padding:0 clamp(12px,calc(2.4 * var(--vw)),24px);
            border-left:1px solid rgba(255,255,255,.14);border-right:1px solid rgba(255,255,255,.14);}
   .endActions{flex:0 0 auto;min-width:min(100%,246px);display:flex;flex-direction:column;gap:8px;
            justify-content:center;align-items:stretch;}
-  .resHdr{color:#ffd54a;font-weight:800;letter-spacing:2px;text-align:left;font-size:clamp(9px,1.5vw,13px);}
+  .resHdr{color:#ffd54a;font-weight:800;letter-spacing:2px;text-align:left;font-size:clamp(9px,calc(1.5 * var(--vw)),13px);}
   /* min-height, not height: the list keeps the panel a constant size when a run
      earns little or nothing, and grows past it when there is more to show. The
      panel is anchored to the bottom of the stage, so it expands upward into the
      artwork rather than pushing the buttons off. A run can earn nine. */
-  .resList{list-style:none;margin:0;padding:0 4px 0 0;min-height:clamp(70px,11vh,106px);
+  .resList{list-style:none;margin:0;padding:0 4px 0 0;min-height:clamp(70px,calc(11 * var(--vh)),106px);
            display:flex;flex-direction:column;gap:5px;}
   /* One line per achievement: icon, name, what triggered it, what it is worth.
      Clipped rather than wrapped, so every row is a single line. */
   .resList li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:9px;align-items:baseline;
-              text-align:left;line-height:1.35;font-size:clamp(8px,1.35vw,13px);color:#fff;}
+              text-align:left;line-height:1.35;font-size:clamp(8px,calc(1.35 * var(--vw)),13px);color:#fff;}
   .resList .ico{font-size:1.25em;line-height:1.1;}
   .resList .txt{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .resList b,.resList .achLink{color:#ffd54a;font-weight:800;}
@@ -182,23 +190,23 @@
   .resList .pts{color:#8fff7a;font-weight:800;font-size:.92em;white-space:nowrap;
                 font-variant-numeric:tabular-nums;}
   .resList .resNone{display:flex;align-items:center;color:#9aa8bd;font-style:italic;text-align:left;
-           min-height:clamp(70px,11vh,106px);font-size:clamp(9px,1.4vw,13px);line-height:1.4;}
+           min-height:clamp(70px,calc(11 * var(--vh)),106px);font-size:clamp(9px,calc(1.4 * var(--vw)),13px);line-height:1.4;}
   .endLabel{color:#cfe0ff;font-weight:800;letter-spacing:2px;opacity:.75;white-space:nowrap;
-            font-size:clamp(8px,1.1vw,10px);}
-  #victoryScore,#gameoverScore{font-size:clamp(24px,4.6vw,44px);font-weight:800;line-height:1.15;
+            font-size:clamp(8px,calc(1.1 * var(--vw)),10px);}
+  #victoryScore,#gameoverScore{font-size:clamp(24px,calc(4.6 * var(--vw)),44px);font-weight:800;line-height:1.15;
             text-shadow:0 2px 4px #000;font-variant-numeric:tabular-nums;}
   #victoryScore{color:#ffd54a;}
   #gameoverScore{color:#ff9a7a;}
   .endBreak{color:#cfe0ff;opacity:.75;white-space:nowrap;font-variant-numeric:tabular-nums;
-            font-size:clamp(8px,1.15vw,11px);}
-  .endRank{color:#8fff7a;font-weight:800;letter-spacing:2px;font-size:clamp(8px,1.1vw,10px);}
-  .endMiss{color:#9aa8bd;font-style:italic;line-height:1.35;max-width:230px;font-size:clamp(9px,1.3vw,12px);}
+            font-size:clamp(8px,calc(1.15 * var(--vw)),11px);}
+  .endRank{color:#8fff7a;font-weight:800;letter-spacing:2px;font-size:clamp(8px,calc(1.1 * var(--vw)),10px);}
+  .endMiss{color:#9aa8bd;font-style:italic;line-height:1.35;max-width:230px;font-size:clamp(9px,calc(1.3 * var(--vw)),12px);}
   #nameEntry{display:flex;gap:8px;align-items:center;min-width:0;}
   #nameInput{flex:1 1 auto;min-width:0;padding:9px 10px;border-radius:8px;border:2px solid #ffd54a;
-             font-size:clamp(12px,2vw,14px);}
+             font-size:clamp(12px,calc(2 * var(--vw)),14px);}
   #nameEntry .pBtn{flex:0 0 auto;width:auto;margin:0;padding:9px 14px;
-             font-size:clamp(12px,2vw,14px);white-space:nowrap;}
-  #saveMsg{color:#8fff7a;font-weight:700;min-height:1em;font-size:clamp(9px,1.4vw,12px);}
+             font-size:clamp(12px,calc(2 * var(--vw)),14px);white-space:nowrap;}
+  #saveMsg{color:#8fff7a;font-weight:700;min-height:1em;font-size:clamp(9px,calc(1.4 * var(--vw)),12px);}
   /* Victory only: the bonus level can still add medallions, so the name is
      asked for on the way out rather than the moment Go Live is cleared. */
   #savePrompt{position:absolute;inset:0;z-index:9;display:flex;align-items:center;justify-content:center;
@@ -206,24 +214,24 @@
   #savePromptBox{width:min(88%,460px);background:#0d1424;border:3px solid #ffd54a;border-radius:6px;
              box-shadow:0 0 0 2px #06263a,0 10px 40px rgba(0,0,0,.7);padding:22px 24px;text-align:center;
              display:flex;flex-direction:column;gap:12px;}
-  #savePromptRank{color:#8fff7a;font-weight:800;letter-spacing:2px;font-size:clamp(10px,1.8vw,13px);}
-  #savePromptText{color:#dfe7ff;line-height:1.45;font-size:clamp(12px,2.2vw,15px);}
+  #savePromptRank{color:#8fff7a;font-weight:800;letter-spacing:2px;font-size:clamp(10px,calc(1.8 * var(--vw)),13px);}
+  #savePromptText{color:#dfe7ff;line-height:1.45;font-size:clamp(12px,calc(2.2 * var(--vw)),15px);}
   #savePromptRow{display:flex;gap:8px;justify-content:center;}
   #promptName{padding:10px 12px;border-radius:8px;border:2px solid #ffd54a;width:min(60%,190px);
-             font-size:clamp(13px,2.2vw,15px);}
-  #savePromptRow .pBtn{width:auto;margin:0;padding:10px 18px;font-size:clamp(13px,2.2vw,15px);}
-  #promptMsg{color:#8fff7a;font-weight:700;min-height:1em;font-size:clamp(10px,1.7vw,13px);}
+             font-size:clamp(13px,calc(2.2 * var(--vw)),15px);}
+  #savePromptRow .pBtn{width:auto;margin:0;padding:10px 18px;font-size:clamp(13px,calc(2.2 * var(--vw)),15px);}
+  #promptMsg{color:#8fff7a;font-weight:700;min-height:1em;font-size:clamp(10px,calc(1.7 * var(--vw)),13px);}
   #promptSkip{background:none;border:none;color:#9aa8bd;text-decoration:underline;cursor:pointer;
-             padding:2px;font-size:clamp(11px,1.9vw,13px);}
+             padding:2px;font-size:clamp(11px,calc(1.9 * var(--vw)),13px);}
   .vRow{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
   .vRow .pBtn{width:auto;margin:4px;}
   #scores{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;
           background:rgba(10,25,12,.95);color:#fff;padding:20px;box-sizing:border-box;}
-  #scores h2{color:#ffd54a;font-size:clamp(24px,5vw,40px);margin:0 0 14px;}
+  #scores h2{color:#ffd54a;font-size:clamp(24px,calc(5 * var(--vw)),40px);margin:0 0 14px;}
   /* shrink-to-fit inside the stage and scroll, so the buttons are never pushed off */
   #scoreList{list-style:none;padding:0;margin:0 0 16px;width:min(90%,460px);
              flex:0 1 auto;min-height:0;overflow-y:auto;}
-  #scoreList li{display:flex;justify-content:space-between;padding:8px 12px;font-size:clamp(14px,2.6vw,20px);
+  #scoreList li{display:flex;justify-content:space-between;padding:8px 12px;font-size:clamp(14px,calc(2.6 * var(--vw)),20px);
                 border-bottom:1px solid rgba(255,255,255,.15);}
   #scoreList li span{flex:1;text-align:left;}
   #scoreList li span:nth-child(2){flex:0 0 70px;text-align:center;color:#ffd54a;font-weight:800;}
@@ -238,10 +246,10 @@
   #achieveBox{width:min(94%,720px);max-height:92%;overflow-y:auto;background:#0d1424;border:3px solid #ffd54a;
               border-radius:6px;box-shadow:0 0 0 2px #06263a,0 10px 40px rgba(0,0,0,.7);
               padding:18px 22px;color:#dfe7ff;font-family:'Consolas','Courier New',monospace;text-align:center;}
-  #achieveHdr{color:#ffd54a;font-weight:800;letter-spacing:2px;font-size:clamp(15px,2.8vw,22px);margin-bottom:12px;}
-  #achieveTitle{color:#7ad0ff;font-weight:800;font-size:clamp(15px,2.6vw,22px);margin-bottom:12px;line-height:1.3;}
-  #achieveBody{font-size:clamp(12px,2vw,16px);line-height:1.5;text-align:left;white-space:pre-wrap;margin-bottom:12px;}
-  #achieveReward{font-size:clamp(11px,1.9vw,15px);line-height:1.45;text-align:left;color:#8fff7a;
+  #achieveHdr{color:#ffd54a;font-weight:800;letter-spacing:2px;font-size:clamp(15px,calc(2.8 * var(--vw)),22px);margin-bottom:12px;}
+  #achieveTitle{color:#7ad0ff;font-weight:800;font-size:clamp(15px,calc(2.6 * var(--vw)),22px);margin-bottom:12px;line-height:1.3;}
+  #achieveBody{font-size:clamp(12px,calc(2 * var(--vw)),16px);line-height:1.5;text-align:left;white-space:pre-wrap;margin-bottom:12px;}
+  #achieveReward{font-size:clamp(11px,calc(1.9 * var(--vw)),15px);line-height:1.45;text-align:left;color:#8fff7a;
                  border-top:1px dashed #33507a;padding-top:10px;margin-bottom:14px;}
   #achieveReward::before{content:'REWARD: ';color:#ffd54a;font-weight:800;}
   /* Shown only on a repeat, in place of the body and reward. */
@@ -250,18 +258,18 @@
                background:#7ad0ff;box-shadow:0 4px 0 #3f9fd0;color:#06263a;
                font-family:inherit;letter-spacing:1px;}
   #achieveMore:hover{background:#a5e0ff;}
-  #achieveNag{font-size:clamp(11px,1.85vw,14px);line-height:1.5;color:#9fb0d8;
+  #achieveNag{font-size:clamp(11px,calc(1.85 * var(--vw)),14px);line-height:1.5;color:#9fb0d8;
               font-style:italic;max-width:48ch;margin:0 auto;}
   .btnRow{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;align-items:center;}
   /* Level select: one row that always fits the stage. Labels shorten to
      "Lvl 1 … Bonus" when the stage gets narrow. */
   #levelSelect{width:min(98%,980px);box-sizing:border-box;}
-  .lsLabel{font-size:clamp(10px,1.7vw,12px);letter-spacing:2px;font-weight:700;opacity:.8;margin-bottom:8px;}
+  .lsLabel{font-size:clamp(10px,calc(1.7 * var(--vw)),12px);letter-spacing:2px;font-weight:700;opacity:.8;margin-bottom:8px;}
   .lsLabel.testing{color:#ff9a7a;}
   .lsRow{display:flex;flex-wrap:nowrap;gap:6px;justify-content:center;width:100%;}
   .lsBtn{flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden;
          background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);
-         border-radius:8px;padding:8px 4px;font-size:clamp(9px,1.25vw,14px);font-weight:700;cursor:pointer;}
+         border-radius:8px;padding:8px 4px;font-size:clamp(9px,calc(1.25 * var(--vw)),14px);font-weight:700;cursor:pointer;}
   .lsBtn:hover{background:rgba(255,213,74,.85);color:#2a1c05;}
   .lsShort{display:none;}
   .lsRow.compact .lsLong{display:none;}
@@ -273,8 +281,9 @@
          padding-right:calc(8px + env(safe-area-inset-right,0px));}
   #touch .side{display:flex;gap:14px;}
   .tbtn{width:var(--tbtn);height:var(--tbtn);border-radius:50%;
+        -webkit-touch-callout:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
         background:rgba(255,255,255,.20);border:2px solid rgba(255,255,255,.42);color:#fff;
-        font-size:clamp(22px,5vw,34px);display:flex;align-items:center;justify-content:center;
+        font-size:clamp(22px,calc(5 * var(--vw)),34px);display:flex;align-items:center;justify-content:center;
         pointer-events:auto;user-select:none;touch-action:none;font-weight:800;}
   .tbtn:active{background:rgba(255,255,255,.5);}
   /* Touch layout. The controls get a band of their own below the picture rather
@@ -1604,6 +1613,23 @@ function updateLevelSelect(){
   fitLevelButtons();
 }
 addEventListener('resize',fitLevelButtons);
+
+// The screens size themselves off --vw/--vh, which are one per cent of the
+// STAGE rather than the window. Everything inside then scales with the picture,
+// which is what keeps the menus in proportion on a phone.
+function sizeStageUnits(){
+  const st=document.getElementById('stage'), r=st.getBoundingClientRect();
+  if(!r.width)return;
+  st.style.setProperty('--vw',(r.width/100)+'px');
+  st.style.setProperty('--vh',(r.height/100)+'px');
+}
+addEventListener('resize',sizeStageUnits);
+addEventListener('orientationchange',sizeStageUnits);
+addEventListener('fullscreenchange',sizeStageUnits);
+addEventListener('webkitfullscreenchange',sizeStageUnits);
+try{ new ResizeObserver(sizeStageUnits).observe(document.getElementById('stage')); }catch(e){}
+sizeStageUnits();
+
 
 function showOverlay(title,text,btn){
   document.getElementById('ovTitle').innerHTML=title;

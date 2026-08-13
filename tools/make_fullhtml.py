@@ -146,13 +146,8 @@ cut("""    if(f.type==='dust'){ctx.globalAlpha=t*0.8;ctx.fillStyle='#e8ddc0';
       ctx.fillRect(f.x,f.y-1,f.dir>0?w:-w,2);}""",
     'fx draw')
 
-# tell the player about it
-cut("""        <span><kbd>SPACE</kbd><em>jump</em></span>
-""",
-    """        <span><kbd>SPACE</kbd><em>jump</em></span>
-        <span><kbd>E</kbd><em>scanner</em></span>
-""",
-    'controls hint')
+# The scanner still works on Level 6 here, but it is not advertised on the
+# title screen -- the controls line stays as it is in the hosted build.
 
 
 # ------------------------------------------------------------ level 6 music
@@ -173,14 +168,14 @@ const LEVEL_MUSIC=['cavern','cavern','cavern','legacy','legacy','legacy','legacy
 # would keep its own list, which is more confusing than having none.
 # The three-column end panel stays; only the parts that serve the leaderboard --
 # the rank line, the miss note, the name field and the victory save prompt -- go.
-cut("""  .endRank{color:#8fff7a;font-weight:800;letter-spacing:2px;font-size:clamp(8px,1.1vw,10px);}
-  .endMiss{color:#9aa8bd;font-style:italic;line-height:1.35;max-width:230px;font-size:clamp(9px,1.3vw,12px);}
+cut("""  .endRank{color:#8fff7a;font-weight:800;letter-spacing:2px;font-size:clamp(8px,calc(1.1 * var(--vw)),10px);}
+  .endMiss{color:#9aa8bd;font-style:italic;line-height:1.35;max-width:230px;font-size:clamp(9px,calc(1.3 * var(--vw)),12px);}
   #nameEntry{display:flex;gap:8px;align-items:center;min-width:0;}
   #nameInput{flex:1 1 auto;min-width:0;padding:9px 10px;border-radius:8px;border:2px solid #ffd54a;
-             font-size:clamp(12px,2vw,14px);}
+             font-size:clamp(12px,calc(2 * var(--vw)),14px);}
   #nameEntry .pBtn{flex:0 0 auto;width:auto;margin:0;padding:9px 14px;
-             font-size:clamp(12px,2vw,14px);white-space:nowrap;}
-  #saveMsg{color:#8fff7a;font-weight:700;min-height:1em;font-size:clamp(9px,1.4vw,12px);}
+             font-size:clamp(12px,calc(2 * var(--vw)),14px);white-space:nowrap;}
+  #saveMsg{color:#8fff7a;font-weight:700;min-height:1em;font-size:clamp(9px,calc(1.4 * var(--vw)),12px);}
   /* Victory only: the bonus level can still add medallions, so the name is
      asked for on the way out rather than the moment Go Live is cleared. */
   #savePrompt{position:absolute;inset:0;z-index:9;display:flex;align-items:center;justify-content:center;
@@ -188,15 +183,15 @@ cut("""  .endRank{color:#8fff7a;font-weight:800;letter-spacing:2px;font-size:cla
   #savePromptBox{width:min(88%,460px);background:#0d1424;border:3px solid #ffd54a;border-radius:6px;
              box-shadow:0 0 0 2px #06263a,0 10px 40px rgba(0,0,0,.7);padding:22px 24px;text-align:center;
              display:flex;flex-direction:column;gap:12px;}
-  #savePromptRank{color:#8fff7a;font-weight:800;letter-spacing:2px;font-size:clamp(10px,1.8vw,13px);}
-  #savePromptText{color:#dfe7ff;line-height:1.45;font-size:clamp(12px,2.2vw,15px);}
+  #savePromptRank{color:#8fff7a;font-weight:800;letter-spacing:2px;font-size:clamp(10px,calc(1.8 * var(--vw)),13px);}
+  #savePromptText{color:#dfe7ff;line-height:1.45;font-size:clamp(12px,calc(2.2 * var(--vw)),15px);}
   #savePromptRow{display:flex;gap:8px;justify-content:center;}
   #promptName{padding:10px 12px;border-radius:8px;border:2px solid #ffd54a;width:min(60%,190px);
-             font-size:clamp(13px,2.2vw,15px);}
-  #savePromptRow .pBtn{width:auto;margin:0;padding:10px 18px;font-size:clamp(13px,2.2vw,15px);}
-  #promptMsg{color:#8fff7a;font-weight:700;min-height:1em;font-size:clamp(10px,1.7vw,13px);}
+             font-size:clamp(13px,calc(2.2 * var(--vw)),15px);}
+  #savePromptRow .pBtn{width:auto;margin:0;padding:10px 18px;font-size:clamp(13px,calc(2.2 * var(--vw)),15px);}
+  #promptMsg{color:#8fff7a;font-weight:700;min-height:1em;font-size:clamp(10px,calc(1.7 * var(--vw)),13px);}
   #promptSkip{background:none;border:none;color:#9aa8bd;text-decoration:underline;cursor:pointer;
-             padding:2px;font-size:clamp(11px,1.9vw,13px);}
+             padding:2px;font-size:clamp(11px,calc(1.9 * var(--vw)),13px);}
 """, '', 'end panel score css')
 
 # #scores block through the last #scoreList rule
