@@ -89,6 +89,12 @@ const win = {
   requestAnimationFrame(fn) { rafQueue.push(fn); return rafQueue.length; },
   performance: { now: () => clock },
   localStorage: { getItem: () => null, setItem() {}, removeItem() {} },
+  // Real storage, unlike localStorage above: the session roster behind
+  // "Avengers... Assemble!" lives here, and a test needs it to actually hold.
+  sessionStorage: (() => { const m = new Map(); return {
+    getItem: k => (m.has(k) ? m.get(k) : null),
+    setItem: (k, v) => { m.set(k, String(v)); },
+    removeItem: k => { m.delete(k); }, clear: () => m.clear() }; })(),
   setTimeout, clearTimeout, fetch: () => Promise.reject(new Error('offline')),
   Image: class { set src(v) { this._src = v; queueMicrotask(() => this.onerror && this.onerror()); } },
   URL: { createObjectURL: () => 'blob:x', revokeObjectURL() {} },

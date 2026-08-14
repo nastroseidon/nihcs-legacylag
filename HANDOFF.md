@@ -292,8 +292,12 @@ Present but not involved:
 
 ### Numbers worth knowing
 
-- Maximum score in a run: **349** — 154 collected (74 medallions and 26 bots
-  across levels 1–6, 35 and 19 in the Labyrinth) plus 195 in achievements.
+- Maximum score in a run: **424** — 154 collected (74 medallions and 26 bots
+  across levels 1–6, 35 and 19 in the Labyrinth) plus 270 in achievements. The
+  last 75 is **Avengers… Assemble!**, which needs Levels 1–6 finished with all
+  eight characters in one session; before that the ceiling is 349. Once earned
+  it pays 75 on every later run in the session, so a run's total is not
+  comparable with one from a session that has not assembled the roster.
 - **29 of the Labyrinth's 64 medallions are unreachable by design.** Verified
   with a physics search; do not "fix" them.
 - Pogo is levels 1–6 only. The Labyrinth is built so it cannot be hopped.

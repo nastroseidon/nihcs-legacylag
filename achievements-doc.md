@@ -2,7 +2,7 @@
 
 ## ✅ ACHIEVEMENT DESIGN & FLAVOR TEXT — COMPLETE AND IMPLEMENTED
 
-All achievement names, emojis, rules, notes, and flavor-text variants are complete, and all eleven are implemented in `index.html` (and so in the generated `FullHTML.html`). Implementation status and any remaining gameplay-specific setup are noted below.
+All achievement names, emojis, rules, notes, and flavor-text variants are complete, and all twelve are implemented in `index.html` (and so in the generated `FullHTML.html`). Implementation status and any remaining gameplay-specific setup are noted below.
 
 | Achievement | Emoji | Rule | Notes |
 |---|---|---|---|
@@ -17,6 +17,7 @@ All achievement names, emojis, rules, notes, and flavor-text variants are comple
 | **Minimalist** | 🪶 | Finish a level collecting ZERO medallions. | Once per session, per level; 4 flavor variants; built and working. |
 | **Overtime Hero** | 🌀 | Complete the bonus "Legacy Labyrinth" level. | Earned on bonus-level completion; 4 flavor variants; built and working. |
 | **Extensive User Acceptance Testing** | 🧪 | Die 7+ times total in a session. | Anti-achievement; once per session; 4 flavor variants; built and working. |
+| **Avengers… Assemble!** | 🦸 | Finish Levels 1–6 with all eight playable characters in one session. | Session-long meta-achievement; the roster of characters who have finished sits beside the end-screen heading and grows a face at a time; earned once, then worth +75 on every later run in the session (AVENGERS_BONUS in index.html); 4 flavor variants; built and working. |
 
 ---
 
@@ -1142,3 +1143,79 @@ They closed it again.
 You died during the argument.
 The ticket remains closed.
 **Reward:** One imaginary support ticket marked RESOLVED, a fully functional death counter, and the comforting assurance that the system has been thoroughly tested by the least predictable component available.
+\-------------------------------------------------
+**Avengers… Assemble!**
+**NEW ACHIEVEMENT UNLOCKED!**
+**AVENGERS… ASSEMBLE!**
+Congratulations!
+According to our records, you have now completed all six levels with **every single playable character.**
+All eight of them.
+Forty-eight successful level completions.
+We checked twice.
+Then we gave the numbers to someone from Finance because they own a calculator and seemed responsible.
+They confirmed it.
+At some point during this session, you stopped merely playing and began conducting what can only be described as a comprehensive operational evaluation of the entire roster.
+Every character answered the call.
+Every level was conquered.
+Every obstacle now knows your name.
+**Dr. Marion Wayne** has requested that you please stop proving things. There is nothing left to prove.
+**Reward:** The complete admiration of eight imaginary heroes, one extremely real sense of accomplishment, and the uncomfortable realization that you now know this game better than some of the people who made it.
+\-------------------------------------------------
+**Avengers… Assemble!**
+**NEW ACHIEVEMENT UNLOCKED!**
+**AVENGERS… ASSEMBLE!**
+Congratulations!
+Long ago, an ancient prophecy foretold of a player who would master all six levels with every member of the roster.
+Actually, it was an Excel spreadsheet.
+But someone accidentally printed it on beige paper, so we've been calling it a prophecy.
+For generations—or at least since this game launched—we waited.
+**Eight characters.**
+**Six levels.**
+**Forty-eight victories.**
+And now, against all reasonable expectations regarding how you might choose to spend your time, the prophecy has been fulfilled.
+You assembled the entire team and brought every last one of them across the finish line.
+**Dr. Marion Wayne** always believed this day would come.
+That's not true.
+He owes several people lunch.
+**Reward:** One ceremonial cape, the title of **Supreme Commander of Character Selection**, and permanent permission to look mildly disappointed whenever someone tells you they've only beaten the game once.
+\-------------------------------------------------
+**Avengers… Assemble!**
+**NEW ACHIEVEMENT UNLOCKED!**
+**AVENGERS… ASSEMBLE!**
+Oh.
+Oh, wow.
+You actually did it.
+You completed **all six levels with all eight playable characters.**
+We included this achievement because someone said, "Eventually, somebody will probably unlock it."
+We did not expect that person to arrive with this level of determination.
+There were eight characters available to you, and apparently you took that personally.
+You selected every one.
+You completed every level.
+You left absolutely no combination unchecked.
+Forty-eight boxes existed.
+You checked forty-eight boxes.
+Somewhere, a project manager just experienced a feeling of satisfaction they cannot explain.
+**Dr. Marion Wayne** would congratulate you personally, but you've apparently made him run through these levels six times already.
+Give the man a minute.
+**Reward:** Maximum bragging rights, an imaginary 100% completion certificate, and the ability to say **"I've done things you wouldn't understand"** whenever a coworker asks how your day is going.
+\-------------------------------------------------
+**Avengers… Assemble!**
+**NEW ACHIEVEMENT UNLOCKED!**
+**AVENGERS… ASSEMBLE!**
+Congratulations!
+An emergency meeting of the **International Committee for Extremely Questionable Accomplishments** has been called.
+Attendance was mandatory.
+There were charts.
+There was a presentation.
+Someone brought donuts.
+After reviewing the evidence, the committee has unanimously confirmed that you completed every one of the six levels using **all eight playable characters.**
+Forty-eight successful runs.
+No character left behind.
+No level left unconquered.
+The motion to classify your performance as "excessive" passed unanimously.
+The subsequent motion to classify it as "impressive" also passed unanimously.
+The donuts were unrelated.
+You have officially mastered the entire roster.
+**Dr. Marion Wayne** would like you to know that assembling the team was supposed to be the hard part. You apparently misunderstood the assignment and assembled them **forty-eight times.**
+**Reward:** One imaginary trophy requiring two imaginary people to lift, lifetime membership in the Committee for Extremely Questionable Accomplishments, and the most valuable prize of all:
+**Knowing you got them all.**

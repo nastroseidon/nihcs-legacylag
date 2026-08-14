@@ -186,6 +186,14 @@
   .endActions{flex:0 0 auto;min-width:min(100%,246px);display:flex;flex-direction:column;gap:8px;
            justify-content:center;align-items:stretch;}
   .resHdr{color:#ffd54a;font-weight:800;letter-spacing:2px;text-align:left;font-size:clamp(9px,calc(1.5 * var(--vw)),13px);}
+  /* The session roster, inline with the heading. Sized in em so it tracks the
+     heading's own clamp rather than needing a second one of its own. */
+  .rosterStrip{display:inline-flex;align-items:center;gap:2px;margin-left:9px;vertical-align:middle;
+               line-height:0;}
+  /* Exactly the heading's own font size, so the row keeps the height it had
+     before the roster existed. Anything taller pushes the whole panel around. */
+  .rosterPip{height:1em;width:auto;object-fit:contain;
+             filter:drop-shadow(0 1px 1px rgba(0,0,0,.75));}
   /* min-height, not height: the list keeps the panel a constant size when a run
      earns little or nothing, and grows past it when there is more to show. The
      panel is anchored to the bottom of the stage, so it expands upward into the
@@ -573,14 +581,14 @@ const CHARACTERS=[
    blurb:'The founding Pathfinder—steady hand, Indiana grit, legendary vision.' },
  { id:'patch', name:'Patch', sprite:'patch',
    blurb:'The eager sidekick—big heart, quick hands, and absolutely no snack is safe.' },
- { id:'lawrence', name:'Dr. Paul Lawrence', sprite:'lawrence',
+ { id:'lawrence', name:'Deputy Secretary Lawrence', sprite:'lawrence',
    blurb:'The national expedition leader—charting VA’s EHRM course toward a stronger future for Veterans.' },
- { id:'collins', name:'Doug Collins', sprite:'collins',
+ { id:'collins', name:'Secretary Collins', sprite:'collins',
    blurb:'The mission commander—setting the compass for VA’s boldest journeys on behalf of America’s Veterans.' },
  { id:'stoddard', name:'Mike Stoddard', sprite:'stoddard',
    blurb:'The trusted trail guide—turning big-picture strategy into the next winning move.' },
  { id:'beidelschies', name:'Jon Beidelschies', sprite:'beidelschies',
-   blurb:'Northern Indiana’s expedition captain—guiding the home team through every new frontier.' },
+   blurb:'Northern Indiana’s expedition captain—guiding the Northern Indiana team through every new frontier.' },
 ];
 const CHAR_POSES=['idle','walk1','walk2','jump'];
 let charId=(function(){ try{ return localStorage.getItem('dmw_char')||'wayne'; }catch(e){ return 'wayne'; } })();
@@ -706,6 +714,12 @@ const shortName=['Kick-off','Planning','Super User','End User','Migration','Go L
 // How long Levels 1-6 may take and still count as a speedrun.
 // __dmw.runMs() reports the elapsed time of the run in progress.
 const SPEEDRUN_TARGET_MS=4*60*1000;   // under 4 minutes
+
+// What "Avengers... Assemble!" pays. It is the only award that keeps paying:
+// once the roster is assembled, every later run in the session carries it too
+// (see standingBonus). Sized against Completionist at 50 -- clearly the biggest
+// thing in the game, but not so large that the grind outweighs playing well.
+const AVENGERS_BONUS=75;
 
 const ACHIEVEMENTS=[
  { id:'pogo', name:'Pogo', short:'Pogo Champion', badge:'\uD83E\uDD98', scope:'level',
@@ -920,7 +934,28 @@ const ACHIEVEMENTS=[
     reward:'One imaginary lessons-learned document containing no actual lessons, continued access to the retry button, and recognition for delivering results despite aggressively testing the definition of progress.' },
   { title:'WORKING AS INTENDED (PROBABLY)',
     body:'Congratulations!\n\nAfter seven or more deaths, IT has completed its investigation.\nThe game is working.\nThe controls are working.\nThe enemies are working.\nThe pits are definitely working.\n\nAttention has therefore shifted to the remaining variable:\nYou.\nDr. Marion Wayne requested escalation.\n\nTier 2 support watched the replay and quietly closed the ticket with the resolution code:\nUSER TRAINING.\nYou reopened it.\nThey closed it again.\nYou died during the argument.\nThe ticket remains closed.',
-    reward:'One imaginary support ticket marked RESOLVED, a fully functional death counter, and the comforting assurance that the system has been thoroughly tested by the least predictable component available.' } ] }
+    reward:'One imaginary support ticket marked RESOLVED, a fully functional death counter, and the comforting assurance that the system has been thoroughly tested by the least predictable component available.' } ] },
+ // The one achievement that spans whole games rather than one run: finish
+ // Levels 1-6 with every character in a single session. The roster that tracks
+ // it is beside the heading on every end screen, gaining a face at a time.
+ { id:'avengers', name:'Avengers\u2026 Assemble!', short:'Avengers\u2026 Assemble!', badge:'\ud83e\uddb8', scope:'run',
+   pts:AVENGERS_BONUS, desc:'Levels 1\u20136 with all eight characters',
+   // Once only. `earned` is cleared by a new game but the roster is not, so
+   // without this every later full run would win it again.
+   when:function(f){ return f.fullRun && f.rosterCount>=CHARACTERS.length && !f.avengersDone; },
+   variants:[
+  { title:'AVENGERS\u2026 ASSEMBLE!',
+    body:'Congratulations!\n\nAccording to our records, you have now completed all six levels with every single playable character.\n\nAll eight of them.\n\nForty-eight successful level completions.\n\nWe checked twice.\n\nThen we gave the numbers to someone from Finance because they own a calculator and seemed responsible.\n\nThey confirmed it.\n\nAt some point during this session, you stopped merely playing and began conducting what can only be described as a comprehensive operational evaluation of the entire roster.\n\nEvery character answered the call.\n\nEvery level was conquered.\n\nEvery obstacle now knows your name.\n\nDr. Marion Wayne has requested that you please stop proving things. There is nothing left to prove.',
+    reward:'The complete admiration of eight imaginary heroes, one extremely real sense of accomplishment, and the uncomfortable realization that you now know this game better than some of the people who made it.' },
+  { title:'AVENGERS\u2026 ASSEMBLE!',
+    body:'Congratulations!\n\nLong ago, an ancient prophecy foretold of a player who would master all six levels with every member of the roster.\n\nActually, it was an Excel spreadsheet.\n\nBut someone accidentally printed it on beige paper, so we\u2019ve been calling it a prophecy.\n\nFor generations\u2014or at least since this game launched\u2014we waited.\n\nEight characters.\nSix levels.\nForty-eight victories.\n\nAnd now, against all reasonable expectations regarding how you might choose to spend your time, the prophecy has been fulfilled.\n\nYou assembled the entire team and brought every last one of them across the finish line.\n\nDr. Marion Wayne always believed this day would come.\n\nThat\u2019s not true.\n\nHe owes several people lunch.',
+    reward:'One ceremonial cape, the title of Supreme Commander of Character Selection, and permanent permission to look mildly disappointed whenever someone tells you they\u2019ve only beaten the game once.' },
+  { title:'AVENGERS\u2026 ASSEMBLE!',
+    body:'Oh.\n\nOh, wow.\n\nYou actually did it.\n\nYou completed all six levels with all eight playable characters.\n\nWe included this achievement because someone said, "Eventually, somebody will probably unlock it."\n\nWe did not expect that person to arrive with this level of determination.\n\nThere were eight characters available to you, and apparently you took that personally.\n\nYou selected every one.\n\nYou completed every level.\n\nYou left absolutely no combination unchecked.\n\nForty-eight boxes existed.\nYou checked forty-eight boxes.\n\nSomewhere, a project manager just experienced a feeling of satisfaction they cannot explain.\n\nDr. Marion Wayne would congratulate you personally, but you\u2019ve apparently made him run through these levels six times already.\n\nGive the man a minute.',
+    reward:'Maximum bragging rights, an imaginary 100% completion certificate, and the ability to say "I\u2019ve done things you wouldn\u2019t understand" whenever a coworker asks how your day is going.' },
+  { title:'AVENGERS\u2026 ASSEMBLE!',
+    body:'Congratulations!\n\nAn emergency meeting of the International Committee for Extremely Questionable Accomplishments has been called.\n\nAttendance was mandatory.\n\nThere were charts.\nThere was a presentation.\nSomeone brought donuts.\n\nAfter reviewing the evidence, the committee has unanimously confirmed that you completed every one of the six levels using all eight playable characters.\n\nForty-eight successful runs.\n\nNo character left behind.\nNo level left unconquered.\n\nThe motion to classify your performance as "excessive" passed unanimously.\n\nThe subsequent motion to classify it as "impressive" also passed unanimously.\n\nThe donuts were unrelated.\n\nYou have officially mastered the entire roster.\n\nDr. Marion Wayne would like you to know that assembling the team was supposed to be the hard part. You apparently misunderstood the assignment and assembled them forty-eight times.',
+    reward:'One imaginary trophy requiring two imaginary people to lift, lifetime membership in the Committee for Extremely Questionable Accomplishments, and the most valuable prize of all: knowing you got them all.' } ] }
 ];
 
 // ---- run bookkeeping ----
@@ -934,6 +969,35 @@ let earnedList=[];
 let announced={};          // ids that have already had their popup this game
 let run={ fromStart:false, startedAt:0, deaths:0,
           stomps:0, stompable:0, coins:0, coinsTotal:0 };
+
+// ===== The roster =====
+// Who has finished Levels 1-6 this session. Unlike everything else here it
+// outlives the run -- a new game does not clear it -- which is what makes
+// "Avengers... Assemble!" span eight games instead of one.
+//
+// sessionStorage, not localStorage: it survives a new game and a reload but
+// goes with the tab, which is what "in one session" means. A browser that
+// refuses storage (the offline build runs from file://) keeps the in-memory
+// copy instead, so the roster still works for as long as the page is open.
+let roster=(function(){
+  try{ const s=JSON.parse(sessionStorage.getItem('dmw_roster')||'[]');
+       if(Array.isArray(s))return s.filter(function(id){
+         return CHARACTERS.some(function(c){ return c.id===id; }); });   // drop any character since removed
+  }catch(e){}
+  return [];
+})();
+let avengersDone=(function(){
+  try{ return sessionStorage.getItem('dmw_avengers')==='1'; }catch(e){ return false; }
+})();
+function saveRoster(){
+  try{ sessionStorage.setItem('dmw_roster',JSON.stringify(roster));
+       sessionStorage.setItem('dmw_avengers',avengersDone?'1':'0'); }catch(e){}
+}
+// Finishing Levels 1-6 puts whoever you played as on the roster. Idempotent:
+// the same character finishing again adds nothing.
+function noteRosterFinish(){
+  if(roster.indexOf(charId)<0){ roster.push(charId); saveRoster(); }
+}
 let lvlCoins=0, lvlStomps=0;        // this level's tally, folded into the run at the goal
 // The full-run achievements only count when the player actually began at Level 1:
 // otherwise a jump to Level 6 from the level select would qualify for all of them.
@@ -986,7 +1050,15 @@ function awardAtGoal(extra){
     run.coins+=extra.levelCoins||0;   run.coinsTotal+=extra.levelCoinsTotal||0;
     run.stomps+=extra.levelStomps||0; run.stompable+=extra.levelStompable||0;
   }
-  return award(achievementFacts(extra));
+  const f=achievementFacts(extra);
+  // The roster has to take this character before the roster is judged, or
+  // finishing as the eighth would not be the run that completes it.
+  if(f.fullRun)noteRosterFinish();
+  f.rosterCount=roster.length;
+  f.avengersDone=avengersDone;   // false on the run that earns it, true after
+  const hits=award(f);
+  for(const a of hits) if(a.id==='avengers'&&!avengersDone){ avengersDone=true; saveRoster(); }
+  return hits;
 }
 
 // ===== Sound =====
@@ -1710,19 +1782,66 @@ function goMain(){
 // What the run banks: medallions collected, plus the bonus every achievement is
 // worth. Everything that shows or banks a run total uses this figure.
 function achievementBonus(){ let n=0; for(const r of earnedList)n+=(r.pts||0)*(r.count||1); return n; }
-function finalScore(){ return score+achievementBonus(); }
+// Assembling the roster keeps paying: every run after the one that earned it
+// carries the bonus too. The run that earned it is already paid through the
+// achievement itself, so it is not paid twice.
+function standingBonus(){
+  if(!avengersDone)return 0;
+  for(const r of earnedList) if(r.id==='avengers')return 0;
+  return AVENGERS_BONUS;
+}
+function finalScore(){ return score+achievementBonus()+standingBonus(); }
 // Fill the left column of an end panel: one line per achievement — emoji, name,
 // what triggered it, what it was worth. Built as nodes rather than markup so it
 // needs no escaping, and so it survives into the offline build, where the
 // high-score module that owns escapeHtml is stripped out.
+// The line under the total. The standing bonus is called out separately so
+// the parts still add up to the figure above them.
+function scoreBreakdown(){
+  let t=score+' collected \u00b7 +'+achievementBonus()+' earned';
+  if(standingBonus()>0)t+=' \u00b7 +'+standingBonus()+' roster';
+  return t;
+}
+// The characters who have finished Levels 1-6 this session, scaled to the
+// heading they sit beside. The row gains a face each time a run is finished
+// with someone new, and stands until the tab closes -- so it doubles as the
+// progress meter for "Avengers... Assemble!".
+function appendRoster(hdr){
+  if(!roster.length)return;
+  const strip=document.createElement('span'); strip.className='rosterStrip';
+  for(const id of roster){
+    const c=character(id);
+    const im=document.createElement('img');
+    im.className='rosterPip'; im.alt=c.name; im.title=c.name;
+    im.onerror=function(){ this.onerror=null; this.src=poseSrc(CHARACTERS[0],'idle'); };
+    im.src=poseSrc(c,'idle');
+    strip.appendChild(im);
+  }
+  hdr.appendChild(strip);
+}
 function renderAchievements(screen){
   const panel=screen.querySelector('.endAch'); if(!panel)return;
   const hdr=panel.querySelector('.resHdr'), list=panel.querySelector('.resList');
   hdr.textContent=earnedList.length
     ? 'ACHIEVEMENTS EARNED — '+earnedList.length
     : 'ACHIEVEMENTS EARNED';
+  appendRoster(hdr);
   list.textContent='';
-  if(!earnedList.length){
+  // The standing bonus is a row of its own, so a score carrying +75 from a
+  // roster assembled three games ago still adds up in front of the player.
+  if(standingBonus()>0){
+    const li=document.createElement('li'); li.className='resStanding';
+    const ico=document.createElement('span'); ico.className='ico'; ico.textContent='\uD83E\uDDB8';
+    const txt=document.createElement('span'); txt.className='txt';
+    const nm=document.createElement('span'); nm.className='flav';
+    nm.textContent='Avengers\u2026 Assemble! \u2014 the whole roster, still standing';
+    txt.appendChild(nm);
+    const pts=document.createElement('span'); pts.className='pts';
+    pts.textContent='+'+standingBonus();
+    li.appendChild(ico); li.appendChild(txt); li.appendChild(pts);
+    list.appendChild(li);
+  }
+  if(!earnedList.length&&!list.children.length){
     const li=document.createElement('li');
     li.className='resNone';
     li.textContent='None this run. Clear a level without touching the ground to earn one.';
@@ -1776,7 +1895,7 @@ function showVictory(kind){
   const total=finalScore();
   document.getElementById('victoryScore').textContent=total;
   document.getElementById('victoryBreak').textContent=
-    score+' collected · +'+achievementBonus()+' earned';
+    scoreBreakdown();
   document.getElementById('vBonus').classList.toggle('hidden',bonusDone);
   // The rank is shown here, but the name is not asked for until the player
   // leaves: the bonus level continues this run and can still add to the total.
@@ -1791,7 +1910,7 @@ function showGameOver(){
   const total=finalScore();
   document.getElementById('gameoverScore').textContent=total;
   document.getElementById('gameoverBreak').textContent=
-    score+' collected · +'+achievementBonus()+' earned';
+    scoreBreakdown();
   // The run is over either way, so the name is asked for here and now.
   showEndRank(total,'goRank','goMiss','nameEntry');
   hideAllScreens(); gameoverScreen.classList.remove('hidden');
@@ -2514,6 +2633,8 @@ window.__dmw={ jumpTo:function(i){ loadLevel(i); },
   get player(){ return player; }, get enemies(){ return enemies; }, get coins(){ return coins; },
   key:function(k,v){ keys[k]=v; }, get keys(){ return keys; },
   // achievements: what the run has banked, and what it has already won
+  get roster(){ return roster.slice(); }, get avengers(){ return avengersDone; },
+  get standing(){ return standingBonus(); }, get finalScore(){ return finalScore(); },
   get run(){ return run; }, get earned(){ return earned; }, get badges(){ return earnedList.map(function(r){ return r.badge; }); },
   get earnedRows(){ return earnedList; },
   runMs:function(){ return Date.now()-run.startedAt; },
