@@ -212,9 +212,15 @@ Admin keys: **Shift+P** level select, **Shift+L** infinite lives, **M** mute.
 ```bash
 node -e "import('./tools/testharness.mjs').then(async h=>{
   h.pump(5);
-  for (let i=0;i<7;i++){ h.buttons[i].fire('click'); h.pump(60); h.toGoal(); h.drainAchievements();
+  for (let i=0;i<7;i++){ h.buttons[i].fire('click'); h.pump(2);
+    h.elem('charGo').fire('click');
+    h.pump(60); h.toGoal(); h.drainAchievements();
     console.log(i+':'+h.dmw().state); }})"
 ```
+
+The `charGo` click is the character carousel, which now stands between a
+level-select chip and the level. `h.keydown(code)`, `h.keyup(code)` and
+`h.press(code)` drive it from the keyboard.
 
 Expect `0:leveldone 1:leveldone 2:leveldone 3:leveldone 4:leveldone 5:victory
 6:victory`.

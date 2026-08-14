@@ -83,9 +83,9 @@ cut("""  if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='Space')keys.jump=true
   // ----- admin / testing shortcuts -----""",
     'scan keydown')
 
-cut("""  if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='Space')keys.jump=false;
+cut("""  if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='Space'||e.code==='Enter')keys.jump=false;
 });""",
-    """  if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='Space')keys.jump=false;
+    """  if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='Space'||e.code==='Enter')keys.jump=false;
   if(e.code==='KeyE'||e.code==='KeyX')keys.scan=false;
 });""",
     'scan keyup')
@@ -290,6 +290,13 @@ cut("""document.getElementById('vMain').addEventListener('click',function(e){ e.
 if not ASSETS.is_dir():
     sys.exit('ERROR: build/assets missing. Run tools/build_fullhtml.sh first.')
 
+# Sprite prefixes from CHARACTERS in index.html, minus Dr. Wayne (who is the
+# unprefixed player_* set below). A character whose art has not been built yet is
+# skipped, and the game falls back to Dr. Wayne's sprites for it.
+CHAR_PREFIXES = ('jackie', 'colonel', 'patch', 'lawrence',
+                 'collins', 'stoddard', 'beidelschies')
+CHAR_POSES = ('idle', 'walk1', 'walk2', 'jump')
+
 KEYS = {
     # A character's four sprites are inlined under <prefix>_<pose>, matching the
     # keys index.html builds from CHARACTERS. Add e.g. 'nurse_idle': 'nurse_idle'.
@@ -303,6 +310,18 @@ KEYS = {
     'goal1': 'goal1_kickoff', 'goal2': 'goal2_planning', 'goal3': 'goal3_superuser',
     'goal4': 'goal4_enduser', 'goal5': 'goal5_migration', 'goal6': 'goal6_golive',
 }
+
+missing_chars = []
+for prefix in CHAR_PREFIXES:
+    stems = [f'{prefix}_{pose}' for pose in CHAR_POSES]
+    if all((ASSETS / f'{s}.png').exists() for s in stems):
+        KEYS.update({s: s for s in stems})
+    else:
+        missing_chars.append(prefix)
+if missing_chars:
+    print('note: no built art for ' + ', '.join(missing_chars)
+          + ' -- they will use Dr. Wayne\'s sprites')
+
 
 def data_uri(stem):
     for ext, mime in (('jpg', 'image/jpeg'), ('png', 'image/png')):

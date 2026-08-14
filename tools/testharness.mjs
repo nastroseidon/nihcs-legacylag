@@ -134,6 +134,17 @@ export function drainAchievements(max = 12) {
   pump(20);
   return seen;
 }
+// Real key events, for anything driven by the keyboard rather than by clicks --
+// the character carousel, the admin shortcuts, ESC.
+function fireKey(type, code, mods = {}) {
+  const e = { code, shiftKey: !!mods.shift, target: null, preventDefault() {} };
+  for (const fn of winListeners[type] || []) fn(e);
+}
+export function keydown(code, mods) { fireKey('keydown', code, mods); }
+export function keyup(code, mods) { fireKey('keyup', code, mods); }
+// Press and release, running frames in between so an edge-detected reader sees it.
+export function press(code, frames = 2) { keydown(code); pump(frames); keyup(code); pump(1); }
+
 export function startRun() { elem('overlay').fire('click'); pump(60); }
 export function chooseLevel(n) { buttons[n].fire('click'); pump(60); }
 export function toGoal() { G.toGoal(); pump(3); }

@@ -29,7 +29,11 @@ png hazard_spikes 256      # drawn ~118 wide
 # Hero sprites, drawn ~74x82. Add a character by appending its four names here
 # -- <prefix>_idle <prefix>_jump <prefix>_walk1 <prefix>_walk2 -- and adding the
 # same four to KEYS in make_fullhtml.py and to CHARACTERS in index.html.
-for f in player_idle player_jump player_walk1 player_walk2; do png "$f" 288; done
+for p in player jackie colonel patch lawrence collins stoddard beidelschies; do
+  for f in "${p}_idle" "${p}_jump" "${p}_walk1" "${p}_walk2"; do
+    [ -f "$f.png" ] && png "$f" 288
+  done
+done
 for f in enemy_walk1 enemy_walk2; do png "$f" 176; done                             # drawn 58x64
 for f in goal1_kickoff goal2_planning goal3_superuser goal4_enduser \
          goal5_migration goal6_golive; do png "$f" 320; done                        # drawn 90x160

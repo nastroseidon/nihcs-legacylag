@@ -65,37 +65,56 @@
      every word of the game's writing stays Dr. Marion Wayne. */
   #chars{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;
          align-items:center;justify-content:center;gap:clamp(8px,calc(1.6 * var(--vh)),16px);
-         background:rgba(6,14,8,.94);color:#fff;padding:clamp(12px,calc(2.6 * var(--vh)),26px);
-         box-sizing:border-box;overflow-y:auto;}
+         /* Opaque, not nearly so: the menu underneath is not hidden while
+            choosing, and even a few per cent of its yellow headings read
+            through and collide with the carousel. */
+         background:#060e08;color:#fff;padding:clamp(12px,calc(2.6 * var(--vh)),26px);
+         box-sizing:border-box;overflow:hidden;}
   #chars h2{color:#ffd54a;font-size:clamp(17px,calc(3.6 * var(--vw)),30px);margin:0;
             text-shadow:0 3px 6px rgba(0,0,0,.8);text-align:center;}
-  #charBody{display:flex;gap:clamp(10px,calc(2.4 * var(--vw)),26px);align-items:stretch;justify-content:center;
-            width:min(100%,880px);flex-wrap:wrap;}
-  #charCurrent{flex:1 1 240px;max-width:340px;display:flex;flex-direction:column;align-items:center;
-               gap:8px;padding:14px;border:1px solid rgba(255,255,255,.22);border-radius:10px;
-               background:rgba(255,255,255,.05);}
-  #charCurrent .lbl,#charGridWrap .lbl{font-size:clamp(10px,calc(1.7 * var(--vw)),13px);letter-spacing:2px;
-               color:#cfe0ff;opacity:.8;text-align:center;}
-  #charGridWrap{flex:1 1 300px;display:flex;flex-direction:column;gap:8px;min-width:0;}
-  #charGrid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
-  .charCard{background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.28);
-            border-radius:10px;padding:9px 10px 11px;cursor:pointer;color:#fff;font:inherit;
-            display:flex;flex-direction:column;align-items:center;gap:6px;min-width:104px;}
-  .charCard:hover{border-color:#ffd54a;background:rgba(255,213,74,.14);}
-  .charCard:focus-visible{outline:2px solid #ffd54a;outline-offset:2px;}
-  .charCard.on{border-color:#ffd54a;background:rgba(255,213,74,.2);}
-  .charPortrait{width:clamp(62px,calc(9 * var(--vw)),104px);aspect-ratio:2/3;display:flex;align-items:flex-end;
+  /* The carousel. One character at a time, the neighbours peeking in at the
+     sides, cycled with the game's own left/right and confirmed with jump -- so
+     the picker is played with the controls the game is played with, on a
+     keyboard or on the touch pads, with no separate mobile affordance. */
+  #charStage{display:flex;align-items:center;justify-content:center;
+             gap:clamp(4px,calc(1.2 * var(--vw)),14px);width:min(100%,760px);}
+  .charSlide{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+             position:relative;transition:opacity .18s ease,transform .18s ease;}
+  .charSlide.side{opacity:.34;transform:scale(.72);filter:grayscale(.5);}
+  .charSlide.main{opacity:1;}
+  .charArrow{background:none;border:0;color:#ffd54a;font:inherit;cursor:pointer;padding:6px 4px;
+             font-size:clamp(18px,calc(3.4 * var(--vw)),30px);opacity:.75;line-height:1;}
+  .charArrow:hover{opacity:1;}
+  .charArrow:focus-visible{outline:2px solid #ffd54a;outline-offset:2px;}
+  .charTag{position:absolute;top:0;left:50%;transform:translateX(-50%);
+           font-size:clamp(8px,calc(1.4 * var(--vw)),11px);letter-spacing:2px;color:#cfe0ff;
+           background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.25);border-radius:4px;
+           padding:2px 7px;white-space:nowrap;}
+  /* Sized off the stage's HEIGHT, not its width: on a phone the stage is a wide
+     short band with width to spare and none to spare vertically, and a
+     width-driven portrait is what pushed the button off the bottom. */
+  .charPortrait{height:clamp(38px,calc(15 * var(--vh)),70px);aspect-ratio:2/3;display:flex;align-items:flex-end;
                 justify-content:center;overflow:hidden;}
   .charPortrait img{width:100%;height:100%;object-fit:contain;image-rendering:auto;
                     filter:drop-shadow(0 3px 6px rgba(0,0,0,.6));}
+  .charSlide.main .charPortrait{height:clamp(64px,calc(30 * var(--vh)),168px);}
   .charName{font-weight:800;color:#ffd54a;text-align:center;line-height:1.25;
-            font-size:clamp(11px,calc(1.9 * var(--vw)),16px);}
-  #charDetail{display:flex;flex-direction:column;align-items:center;gap:10px;
-              width:min(100%,660px);}
-  #charDetail .charPortrait{width:clamp(84px,calc(13 * var(--vw)),150px);}
-  #charBlurb{margin:0;font-size:clamp(12px,calc(2.1 * var(--vw)),16px);line-height:1.5;text-align:center;
-             max-width:60ch;color:#e6edff;}
-  #charDetail .btnRow .pBtn{width:auto;margin:0;padding:12px 28px;}
+            font-size:clamp(13px,calc(2.4 * var(--vw)),21px);}
+  #charBlurb{margin:0;font-size:clamp(12px,calc(2.1 * var(--vw)),16px);line-height:1.45;text-align:center;
+             max-width:52ch;color:#e6edff;min-height:2.9em;}
+  #charDots{display:flex;gap:7px;justify-content:center;}
+  .charDot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);}
+  .charDot.on{background:#ffd54a;}
+  #chars .btnRow .pBtn{width:auto;margin:0;padding:12px 28px;}
+  #charHint{font-size:clamp(9px,calc(1.6 * var(--vw)),12px);letter-spacing:1.5px;
+            color:#cfe0ff;opacity:.7;text-align:center;}
+  /* Short stage: give up the hint and the blurb's reserved second line, tighten
+     everything else. The carousel itself is never what goes. */
+  #stage.short #chars{gap:5px;padding:6px 10px;}
+  #stage.short #charHint{display:none;}
+  #stage.short #charBlurb{min-height:0;line-height:1.3;}
+  #stage.short #chars h2{font-size:clamp(14px,calc(2.8 * var(--vw)),20px);}
+  #stage.short #chars .btnRow .pBtn{padding:8px 22px;}
   /* Sound settings. Sits on top of whatever opened it -- the menu or the pause
      screen -- so neither has to be torn down and put back. */
   #audio{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;
@@ -454,27 +473,21 @@
     </div>
     <div id="chars" class="hidden">
       <h2 id="charHdr">Choose your character</h2>
-      <div id="charBody">
-        <div id="charCurrent" class="hidden">
-          <div class="lbl">CONTINUE AS</div>
-          <div class="charPortrait"><img id="charCurImg" alt=""></div>
-          <div class="charName" id="charCurName"></div>
-          <button class="pBtn" id="charContinue">Continue</button>
+      <div id="charStage">
+        <button class="charArrow" id="charPrev" type="button" aria-label="Previous character">&#9664;</button>
+        <div class="charSlide side"><div class="charPortrait"><img id="charImgL" alt=""></div></div>
+        <div class="charSlide main">
+          <div class="charTag hidden" id="charTag">LAST PLAYED</div>
+          <div class="charPortrait"><img id="charImgC" alt=""></div>
         </div>
-        <div id="charGridWrap">
-          <div class="lbl" id="charGridLbl">CHOOSE A CHARACTER</div>
-          <div id="charGrid"></div>
-        </div>
+        <div class="charSlide side"><div class="charPortrait"><img id="charImgR" alt=""></div></div>
+        <button class="charArrow" id="charNext" type="button" aria-label="Next character">&#9654;</button>
       </div>
-      <div id="charDetail" class="hidden">
-        <div class="charPortrait"><img id="charDetImg" alt=""></div>
-        <div class="charName" id="charDetName"></div>
-        <p id="charBlurb"></p>
-        <div class="btnRow">
-          <button class="pBtn" id="charGo">Let's Go!</button>
-          <button class="pBtn" id="charBack">Back</button>
-        </div>
-      </div>
+      <div class="charName" id="charDetName"></div>
+      <p id="charBlurb"></p>
+      <div id="charDots"></div>
+      <div class="btnRow"><button class="pBtn" id="charGo">Let's Go!</button></div>
+      <div id="charHint">&#9664; &#9654; TO BROWSE &middot; JUMP TO CHOOSE</div>
     </div>
     <div id="audio" class="hidden">
       <h2>Sound</h2>
@@ -514,6 +527,15 @@ const STORY=130, FALL_CAP=5*STORY, BLOCK=50;   // BLOCK = universal 1:1 tile mea
 // ---------- assets ----------
 const files={
   idle:'player_idle.png',walk1:'player_walk1.png',walk2:'player_walk2.png',jump:'player_jump.png',
+  // Character sprites. A missing set falls back to Dr. Wayne's, so a character
+  // whose art has not landed yet is never invisible.
+  jackie_idle:'jackie_idle.png',jackie_walk1:'jackie_walk1.png',jackie_walk2:'jackie_walk2.png',jackie_jump:'jackie_jump.png',
+  colonel_idle:'colonel_idle.png',colonel_walk1:'colonel_walk1.png',colonel_walk2:'colonel_walk2.png',colonel_jump:'colonel_jump.png',
+  patch_idle:'patch_idle.png',patch_walk1:'patch_walk1.png',patch_walk2:'patch_walk2.png',patch_jump:'patch_jump.png',
+  lawrence_idle:'lawrence_idle.png',lawrence_walk1:'lawrence_walk1.png',lawrence_walk2:'lawrence_walk2.png',lawrence_jump:'lawrence_jump.png',
+  collins_idle:'collins_idle.png',collins_walk1:'collins_walk1.png',collins_walk2:'collins_walk2.png',collins_jump:'collins_jump.png',
+  stoddard_idle:'stoddard_idle.png',stoddard_walk1:'stoddard_walk1.png',stoddard_walk2:'stoddard_walk2.png',stoddard_jump:'stoddard_jump.png',
+  beidelschies_idle:'beidelschies_idle.png',beidelschies_walk1:'beidelschies_walk1.png',beidelschies_walk2:'beidelschies_walk2.png',beidelschies_jump:'beidelschies_jump.png',
   en1:'enemy_walk1.png',en2:'enemy_walk2.png',coin:'coin.png',
   ground:'tile_ground.png',plat:'tile_platform.png',spike:'hazard_spikes.png',
   floating:'tile_floating.png',girder:'tile_girder.png',
@@ -540,9 +562,25 @@ for(const k in files){const im=new Image();ok[k]=false;
 //
 // sprite:'' means the original player_*.png set. With only one character the
 // select screen is skipped entirely and the game behaves as it always has.
+// Names and blurbs come from the crosswalk in "File Prefix.md"; `sprite` is the
+// filename prefix there, never shown to the player.
 const CHARACTERS=[
  { id:'wayne', name:'Dr. Marion Wayne', sprite:'',
-   blurb:'The man himself. Clipboard in hand, migration in progress, optimism intact.' },
+   blurb:'The expedition leader—fedora on, plan ready, and modernization in motion.' },
+ { id:'jackie', name:'Jackie Wayne-Cerner', sprite:'jackie',
+   blurb:'The digital scout—bridging old systems and bold new frontiers.' },
+ { id:'colonel', name:'Colonel Muncie "Hoosier" Wayne', sprite:'colonel',
+   blurb:'The founding Pathfinder—steady hand, Indiana grit, legendary vision.' },
+ { id:'patch', name:'Patch', sprite:'patch',
+   blurb:'The eager sidekick—big heart, quick hands, and absolutely no snack is safe.' },
+ { id:'lawrence', name:'Dr. Paul Lawrence', sprite:'lawrence',
+   blurb:'The national expedition leader—charting VA’s EHRM course toward a stronger future for Veterans.' },
+ { id:'collins', name:'Doug Collins', sprite:'collins',
+   blurb:'The mission commander—setting the compass for VA’s boldest journeys on behalf of America’s Veterans.' },
+ { id:'stoddard', name:'Mike Stoddard', sprite:'stoddard',
+   blurb:'The trusted trail guide—turning big-picture strategy into the next winning move.' },
+ { id:'beidelschies', name:'Jon Beidelschies', sprite:'beidelschies',
+   blurb:'Northern Indiana’s expedition captain—guiding the home team through every new frontier.' },
 ];
 const CHAR_POSES=['idle','walk1','walk2','jump'];
 let charId=(function(){ try{ return localStorage.getItem('dmw_char')||'wayne'; }catch(e){ return 'wayne'; } })();
@@ -1081,6 +1119,8 @@ const SFX={
   jump:function(t){ tone('triangle',300,t,0.10,0.09,540); noise(t,0.05,1800,0.035); },
   land:function(t){ noise(t,0.05,2600,0.10); tone('sine',150,t,0.10,0.12,90); },
   coin:function(t){ tone('square',1180,t,0.045,0.11); tone('square',1620,t+0.075,0.075,0.11); },
+  // cycling the character carousel: short, dry, and quiet enough to hold a key on
+  select:function(t){ tone('square',880,t,0.035,0.055); },
   stomp:function(t){ wobble(190,t,0.24,0.12,90,26,660); },
   oneup:function(t){ [N.C5,N.E5,N.G5,N.C6].forEach(function(f,i){
     tone('square',f,t+i*0.105,0.34,0.20); tone('triangle',f*2,t+i*0.105,0.18,0.05); }); },
@@ -1638,6 +1678,10 @@ function sizeStageUnits(){
   if(!r.width)return;
   st.style.setProperty('--vw',(r.width/100)+'px');
   st.style.setProperty('--vh',(r.height/100)+'px');
+  // A phone in portrait leaves the stage a short letterbox band. CSS cannot ask
+  // how tall the stage is -- only how tall the window is -- so say so here, and
+  // the character screen drops what it can spare rather than being clipped.
+  st.classList.toggle('short',r.height<340);
 }
 addEventListener('resize',sizeStageUnits);
 addEventListener('orientationchange',sizeStageUnits);
@@ -1961,57 +2005,76 @@ if(fsBtn){
 // has been beaten, it offers to carry on as whoever you last played. With a
 // single character in CHARACTERS it steps aside and starts the level.
 const charsScreen=document.getElementById('chars');
-let charsOpen=false, afterChars=null, charPicked=null;
-function buildCharGrid(exclude){
-  const grid=document.getElementById('charGrid');
-  grid.textContent='';
-  for(const c of CHARACTERS){
-    if(exclude&&c.id===exclude)continue;
-    const b=document.createElement('button');
-    b.type='button'; b.className='charCard'; b.title=c.name;
-    const port=document.createElement('div'); port.className='charPortrait';
-    const im=document.createElement('img'); im.alt=c.name; im.src=poseSrc(c,'idle');
-    port.appendChild(im);
-    const nm=document.createElement('div'); nm.className='charName'; nm.textContent=c.name;
-    b.appendChild(port); b.appendChild(nm);
-    b.addEventListener('click',function(e){ e.stopPropagation(); showCharDetail(c); this.blur(); });
-    grid.appendChild(b);
-  }
-}
-function showCharDetail(c){
-  charPicked=c;
-  document.getElementById('charDetImg').src=poseSrc(c,'idle');
-  document.getElementById('charDetImg').alt=c.name;
+let charsOpen=false, afterChars=null, charIdx=0, charLast=null;
+// Cycled with the game's own controls: left/right to browse, jump to choose.
+// Those come off the same `keys` object gameplay reads, so the touch pads drive
+// the carousel on a phone without a single mobile-only control.
+const charEdge={left:false,right:false,jump:false};
+let charRepeat=0;
+const CHAR_HOLD_DELAY=22, CHAR_HOLD_RATE=7;   // frames before a held key repeats, then between repeats
+function charAt(i){ const n=CHARACTERS.length; return CHARACTERS[((i%n)+n)%n]; }
+function paintChars(){
+  const c=charAt(charIdx);
+  // If a character's art has not landed yet the portrait falls back to Dr.
+  // Wayne's, matching what poseKey does on the canvas -- a half-added character
+  // shows the wrong face rather than a broken image.
+  const setImg=function(id,ch){
+    const im=document.getElementById(id);
+    im.onerror=function(){ this.onerror=null; this.src=poseSrc(CHARACTERS[0],'idle'); };
+    im.src=poseSrc(ch,'idle'); im.alt=ch.name;
+  };
+  setImg('charImgC',c);
+  setImg('charImgL',charAt(charIdx-1));
+  setImg('charImgR',charAt(charIdx+1));
   document.getElementById('charDetName').textContent=c.name;
   document.getElementById('charBlurb').textContent=c.blurb||'';
-  document.getElementById('charBody').classList.add('hidden');
-  document.getElementById('charDetail').classList.remove('hidden');
+  document.getElementById('charTag').classList.toggle('hidden',c.id!==charLast);
+  const dots=document.getElementById('charDots');
+  dots.textContent='';
+  for(let i=0;i<CHARACTERS.length;i++){
+    const d=document.createElement('div');
+    d.className=i===charIdx?'charDot on':'charDot';
+    dots.appendChild(d);
+  }
 }
-function backToCharList(){
-  charPicked=null;
-  document.getElementById('charDetail').classList.add('hidden');
-  document.getElementById('charBody').classList.remove('hidden');
+function moveChar(dir){
+  charIdx=(charIdx+dir+CHARACTERS.length)%CHARACTERS.length;
+  paintChars();
+  sfx('select');
 }
-function closeChars(){ charsOpen=false; charsScreen.classList.add('hidden'); }
+// Run every frame while the screen is up. Edge-detected so one press moves one
+// character, with a hold-to-repeat for getting across a long roster quickly.
+function stepCharSelect(){
+  if(!charsOpen)return;
+  const dir=keys.left?-1:(keys.right?1:0);
+  if(dir===0){ charRepeat=0; }
+  else{
+    const fresh=!(dir<0?charEdge.left:charEdge.right);
+    if(fresh){ charRepeat=0; moveChar(dir); }
+    else{ charRepeat++;
+      if(charRepeat>=CHAR_HOLD_DELAY&&(charRepeat-CHAR_HOLD_DELAY)%CHAR_HOLD_RATE===0)moveChar(dir); }
+  }
+  charEdge.left=keys.left; charEdge.right=keys.right;
+  if(keys.jump&&!charEdge.jump)confirmCharacter();
+  charEdge.jump=keys.jump;
+}
+function closeChars(){ charsOpen=false; charsScreen.classList.add('hidden'); releaseAllKeys(); }
 function chooseCharacter(next,mode){
   if(CHARACTERS.length<2){ if(next)next(); return; }   // nothing to choose between
   afterChars=next;
   const carryOn=mode==='continue';
-  const cur=character();
+  charLast=carryOn?character().id:null;
   document.getElementById('charHdr').textContent=carryOn?'Who is playing?':'Choose your character';
-  document.getElementById('charGridLbl').textContent=carryOn?'OR PICK ANOTHER':'CHOOSE A CHARACTER';
-  const curBox=document.getElementById('charCurrent');
-  curBox.classList.toggle('hidden',!carryOn);
-  if(carryOn){
-    document.getElementById('charCurImg').src=poseSrc(cur,'idle');
-    document.getElementById('charCurImg').alt=cur.name;
-    document.getElementById('charCurName').textContent=cur.name;
-  }
-  buildCharGrid(carryOn?cur.id:null);
-  backToCharList();
+  // Open on whoever played last, so carrying on is a single button press.
+  charIdx=Math.max(0,CHARACTERS.indexOf(character()));
+  paintChars();
+  releaseAllKeys();
+  charEdge.left=charEdge.right=charEdge.jump=false;
+  charRepeat=0;
   charsOpen=true;
   charsScreen.classList.remove('hidden');
 }
+function confirmCharacter(){ startWithCharacter(charAt(charIdx).id); }
 function startWithCharacter(id){
   setCharacter(id);
   const go=afterChars; afterChars=null;
@@ -2019,11 +2082,11 @@ function startWithCharacter(id){
   if(go)fadeTo(go);
 }
 document.getElementById('charGo').addEventListener('click',function(e){ e.stopPropagation();
-  this.blur(); startWithCharacter(charPicked?charPicked.id:charId); });
-document.getElementById('charBack').addEventListener('click',function(e){ e.stopPropagation();
-  this.blur(); backToCharList(); });
-document.getElementById('charContinue').addEventListener('click',function(e){ e.stopPropagation();
-  this.blur(); startWithCharacter(charId); });
+  this.blur(); confirmCharacter(); });
+document.getElementById('charPrev').addEventListener('click',function(e){ e.stopPropagation();
+  this.blur(); moveChar(-1); });
+document.getElementById('charNext').addEventListener('click',function(e){ e.stopPropagation();
+  this.blur(); moveChar(1); });
 charsScreen.addEventListener('click',function(e){ e.stopPropagation(); });
 
 function overlayAction(){
@@ -2114,7 +2177,16 @@ addEventListener('keydown',function(e){
   if(e.target&&e.target.tagName==='INPUT')return;   // don't capture keys while typing (e.g. name entry)
   // sound settings are open on top: ESC closes them, everything else is theirs
   if(audioOpen){ if(e.code==='Escape'||e.code==='Enter'){ closeAudioSettings(); e.preventDefault(); } return; }
-  if(charsOpen){ if(e.code==='Escape'){ closeChars(); afterChars=null; e.preventDefault(); } return; }
+  // Character select is played with the game's controls, so left/right/jump go
+  // through to `keys` and stepCharSelect reads them. Nothing else is its.
+  if(charsOpen){
+    if(e.code==='Escape'){ closeChars(); afterChars=null; e.preventDefault(); return; }
+    if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;
+    if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;
+    if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='Space'||e.code==='Enter')keys.jump=true;
+    if(['ArrowLeft','ArrowRight','ArrowUp','Space','KeyA','KeyD','KeyW','Enter'].includes(e.code))e.preventDefault();
+    return;
+  }
   if(['ArrowLeft','ArrowRight','ArrowUp','Space','KeyA','KeyD','KeyW'].includes(e.code))e.preventDefault();
   if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;
   if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;
@@ -2129,7 +2201,7 @@ addEventListener('keydown',function(e){
 addEventListener('keyup',function(e){
   if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;
   if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false;
-  if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='Space')keys.jump=false;
+  if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='Space'||e.code==='Enter')keys.jump=false;
 });
 function releaseAllKeys(){ for(const k in keys)keys[k]=false; }
 const PAD=Array.prototype.map.call(document.querySelectorAll('.tbtn'),function(b){ return b.dataset.k; });
@@ -2429,6 +2501,7 @@ function loop(ts){
   _acc+=dt;
   let guard=0;
   stepFade(dt);
+  stepCharSelect();
   while(_acc>=_STEP && guard<5){ if(!paused && !trans)update(); _acc-=_STEP; guard++; }
   draw();
   requestAnimationFrame(loop);
