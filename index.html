@@ -208,13 +208,14 @@
   .vRow{gap:clamp(4px,calc(1 * var(--vw)),10px);}
   #victoryPanel .vRow .pBtn,#gameoverPanel .vRow .pBtn{margin:clamp(1px,calc(.4 * var(--vw)),4px);}
   .resHdr{color:#ffd54a;font-weight:800;letter-spacing:2px;text-align:left;font-size:clamp(9px,calc(1.5 * var(--vw)),13px);}
-  /* The session roster, inline with the heading. Sized in em so it tracks the
-     heading's own clamp rather than needing a second one of its own. */
-  .rosterStrip{display:inline-flex;align-items:center;gap:2px;margin-left:9px;vertical-align:middle;
-               line-height:0;}
-  /* Exactly the heading's own font size, so the row keeps the height it had
-     before the roster existed. Anything taller pushes the whole panel around. */
-  .rosterPip{height:1em;width:auto;object-fit:contain;
+  /* The session roster, sitting above TOTAL MEDALLIONS. The middle column is
+     wider than the achievements heading and has vertical slack the heading has
+     not, so all eight stay on one row at any stage width and can be drawn
+     bigger than heading-height without moving anything. */
+  .rosterStrip{display:flex;align-items:flex-end;justify-content:center;
+               gap:clamp(1px,calc(.3 * var(--vw)),3px);line-height:0;
+               margin-bottom:clamp(2px,calc(.6 * var(--vh)),5px);}
+  .rosterPip{height:clamp(11px,calc(2.1 * var(--vw)),22px);width:auto;object-fit:contain;
              filter:drop-shadow(0 1px 1px rgba(0,0,0,.75));}
   /* min-height, not height: the list keeps the panel a constant size when a run
      earns little or nothing, and grows past it when there is more to show. The
@@ -1828,7 +1829,8 @@ function scoreBreakdown(){
 // heading they sit beside. The row gains a face each time a run is finished
 // with someone new, and stands until the tab closes -- so it doubles as the
 // progress meter for "Avengers... Assemble!".
-function appendRoster(hdr){
+function appendRoster(host){
+  const old=host.querySelector('.rosterStrip'); if(old)old.remove();   // rebuilt on every end screen
   if(!roster.length)return;
   const strip=document.createElement('span'); strip.className='rosterStrip';
   for(const id of roster){
@@ -1839,7 +1841,7 @@ function appendRoster(hdr){
     im.src=poseSrc(c,'idle');
     strip.appendChild(im);
   }
-  hdr.appendChild(strip);
+  host.insertBefore(strip,host.firstChild);
 }
 function renderAchievements(screen){
   const panel=screen.querySelector('.endAch'); if(!panel)return;
@@ -1847,7 +1849,7 @@ function renderAchievements(screen){
   hdr.textContent=earnedList.length
     ? 'ACHIEVEMENTS EARNED — '+earnedList.length
     : 'ACHIEVEMENTS EARNED';
-  appendRoster(hdr);
+  appendRoster(screen.querySelector('.endScore'));
   list.textContent='';
   // The standing bonus is a row of its own, so a score carrying +75 from a
   // roster assembled three games ago still adds up in front of the player.
