@@ -40,11 +40,29 @@ function el(id) {
     getAttribute(k) { return k in e._attrs ? e._attrs[k] : null; },
     blur() {}, focus() {},
     _q: {},
-    querySelector(sel) { return e._q[sel] || (e._q[sel] = el(id + ' ' + sel)); },
+    // A class selector searches what has actually been built, so code that
+    // finds-and-replaces its own nodes behaves as it does in a browser. Anything
+    // else falls back to a stand-in element created on demand.
+    querySelector(sel) {
+      if (sel.startsWith('.')) {
+        const want = sel.slice(1);
+        const hit = e.find(c => c._classes && c._classes.has(want));
+        if (hit.length) return hit[0];
+      }
+      return e._q[sel] || (e._q[sel] = el(id + ' ' + sel));
+    },
     getContext: () => ctx2d,
     children: [],
-    appendChild(c) { e.children.push(c); return c; },
-    remove() {}, click() { e.fire('click'); },
+    appendChild(c) { e.children.push(c); c._parent = e; return c; },
+    insertBefore(c, ref) {
+      const i = ref ? e.children.indexOf(ref) : -1;
+      if (i < 0) e.children.push(c); else e.children.splice(i, 0, c);
+      c._parent = e; return c;
+    },
+    get firstChild() { return e.children[0] || null; },
+    querySelectorAll(sel) { return e.find(c => c._sel === sel); },
+    remove() { const p = e._parent; if (p) { const i = p.children.indexOf(e); if (i >= 0) p.children.splice(i, 1); } },
+    click() { e.fire('click'); },
     // walk the subtree, so tests can find what renderAchievements built
     find(pred, out = []) {
       for (const c of e.children) { if (pred(c)) out.push(c); c.find && c.find(pred, out); }

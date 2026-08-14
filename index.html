@@ -212,11 +212,20 @@
      wider than the achievements heading and has vertical slack the heading has
      not, so all eight stay on one row at any stage width and can be drawn
      bigger than heading-height without moving anything. */
-  .rosterStrip{display:flex;align-items:flex-end;justify-content:center;
+  .rosterStrip{--pipH:clamp(11px,calc(2.1 * var(--vw)),22px);
+               display:flex;align-items:flex-end;justify-content:center;
                gap:clamp(1px,calc(.3 * var(--vw)),3px);line-height:0;
                margin-bottom:clamp(2px,calc(.6 * var(--vh)),5px);}
-  .rosterPip{height:clamp(11px,calc(2.1 * var(--vw)),22px);width:auto;object-fit:contain;
-             filter:drop-shadow(0 1px 1px rgba(0,0,0,.75));}
+  /* Every slot is the same size whether or not it is filled -- the sprites are
+     2:3, so the width follows the height -- which is what keeps each character
+     in its own place and leaves a visible hole where one is missing. */
+  .rosterSlot{width:calc(var(--pipH) * .67);height:var(--pipH);
+              display:flex;align-items:flex-end;justify-content:center;}
+  .rosterPip{height:100%;width:auto;object-fit:contain;
+             filter:drop-shadow(0 1px 1px rgba(0,0,0,.75));
+             opacity:1;transition:opacity .35s ease;}
+  /* Not yet earned: present, holding its place, invisible. */
+  .rosterPip.locked{opacity:0;}
   /* min-height, not height: the list keeps the panel a constant size when a run
      earns little or nothing, and grows past it when there is more to show. The
      panel is anchored to the bottom of the stage, so it expands upward into the
@@ -614,6 +623,10 @@ const CHARACTERS=[
    blurb:'Northern Indiana’s expedition captain—guiding the Northern Indiana team through every new frontier.' },
 ];
 const CHAR_POSES=['idle','walk1','walk2','jump'];
+// The order the end-screen roster is always drawn in. Every character keeps its
+// own slot whether or not it has been earned, so the gaps show at a glance who
+// is still missing -- which is the whole point of showing it.
+const ROSTER_ORDER=['wayne','collins','lawrence','stoddard','beidelschies','jackie','patch','colonel'];
 let charId=(function(){ try{ return localStorage.getItem('dmw_char')||'wayne'; }catch(e){ return 'wayne'; } })();
 function character(id){
   for(const c of CHARACTERS) if(c.id===(id||charId)) return c;
@@ -1831,15 +1844,26 @@ function scoreBreakdown(){
 // progress meter for "Avengers... Assemble!".
 function appendRoster(host){
   const old=host.querySelector('.rosterStrip'); if(old)old.remove();   // rebuilt on every end screen
-  if(!roster.length)return;
   const strip=document.createElement('span'); strip.className='rosterStrip';
-  for(const id of roster){
+  // All eight slots, always, in ROSTER_ORDER. An unearned character leaves its
+  // slot empty rather than closing the gap, so the row reads as eight places to
+  // fill instead of a tally of however many happen to be done.
+  for(const id of ROSTER_ORDER){
     const c=character(id);
+    const got=roster.indexOf(id)>=0;
+    const slot=document.createElement('span');
+    slot.className='rosterSlot';
+    if(got)slot.title=c.name;
+    // Every character is always here. An unearned one is simply invisible, so
+    // its place is held by the character itself rather than by a stand-in and
+    // the spacing cannot drift between the two states.
     const im=document.createElement('img');
-    im.className='rosterPip'; im.alt=c.name; im.title=c.name;
+    im.className=got?'rosterPip':'rosterPip locked';
+    im.alt=got?c.name:'';
     im.onerror=function(){ this.onerror=null; this.src=poseSrc(CHARACTERS[0],'idle'); };
     im.src=poseSrc(c,'idle');
-    strip.appendChild(im);
+    slot.appendChild(im);
+    strip.appendChild(slot);
   }
   host.insertBefore(strip,host.firstChild);
 }
