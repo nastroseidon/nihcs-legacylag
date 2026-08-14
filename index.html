@@ -174,17 +174,39 @@
      earned on the left, the medallion total in the middle, what to do next on
      the right. Nothing floats over the artwork and nothing can leave the stage.
      The columns wrap on a narrow stage rather than overflowing it. */
-  #victoryPanel,#gameoverPanel{width:100%;box-sizing:border-box;padding:14px clamp(10px,calc(2 * var(--vw)),20px);
+  #victoryPanel,#gameoverPanel{width:100%;box-sizing:border-box;
+           padding:clamp(6px,calc(2 * var(--vh)),14px) clamp(10px,calc(2 * var(--vw)),20px);
            border-top:1px solid rgba(255,213,74,.22);display:flex;flex-wrap:wrap;
            gap:clamp(10px,calc(2 * var(--vw)),18px);justify-content:center;align-items:stretch;text-align:center;}
   #victoryPanel{background:rgba(10,25,12,.82);}
   #gameoverPanel{background:rgba(20,8,8,.88);}
-  .endAch{flex:1 1 300px;max-width:420px;min-width:0;display:flex;flex-direction:column;gap:7px;}
+  /* A fixed 300px basis made the three columns wrap into a tall stack early;
+     scaled, they stay side by side down to a genuinely narrow stage. */
+  .endAch{flex:1 1 clamp(170px,calc(26 * var(--vw)),300px);max-width:420px;min-width:0;
+          display:flex;flex-direction:column;gap:clamp(3px,calc(1 * var(--vh)),7px);}
   .endScore{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
            padding:0 clamp(12px,calc(2.4 * var(--vw)),24px);
            border-left:1px solid rgba(255,255,255,.14);border-right:1px solid rgba(255,255,255,.14);}
-  .endActions{flex:0 0 auto;min-width:min(100%,246px);display:flex;flex-direction:column;gap:8px;
+  .endActions{flex:0 0 auto;min-width:min(100%,clamp(140px,calc(21 * var(--vw)),246px));
+           display:flex;flex-direction:column;gap:clamp(4px,calc(1.2 * var(--vh)),8px);
            justify-content:center;align-items:stretch;}
+  /* The end panel's own controls, scaled to the stage.
+     .pBtn is built for the main menu: a 15px floor, a 22px ceiling reached at
+     about 790px of stage width, and padding fixed in px. Past that ceiling the
+     buttons stop growing, which is right -- but they also never shrink, so on a
+     small window they kept their full size while the stage contracted around
+     them and ended up dominating the panel. Here the type scales the whole way
+     down and the padding is in em, so it follows the type instead of being a
+     constant lump. Same ceiling as before, so a large screen is unchanged. */
+  #victoryPanel .pBtn,#gameoverPanel .pBtn{
+           font-size:clamp(8px,calc(1.9 * var(--vw)),22px);
+           padding:.5em 1.15em;border-radius:.45em;box-shadow:0 .18em 0 #b8952a;}
+  #nameInput{font-size:clamp(7px,calc(1.4 * var(--vw)),14px);padding:.45em .6em;
+           border-radius:.5em;border-width:.14em;}
+  #nameEntry{gap:clamp(4px,calc(.8 * var(--vw)),8px);}
+  #nameEntry .pBtn{font-size:clamp(7px,calc(1.4 * var(--vw)),14px);padding:.45em .85em;}
+  .vRow{gap:clamp(4px,calc(1 * var(--vw)),10px);}
+  #victoryPanel .vRow .pBtn,#gameoverPanel .vRow .pBtn{margin:clamp(1px,calc(.4 * var(--vw)),4px);}
   .resHdr{color:#ffd54a;font-weight:800;letter-spacing:2px;text-align:left;font-size:clamp(9px,calc(1.5 * var(--vw)),13px);}
   /* The session roster, inline with the heading. Sized in em so it tracks the
      heading's own clamp rather than needing a second one of its own. */
@@ -945,7 +967,7 @@ const ACHIEVEMENTS=[
    when:function(f){ return f.fullRun && f.rosterCount>=CHARACTERS.length && !f.avengersDone; },
    variants:[
   { title:'AVENGERS\u2026 ASSEMBLE!',
-    body:'Congratulations!\n\nAccording to our records, you have now completed all six levels with every single playable character.\n\nAll eight of them.\n\nForty-eight successful level completions.\n\nWe checked twice.\n\nThen we gave the numbers to someone from Finance because they own a calculator and seemed responsible.\n\nThey confirmed it.\n\nAt some point during this session, you stopped merely playing and began conducting what can only be described as a comprehensive operational evaluation of the entire roster.\n\nEvery character answered the call.\n\nEvery level was conquered.\n\nEvery obstacle now knows your name.\n\nDr. Marion Wayne has requested that you please stop proving things. There is nothing left to prove.',
+    body:'Congratulations!\n\nAccording to our records, you have now completed all six levels with every single playable character.\n\nAll eight of them.\n\nForty-eight successful level completions.\n\nWe checked twice.\n\nThen we gave the numbers to someone from Finance because they own a calculator and seemed responsible.\n\nThey confirmed it.\n\nAt some point during this session, you stopped merely playing EHRM Dash and began conducting what can only be described as a comprehensive operational evaluation of the entire roster.\n\nEvery character answered the call.\n\nEvery level was conquered.\n\nEvery obstacle now knows your name.\n\nDr. Marion Wayne has requested that you please stop proving things. There is nothing left to prove.',
     reward:'The complete admiration of eight imaginary heroes, one extremely real sense of accomplishment, and the uncomfortable realization that you now know this game better than some of the people who made it.' },
   { title:'AVENGERS\u2026 ASSEMBLE!',
     body:'Congratulations!\n\nLong ago, an ancient prophecy foretold of a player who would master all six levels with every member of the roster.\n\nActually, it was an Excel spreadsheet.\n\nBut someone accidentally printed it on beige paper, so we\u2019ve been calling it a prophecy.\n\nFor generations\u2014or at least since this game launched\u2014we waited.\n\nEight characters.\nSix levels.\nForty-eight victories.\n\nAnd now, against all reasonable expectations regarding how you might choose to spend your time, the prophecy has been fulfilled.\n\nYou assembled the entire team and brought every last one of them across the finish line.\n\nDr. Marion Wayne always believed this day would come.\n\nThat\u2019s not true.\n\nHe owes several people lunch.',
