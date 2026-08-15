@@ -1617,6 +1617,10 @@ addEventListener('message',function(e){
     if(won.length){ state='achieve';
       fadeTo(function(){ showAchievements(won,showVictory,'coronation'); }); }
     else { state='victory'; fadeTo(showVictory); }
+  } else if(d.type==='quit'){
+    // Return to Main Screen, pressed inside the 3D stage's own pause screen.
+    // The run is abandoned exactly as it is from the 2D pause menu.
+    stop3DGoLive(); fadeTo(goMain);
   } else if(d.type==='gameover'){
     score=levelStartScore+(d.score||0); run.deaths+=d.deaths||0; updateHud();
     stop3DGoLive(); state='gameover'; fadeTo(showGameOver);

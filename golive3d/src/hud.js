@@ -5,12 +5,13 @@ export function createHUD() {
   const startScr = $('startScreen'), pauseScr = $('pauseScreen'),
     endScr = $('endScreen'), endTitle = $('endTitle'), endScore = $('endScore'),
     toast = $('toast');
-  let readyCb = null, restartCb = null, resumeCb = null;
+  let readyCb = null, restartCb = null, resumeCb = null, quitCb = null;
 
   $('startBtn').addEventListener('click', () => { startScr.classList.add('hidden'); readyCb?.(); });
   $('endBtn').addEventListener('click', () => { endScr.classList.add('hidden'); restartCb?.(); });
   $('pResume').addEventListener('click', () => resumeCb?.());
   $('pRestart').addEventListener('click', () => { pauseScr.classList.add('hidden'); restartCb?.(); });
+  $('pMain').addEventListener('click', () => { pauseScr.classList.add('hidden'); quitCb?.(); });
   $('saveScore').addEventListener('click', () => {
     const name = ($('nameInput').value || 'Anonymous').trim().slice(0, 14);
     const sc = parseInt(endScore.dataset.score || '0', 10);
@@ -25,6 +26,9 @@ export function createHUD() {
     ready(cb) { readyCb = cb; },
     onRestart(cb) { restartCb = cb; },
     onResume(cb) { resumeCb = cb; },
+    // Returning to the main menu only means something when the host is there.
+    onQuit(cb) { quitCb = cb; },
+    showQuit(on) { $('pMain').classList.toggle('hidden', !on); },
     setScore(v) { score.textContent = 'Medallions: ' + v; },
     setLives(v) { lives.textContent = 'Lives: ' + Math.max(0, v); },
     setPaused(p) { pauseScr.classList.toggle('hidden', !p); },

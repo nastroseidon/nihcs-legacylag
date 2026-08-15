@@ -147,6 +147,10 @@ function togglePause() { if (state.status !== 'playing') return; paused = !pause
 function uiAction() { if (state.status === 'won' || state.status === 'gameover') { newGame(); } }
 hud.onRestart(() => { paused = false; hud.setPaused(false); newGame(); });
 hud.onResume(() => { paused = false; hud.setPaused(false); });
+// Level 6 runs in an iframe, so the host's own pause menu -- and its way back to
+// the main screen -- is out of reach here. Hand the decision back to the host.
+hud.onQuit(() => { paused = false; hud.setPaused(false); tellHost('quit'); });
+hud.showQuit(embedded);
 
 // ---------- build scene ----------
 init();
